@@ -517,6 +517,15 @@ internal fun NewLookHomeContent(
         if (settings.posterOpenDelayMs > 0) delay(settings.posterOpenDelayMs.toLong())
         openPoster = card
     }
+    // With no delay the card opens in the same frame it gets focus, not a frame later through the effect above: that
+    // frame showed the closed vertical poster before it opened.
+    val openPosterNow = if (settings.posterOpenDelayMs == 0) {
+        focusedCard?.takeIf { card ->
+            rows.firstOrNull { it.key == card.first }?.let { it.kind == RowKind.POSTER && !it.isPlaceholder } == true
+        }
+    } else {
+        openPoster
+    }
     /** On a grand card, which pill is lit: 0 Watch Now, 1 More Info. Back to Watch Now on every new card. */
     var grandButton by remember { mutableIntStateOf(0) }
     LaunchedEffect(focusedCard) { grandButton = 0 }
@@ -755,7 +764,7 @@ internal fun NewLookHomeContent(
         (focusedRow.kind == RowKind.HIGHLIGHT || focusedRow.kind == RowKind.GRAND) && !focusedRow.collection
     }
     // A regular row's poster plays its trailer once it has opened out (and stays on it when the trailer ends).
-    val posterTrailerItem = focusedItem?.takeIf { focusedRow.kind == RowKind.POSTER && openPoster == focusedCard }
+    val posterTrailerItem = focusedItem?.takeIf { focusedRow.kind == RowKind.POSTER && openPosterNow == focusedCard }
     // Fetch on expansion: the opened poster's sources, so Play finds a search already running. The wait makes up the
     // usual focus dwell (with a short expand delay, focus may still be passing through the row).
     LaunchedEffect(posterTrailerItem?.key) {
@@ -1053,7 +1062,7 @@ internal fun NewLookHomeContent(
                             }
                         },
                         onPrefetch = { item -> loadDetails(item.metaPreview) },
-                        openItemKey = openPoster?.takeIf { it.first == row.key }?.second,
+                        openItemKey = openPosterNow?.takeIf { it.first == row.key }?.second,
                         onClick = { item ->
                             if (row.onlyPlaceholders) return@NewLookRowView
                             when (val payload = item.payload) {
