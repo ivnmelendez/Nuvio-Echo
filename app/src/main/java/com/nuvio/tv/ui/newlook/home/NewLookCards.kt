@@ -337,17 +337,17 @@ internal fun PosterCard(
     // doesn't recompose it.
     val width = animateDpAsState(
         targetValue = if (open) dims.posterOpenWidth else dims.posterWidth,
-        animationSpec = tween(280, easing = OpenEasing),
+        animationSpec = snap(),
         label = "posterOpen"
     )
     // As stock Nuvio does: the poster goes the moment the card starts opening, so it's never seen cropped and blown
     // up to the wide shape; the card is black until the backdrop has loaded and faded in. Closing fades the backdrop
     // out quickly and the poster back in once the card is narrow again.
     val openAlpha = animateFloatAsState(
-        if (open) 1f else 0f, if (open) snap() else tween(160), label = "posterOpenAlpha"
+        if (open) 1f else 0f, snap(), label = "posterOpenAlpha"
     )
     val posterAlpha = animateFloatAsState(
-        if (open) 0f else 1f, if (open) snap() else tween(220, delayMillis = 120), label = "posterAlpha"
+        if (open) 0f else 1f, snap(), label = "posterAlpha"
     )
     val showOpen by remember { derivedStateOf { openAlpha.value > 0f } }
     NewLookCard(
