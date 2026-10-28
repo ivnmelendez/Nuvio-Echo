@@ -1218,7 +1218,7 @@ private const val ROW_PIN_CHECK_DELAY_MS = 300L
 /** Rows pin the focused card to their start, so a row always starts with its focused card. */
 internal class PinToStart(private val startPx: Float) : BringIntoViewSpec {
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-    override val scrollAnimationSpec: androidx.compose.animation.core.AnimationSpec<Float> = Glide.scroll
+    override val scrollAnimationSpec: androidx.compose.animation.core.AnimationSpec<Float> = androidx.compose.animation.core.snap()
 
     override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
         val distance = offset - startPx
@@ -1407,7 +1407,7 @@ private fun NewLookRowView(
                     .focusGroup()
             ) {
                 itemsIndexed(row.items, key = { _, item -> item.key }) { index, item ->
-                    val passed by animateFloatAsState(if (index < col) 0f else 1f, tween(200), label = "passed")
+                    val passed by animateFloatAsState(if (index < col) 0f else 1f, androidx.compose.animation.core.snap(), label = "passed")
                     val modifier = Modifier
                         .graphicsLayer { alpha = passed }
                         .then(
