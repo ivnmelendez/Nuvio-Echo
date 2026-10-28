@@ -4,6 +4,7 @@ package com.nuvio.tv.ui.newlook.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
+import coil3.imageLoader
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
@@ -1392,6 +1393,18 @@ private fun NewLookRowView(
                     compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.ModulateAlpha
                 }
         )
+        // Backdrops of the next cards are fetched ahead, so moving fast through a row doesn't catch an opened card
+        // before its picture is there.
+        if (row.kind == RowKind.POSTER && rowActive) {
+            val appContext = androidx.compose.ui.platform.LocalContext.current
+            LaunchedEffect(col, row.items.size) {
+                for (i in col..(col + 4).coerceAtMost(row.items.lastIndex)) {
+                    val item = row.items[i]
+                    val url = item.heroPreview.backdrop ?: item.metaPreview?.id?.let { details[it]?.backdrop } ?: continue
+                    appContext.imageLoader.enqueue(coil3.request.ImageRequest.Builder(appContext).data(url).build())
+                }
+            }
+        }
         // The focused card is what asks to be scrolled into view; a ranked card sits rankPad into its item.
         val startPx = with(density) { (contentStart + if (row.ranked) dims.rankPad else 0.dp).toPx() }
         // Now and then that scroll falls short (seen two cards short after quick moves), and the passed cards,
