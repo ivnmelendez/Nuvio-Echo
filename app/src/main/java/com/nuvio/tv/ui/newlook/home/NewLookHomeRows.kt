@@ -2,6 +2,7 @@ package com.nuvio.tv.ui.newlook.home
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.nuvio.tv.core.home.BuiltInRow
 import com.nuvio.tv.core.home.BuiltInRowsRepository
 import com.nuvio.tv.core.home.HomeRowOrder
@@ -89,7 +90,8 @@ internal data class NewLookRow(
     fun metaHeight(d: NewLookDimens): Dp = when (kind) {
         // Grand cards carry their details inside, as the hero does.
         RowKind.WIDE, RowKind.GRAND -> Dp(0f)
-        RowKind.POSTER, RowKind.COLLECTION -> d.posterMeta
+        RowKind.POSTER -> if (collection) d.posterMeta else d.posterMeta + 48.dp
+        RowKind.COLLECTION -> d.posterMeta
         RowKind.HIGHLIGHT -> if (collection) d.posterMeta else d.highlightMeta
     }
 

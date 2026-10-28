@@ -1658,7 +1658,7 @@ private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookD
             rating = rating,
             ratingIsImdb = ratingIsImdb
         )
-        if (row.kind == RowKind.HIGHLIGHT) {
+        if (row.kind == RowKind.HIGHLIGHT || row.kind == RowKind.POSTER) {
             val synopsis = preview.description ?: details?.overview
             if (!synopsis.isNullOrBlank()) {
                 Text(
@@ -1666,9 +1666,9 @@ private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookD
                     color = Color(0xFFB8B8B8),
                     fontSize = 13.5.sp,
                     lineHeight = 18.sp,
-                    maxLines = 3,
+                    maxLines = if (row.kind == RowKind.POSTER) 2 else 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.width(dims.highlightWidth)
+                    modifier = Modifier.width(if (row.kind == RowKind.POSTER) dims.posterOpenWidth else dims.highlightWidth)
                 )
             }
         }
