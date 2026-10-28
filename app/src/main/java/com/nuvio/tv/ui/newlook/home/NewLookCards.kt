@@ -365,7 +365,7 @@ internal fun PosterCard(
         )
         if (showOpen) {
             Box(modifier = Modifier.fillMaxSize().graphicsLayer { alpha = openAlpha.value }.background(Color.Black)) {
-                Artwork(backdrop ?: poster, Modifier.fillMaxSize())
+                Artwork(backdrop, Modifier.fillMaxSize())
                 HeldTrailer(active = playing, key = trailerUrl) { onFirstFrame ->
                     TrailerPlayer(
                         trailerUrl = trailerUrl,

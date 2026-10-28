@@ -1548,7 +1548,8 @@ private fun RowCard(
         row.kind == RowKind.POSTER -> PosterCard(
             poster = preview.poster ?: item.imageUrl,
             posterFallback = item.metaPreview?.rawPosterUrl,
-            backdrop = backdrop,
+            // Never the poster: an opened card is wide, so until a real backdrop is known it stays black.
+            backdrop = preview.backdrop ?: details?.backdrop,
             logo = logo,
             title = item.title,
             watched = item.metaPreview?.let(isWatched) == true,
