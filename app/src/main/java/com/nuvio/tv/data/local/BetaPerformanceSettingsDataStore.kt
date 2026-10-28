@@ -114,7 +114,7 @@ data class BetaPerformanceSettings(
      */
     val trailerVideoLayer: Boolean = false,
     /** New look: how long a focused poster waits before it opens out, in ms (one of [POSTER_OPEN_DELAYS]). */
-    val posterOpenDelayMs: Int = 750,
+    val posterOpenDelayMs: Int = 0,
     /** New look: how long a card, grand card, highlight or the hero waits, once focused, before its trailer starts (ms). */
     val trailerStartDelayMs: Int = 2000,
     /** New look: the menu stays out of sight until it's selected (Left from a row, or Up for the top bar). */
