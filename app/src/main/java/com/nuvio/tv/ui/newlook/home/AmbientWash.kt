@@ -3,6 +3,7 @@ package com.nuvio.tv.ui.newlook.home
 import android.graphics.Bitmap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +60,9 @@ private val washCache = object : LinkedHashMap<String, ImageBitmap>(16, 0.75f, t
  */
 @Composable
 internal fun AmbientPageWash(url: String?, modifier: Modifier = Modifier) {
+    // Pure black for OLED and low-end TVs: no artwork is read, blurred or drawn.
+    androidx.compose.foundation.layout.Box(modifier.androidxBlackBackground())
+    if (true) return
     val context = LocalContext.current
     var shown by remember { mutableStateOf<ImageBitmap?>(url?.let { synchronized(washCache) { washCache[it] } }) }
     var previous by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -179,3 +183,5 @@ private fun boxBlur(channel: FloatArray, w: Int, h: Int, radius: Int, horizontal
         }
     }
 }
+
+private fun Modifier.androidxBlackBackground(): Modifier = this.background(androidx.compose.ui.graphics.Color.Black)

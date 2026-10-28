@@ -786,7 +786,15 @@ internal fun NewLookHomeContent(
     val trailerSurfacePx = with(density) { trailerSurface.roundToPx() }
     val trailerUrls = source.trailerUrls
     val trailerAudioUrls = source.trailerAudioUrls
-    val trailerUrl = trailerTarget?.let { trailerUrls[it.first] }
+    // The URL is fetched as soon as the card is focused, but plays only after the trailer start delay.
+    var trailerArmed by remember { mutableStateOf(false) }
+    LaunchedEffect(trailerTarget?.first, settings.trailerStartDelayMs) {
+        trailerArmed = false
+        if (trailerTarget == null) return@LaunchedEffect
+        if (settings.trailerStartDelayMs > 0) delay(settings.trailerStartDelayMs.toLong())
+        trailerArmed = true
+    }
+    val trailerUrl = trailerTarget?.let { trailerUrls[it.first] }?.takeIf { trailerArmed }
     LaunchedEffect(trailerTarget?.first, trailerSurfacePx) {
         val target = trailerTarget ?: return@LaunchedEffect
         // Asked again a few times: requests are dropped during the startup grace period. The first ask always goes
@@ -867,7 +875,7 @@ internal fun NewLookHomeContent(
                 val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
                 layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(-extra, 0) }
             }
-            .then(if (settings.homeAmbientBackground) Modifier.background(PageBase) else Modifier.background(PageGradient))
+            .background(Color.Black)
             .focusRequester(contentFocusRequester)
             // Coming back into Home (from the menu, a dialog or another screen's return): to the card or button
             // Home was on, from its own memory. A focusRestorer here brought focus back one row up (seen
@@ -950,10 +958,6 @@ internal fun NewLookHomeContent(
             }
     ) {
         val screenWidth = maxWidth
-        if (settings.homeAmbientBackground) {
-            // The carousel's current title, blurred to its colours, behind the whole page (Appearance → Ambient colour).
-            AmbientPageWash(url = slides.getOrNull(slide)?.backdrop, modifier = Modifier.fillMaxSize())
-        }
         CompositionLocalProvider(LocalBringIntoViewSpec provides NoBringIntoView, LocalNewLookCardRadius provides dims.cardRadius) {
             LazyColumn(
                 state = listState,
@@ -1262,17 +1266,6 @@ private fun HeroBlock(
             }
             .height(NewLookLayout.RowsTop)
     ) {
-        // The ambient tint: the current title's colour glowing around the window, following the carousel. An
-        // edge-to-edge hero has no window to glow around.
-        if (!edgeToEdge) {
-            val tint = rememberArtworkTint(slides.getOrNull(slide)?.backdrop)
-            AmbientGlow(
-                color = tint,
-                modifier = Modifier
-                    .offset { IntOffset(contentStart.roundToPx(), top.roundToPx()) }
-                    .size(width, height)
-            )
-        }
         if (slides.isNotEmpty()) {
             HeroWindow(
                 slides = slides,
@@ -1390,31 +1383,6 @@ private fun NewLookRowView(
                     compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.ModulateAlpha
                 }
         )
-        // A grand row's focused card glows in its title's colours, as the hero window does.
-        if (row.kind == RowKind.GRAND) {
-            val tint = rememberArtworkTint(if (rowActive) shownItem?.heroPreview?.backdrop ?: shownItem?.imageUrl else null)
-            AmbientGlow(
-                color = tint,
-                visible = rowActive,
-                radius = dims.cardRadius,
-                modifier = Modifier
-                    .offset { IntOffset(contentStart.roundToPx(), cardTop.roundToPx()) }
-                    .size(dims.grandWidth, dims.grandHeight)
-            )
-        }
-        // The focused card of a highlighted row tints its surroundings, only while the row has focus.
-        if (row.kind == RowKind.HIGHLIGHT) {
-            val tint = rememberArtworkTint(if (rowActive) shownItem?.heroPreview?.backdrop ?: shownItem?.imageUrl else null)
-            val cardStart = contentStart + if (row.ranked) dims.rankPad else 0.dp
-            AmbientGlow(
-                color = tint,
-                visible = rowActive,
-                radius = dims.cardRadius,
-                modifier = Modifier
-                    .offset { IntOffset(cardStart.roundToPx(), cardTop.roundToPx()) }
-                    .size(dims.highlightWidth, dims.highlightHeight)
-            )
-        }
         // The focused card is what asks to be scrolled into view; a ranked card sits rankPad into its item.
         val startPx = with(density) { (contentStart + if (row.ranked) dims.rankPad else 0.dp).toPx() }
         // Now and then that scroll falls short (seen two cards short after quick moves), and the passed cards,

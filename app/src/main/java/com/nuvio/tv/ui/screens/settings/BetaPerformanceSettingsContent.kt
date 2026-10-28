@@ -106,6 +106,7 @@ class BetaPerformanceSettingsViewModel @Inject constructor(
     fun setAudioMenuLanguage(key: String, shown: Boolean) = viewModelScope.launch { dataStore.setAudioMenuLanguage(key, shown) }
     fun setHideMenu(enabled: Boolean) = viewModelScope.launch { dataStore.setHideMenuUntilSelected(enabled) }
     fun setPosterOpenDelay(ms: Int) = viewModelScope.launch { dataStore.setPosterOpenDelay(ms) }
+    fun setTrailerStartDelay(ms: Int) = viewModelScope.launch { dataStore.setTrailerStartDelay(ms) }
     fun setSourceSwitchTimeout(seconds: Int) = viewModelScope.launch { dataStore.setSourceSwitchTimeout(seconds) }
     fun setAutoQuality(enabled: Boolean) = viewModelScope.launch { dataStore.setAutoQuality(enabled) }
     fun setAutoQualityConfirm(seconds: Int) = viewModelScope.launch { dataStore.setAutoQualityConfirm(seconds) }
@@ -292,6 +293,18 @@ internal fun HomeMotionRows(viewModel: BetaPerformanceSettingsViewModel = hiltVi
             stringResource(R.string.beta_poster_delay_value, settings.posterOpenDelayMs / 1000f)
         },
         onValueChange = viewModel::setPosterOpenDelay
+    )
+    SliderSettingsItem(
+        title = stringResource(R.string.beta_trailer_delay_title),
+        subtitle = stringResource(R.string.beta_trailer_delay_subtitle),
+        values = BetaPerformanceSettings.TRAILER_START_DELAYS,
+        selected = settings.trailerStartDelayMs,
+        valueText = if (settings.trailerStartDelayMs == 0) {
+            stringResource(R.string.beta_poster_delay_none)
+        } else {
+            stringResource(R.string.beta_poster_delay_value, settings.trailerStartDelayMs / 1000f)
+        },
+        onValueChange = viewModel::setTrailerStartDelay
     )
     SettingsToggleRow(
         title = stringResource(R.string.beta_trailer_sound_title),

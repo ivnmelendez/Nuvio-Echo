@@ -67,11 +67,11 @@ data class BetaPerformanceSettings(
      */
     val autoQualityHotSwap: Boolean = false,
     /** Search and Genres: the info panel's background is a mesh of the focused poster's colours (off: black). */
-    val posterColourMesh: Boolean = true,
+    val posterColourMesh: Boolean = false,
     /** New look: Home's background takes the colours of the carousel's current title, blurred (off: near black). */
-    val homeAmbientBackground: Boolean = true,
+    val homeAmbientBackground: Boolean = false,
     /** With [homeAmbientBackground]: the details page's background takes its title's colours too. */
-    val detailsAmbientBackground: Boolean = true,
+    val detailsAmbientBackground: Boolean = false,
     /** New look: the hero carousel fills the screen edge to edge and fades into the page, instead of a rounded window. */
     val heroEdgeToEdge: Boolean = true,
     /** New look: focus is a white edge with a slight lift and soft shadow, instead of a ring in the theme's colour. */
@@ -80,7 +80,7 @@ data class BetaPerformanceSettings(
      * Trailer quality: [TRAILER_QUALITY_AUTO] fetches each trailer to match what it plays on (a card, a highlight, the
      * hero, full screen); otherwise the tallest picture to fetch, one of [TRAILER_QUALITIES].
      */
-    val trailerQuality: Int = TRAILER_QUALITY_AUTO,
+    val trailerQuality: Int = 720,
     /** Player shows only play, next episode, subtitles, audio and quality; the rest sit behind the arrow. */
     val minimalPlayer: Boolean = true,
     /** Play the short logo intro while a stream loads; playback waits for it to finish. */
@@ -115,6 +115,8 @@ data class BetaPerformanceSettings(
     val trailerVideoLayer: Boolean = false,
     /** New look: how long a focused poster waits before it opens out, in ms (one of [POSTER_OPEN_DELAYS]). */
     val posterOpenDelayMs: Int = 750,
+    /** New look: how long a card, grand card, highlight or the hero waits, once focused, before its trailer starts (ms). */
+    val trailerStartDelayMs: Int = 2000,
     /** New look: the menu stays out of sight until it's selected (Left from a row, or Up for the top bar). */
     val hideMenuUntilSelected: Boolean = false,
     /** New look: the menu is a glass tab bar at the top instead of the sidebar. */
@@ -192,6 +194,7 @@ data class BetaPerformanceSettings(
         val MENU_GLASS_LEVELS = listOf(0, 1, 2)
         const val TRAILER_QUALITY_AUTO = com.nuvio.tv.core.player.TrailerVideoPolicy.AUTO
         val TRAILER_QUALITIES = com.nuvio.tv.core.player.TrailerVideoPolicy.QUALITIES
+        val TRAILER_START_DELAYS = listOf(0, 1000, 2000, 3000, 4000, 5000, 8000)
         val POSTER_OPEN_DELAYS = listOf(0, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 5000)
 
         /** Seek preview data limits offered, in MB; 0 is no limit. */
@@ -239,6 +242,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
     private val omdbApiKeyKey = stringPreferencesKey("omdb_api_key")
     private val trailerVideoLayerKey = booleanPreferencesKey("new_look_trailer_video_layer_v2") // v2: everyone back on the default (off)
     private val posterOpenDelayKey = intPreferencesKey("new_look_poster_open_delay_ms")
+    private val trailerStartDelayKey = intPreferencesKey("new_look_trailer_start_delay_ms")
     private val hideMenuKey = booleanPreferencesKey("new_look_hide_menu")
     private val menuOnTopKey = booleanPreferencesKey("new_look_menu_on_top")
     private val menuGlassKey = intPreferencesKey("new_look_menu_glass")
@@ -301,6 +305,8 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
             showUnknownAudio = prefs[showUnknownAudioKey] ?: defaults.showUnknownAudio,
             omdbApiKey = prefs[omdbApiKeyKey] ?: defaults.omdbApiKey,
             trailerVideoLayer = prefs[trailerVideoLayerKey] ?: defaults.trailerVideoLayer,
+            trailerStartDelayMs = prefs[trailerStartDelayKey]?.takeIf { it in BetaPerformanceSettings.TRAILER_START_DELAYS }
+                ?: defaults.trailerStartDelayMs,
             posterOpenDelayMs = prefs[posterOpenDelayKey]?.takeIf { it in BetaPerformanceSettings.POSTER_OPEN_DELAYS }
                 ?: defaults.posterOpenDelayMs,
             hideMenuUntilSelected = prefs[hideMenuKey] ?: defaults.hideMenuUntilSelected,
@@ -404,6 +410,10 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
         dataStore.edit { prefs -> prefs[omdbApiKeyKey] = key.trim() }
     }
 
+    suspend fun setTrailerStartDelay(ms: Int) {
+        if (ms !in BetaPerformanceSettings.TRAILER_START_DELAYS) return
+        dataStore.edit { prefs -> prefs[trailerStartDelayKey] = ms }
+    }
     suspend fun setPosterOpenDelay(ms: Int) {
         if (ms !in BetaPerformanceSettings.POSTER_OPEN_DELAYS) return
         dataStore.edit { prefs -> prefs[posterOpenDelayKey] = ms }
