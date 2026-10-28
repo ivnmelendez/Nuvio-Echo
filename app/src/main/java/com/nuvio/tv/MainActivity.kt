@@ -999,20 +999,6 @@ open class MainActivity : ComponentActivity() {
                             )
                             add(
                                 DrawerItem(
-                                    route = Screen.Genres.route,
-                                    label = strNavGenres,
-                                    icon = Icons.Default.GridView
-                                )
-                            )
-                            add(
-                                DrawerItem(
-                                    route = Screen.Calendar.route,
-                                    label = strNavCalendar,
-                                    icon = calendarIcon
-                                )
-                            )
-                            add(
-                                DrawerItem(
                                     route = Screen.Library.route,
                                     label = strNavLibrary,
                                     iconRes = R.raw.sidebar_library
