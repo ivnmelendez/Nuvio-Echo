@@ -688,14 +688,25 @@ internal fun NewLookHomeContent(
         delay(SAVED_ROW_WAIT_MS)
         savedRowWaitOver = true
     }
+    // Coming back to a row, the carousel's buttons can take focus first (Home is entered before the row's cards
+    // exist). Until the row has been focused again, that must not count as the person moving up to the carousel:
+    // it reset the saved place to the top.
+    var restoringRow by remember { mutableStateOf(savedRowKey != null) }
+    LaunchedEffect(focusedCard) { if (focusedCard != null) restoringRow = false }
+    LaunchedEffect(savedRowWaitOver) {
+        if (savedRowWaitOver) {
+            delay(1_000)
+            restoringRow = false
+        }
+    }
     LaunchedEffect(contentReady, savedRowBuilt, savedRowWaitOver) {
         if (!contentReady || initialFocusDone) return@LaunchedEffect
         if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
         initialFocusDone = true
         val savedRow = memory.rowKey?.let { key -> rows.indexOfFirst { it.key == key } } ?: -1
         if (memory.area == HomeArea.ROWS && savedRow >= 0) focusRow(savedRow)
-        else if (slides.isNotEmpty()) focusHero(memory.heroButton)
-        else focusRow(0)
+        else if (slides.isNotEmpty()) { restoringRow = false; focusHero(memory.heroButton) }
+        else { restoringRow = false; focusRow(0) }
     }
 
     // Sidebar's Home pressed while on Home: back to the top.
@@ -1073,7 +1084,7 @@ internal fun NewLookHomeContent(
                         onTrailerEnded = { nextSlide(1) },
                         onHeroFocus = { focused, button ->
                             heroHasFocus = focused
-                            if (focused) {
+                            if (focused && !restoringRow) {
                                 area = HomeArea.HERO
                                 heroButton = button
                                 focusedCard = null
