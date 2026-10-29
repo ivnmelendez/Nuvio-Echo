@@ -76,6 +76,7 @@ private data class HomePosterOptionsTarget(
 )
 
 private const val HOME_STABLE_GATE_TIMEOUT_MS = 5_000L
+private const val HOME_ADDONS_PENDING_TIMEOUT_MS = 25_000L
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -193,20 +194,30 @@ fun HomeScreen(
         }
     }
 
+    val noAddonsError = stringResource(R.string.home_error_no_addons)
+    val noCatalogAddonsError = stringResource(R.string.home_error_no_catalog_addons)
     LaunchedEffect(Unit) {
         // Safety timeout — if catalogs and CW haven't loaded within this
         // window, show whatever is available.  Covers edge cases like
-        // clean cache (addons loading from remote sync) and users with
-        // no addons at all.
+        // clean cache and users with no addons at all.
         delay(HOME_STABLE_GATE_TIMEOUT_MS)
+        // First run after activating a code: the addon was just installed and its manifest is still being
+        // fetched, so the list reads empty. Keep the startup splash instead of flashing "no addons".
+        var waitedMs = HOME_STABLE_GATE_TIMEOUT_MS
+        while (!homeStableGateReleased &&
+            waitedMs < HOME_ADDONS_PENDING_TIMEOUT_MS &&
+            uiState.catalogRows.isEmpty() &&
+            (uiState.error == noAddonsError || uiState.error == noCatalogAddonsError)
+        ) {
+            delay(250)
+            waitedMs += 250
+        }
         if (!homeStableGateReleased) {
             Log.d("HomeGate", "RELEASE timeout: isLoading=${uiState.isLoading} cwResolved=$initialCwResolved catalogs=$hasCatalogContent cwItems=${uiState.continueWatchingItems.size}")
             homeStableGateReleased = true
         }
     }
 
-    val noAddonsError = stringResource(R.string.home_error_no_addons)
-    val noCatalogAddonsError = stringResource(R.string.home_error_no_catalog_addons)
     val hasAnyContent = uiState.catalogRows.isNotEmpty() ||
         (uiState.continueWatchingEnabled && uiState.continueWatchingItems.isNotEmpty()) ||
         uiState.heroItems.isNotEmpty() ||
