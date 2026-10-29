@@ -2636,7 +2636,7 @@ class MetaDetailsViewModel @Inject constructor(
         val meta = _uiState.value.meta ?: return
 
         trailerFetchJob?.cancel()
-        trailerFetchJob = viewModelScope.launch {
+        trailerFetchJob = viewModelScope.launch(com.nuvio.tv.core.player.FullScreenTrailer) {
             _uiState.update { state ->
                 if (state.isTrailerLoading) state else state.copy(isTrailerLoading = true)
             }
@@ -2829,7 +2829,7 @@ class MetaDetailsViewModel @Inject constructor(
             )
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(com.nuvio.tv.core.player.FullScreenTrailer) {
             val meta = _uiState.value.meta
             val year = meta?.releaseInfo?.let { info ->
                 if (info.isBlank()) null else Regex("""\b(19|20)\d{2}\b""").find(info)?.value

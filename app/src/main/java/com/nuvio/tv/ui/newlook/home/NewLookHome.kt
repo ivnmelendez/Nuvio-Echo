@@ -164,6 +164,9 @@ class NewLookHomeMemory {
 private const val REMOTE_REFRESH_MS = 5 * 60_000L
 
 /** Back in the app after this long away, the carousel picks new titles. */
+/** Coming back to a row, how long the first focus waits for it to be built before settling on the carousel. */
+private const val SAVED_ROW_WAIT_MS = 3_000L
+
 private const val RESHUFFLE_AFTER_MS = 20 * 60_000L
 
 /** The carousel's pool takes this many of today's top movies and shows, and of each catalog row. */
@@ -677,8 +680,17 @@ internal fun NewLookHomeContent(
     // First focus: the window's Watch Now, or wherever Home was left.
     var initialFocusDone by remember { mutableStateOf(false) }
     val contentReady = slides.isNotEmpty() || rows.isNotEmpty()
-    LaunchedEffect(contentReady) {
+    // Coming back to a row, the first focus waits for that row to be built: on the carousel alone it landed on the top.
+    val savedRowKey = memory.rowKey.takeIf { memory.area == HomeArea.ROWS }
+    val savedRowBuilt = savedRowKey == null || rows.any { it.key == savedRowKey }
+    var savedRowWaitOver by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(SAVED_ROW_WAIT_MS)
+        savedRowWaitOver = true
+    }
+    LaunchedEffect(contentReady, savedRowBuilt, savedRowWaitOver) {
         if (!contentReady || initialFocusDone) return@LaunchedEffect
+        if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
         initialFocusDone = true
         val savedRow = memory.rowKey?.let { key -> rows.indexOfFirst { it.key == key } } ?: -1
         if (memory.area == HomeArea.ROWS && savedRow >= 0) focusRow(savedRow)

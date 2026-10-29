@@ -46,3 +46,12 @@ object TrailerVideoPolicy {
 class TrailerSurface(val heightPx: Int) : kotlin.coroutines.AbstractCoroutineContextElement(Key) {
     companion object Key : kotlin.coroutines.CoroutineContext.Key<TrailerSurface>
 }
+
+/**
+ * Put in the coroutine context around a trailer lookup for a trailer played full screen from a details page: it is
+ * fetched at 1080p at least, even when the trailer quality setting keeps the cards on Home lower.
+ */
+object FullScreenTrailer : kotlin.coroutines.AbstractCoroutineContextElement(Key) {
+    object Key : kotlin.coroutines.CoroutineContext.Key<FullScreenTrailer>
+    const val MIN_HEIGHT = 1080
+}

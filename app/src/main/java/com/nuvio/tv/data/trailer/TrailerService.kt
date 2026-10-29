@@ -63,7 +63,12 @@ class TrailerService(
         // Trailer quality: Auto matches the surface the trailer is fetched for (see TrailerSurface).
         maxTrailerVideoHeight = { surfaceHeightPx ->
             val quality = kotlin.runCatching { betaSettings.settings.first().trailerQuality }.getOrDefault(TrailerVideoPolicy.AUTO)
-            TrailerVideoPolicy.heightFor(quality, surfaceHeightPx)
+            val height = TrailerVideoPolicy.heightFor(quality, surfaceHeightPx)
+            if (currentCoroutineContext()[com.nuvio.tv.core.player.FullScreenTrailer.Key] != null) {
+                maxOf(height, com.nuvio.tv.core.player.FullScreenTrailer.MIN_HEIGHT)
+            } else {
+                height
+            }
         },
         imdbTrailerSource = imdbTrailerSource
     )
