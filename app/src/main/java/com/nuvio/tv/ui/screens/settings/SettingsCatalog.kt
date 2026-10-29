@@ -28,13 +28,8 @@ internal fun visibleSettingsCategories(
     isEssentialMode: Boolean,
     isDebugBuild: Boolean
 ): List<SettingsCategory> = SettingsCategory.entries.filter { category ->
-    when (category) {
-        SettingsCategory.ACCOUNT,
-        SettingsCategory.PROFILES -> isPrimaryProfile
-        SettingsCategory.DEBUG -> isDebugBuild && !isEssentialMode
-        SettingsCategory.EXPERIENCE -> false
-        else -> true
-    }
+    // Settings only shows About for now; the rest stays in the code, hidden.
+    category == SettingsCategory.ABOUT
 }
 
 internal fun List<SettingsCategory>.startsNewGroup(index: Int): Boolean =

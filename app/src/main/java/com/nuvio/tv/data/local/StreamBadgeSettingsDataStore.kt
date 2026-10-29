@@ -57,8 +57,8 @@ class StreamBadgeSettingsDataStore @Inject constructor(
     }.map { prefs ->
         StreamBadgeSettings(
             rules = parseStreamBadgeRules(prefs[streamBadgeRulesKey]) ?: StreamBadgeRules(),
-            showFileSizeBadges = prefs[showFileSizeBadgesKey] ?: true,
-            showAddonLogo = prefs[showAddonLogoKey] ?: true,
+            showFileSizeBadges = prefs[showFileSizeBadgesKey] ?: false,
+            showAddonLogo = prefs[showAddonLogoKey] ?: false,
             badgePlacement = prefs[streamBadgePlacementKey].toStreamBadgePlacement()
         )
     }

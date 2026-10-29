@@ -58,15 +58,13 @@ class UpdateViewModel @Inject constructor(
                     updateChannel = channel
                 )
             }
-            if (enabled && !BuildConfig.IS_DEBUG_BUILD && AppFeaturePolicy.inAppUpdatesEnabled) {
+            if (!BuildConfig.IS_DEBUG_BUILD && AppFeaturePolicy.inAppUpdatesEnabled) {
                 checkForUpdates(force = false, showNoUpdateFeedback = false)
             }
         }
     }
 
     fun checkForUpdates(force: Boolean, showNoUpdateFeedback: Boolean) {
-        if (!force && !_uiState.value.updateBannerEnabled) return
-
         updateCheckJob?.cancel()
         updateCheckJob = viewModelScope.launch {
             val channel = _uiState.value.updateChannel

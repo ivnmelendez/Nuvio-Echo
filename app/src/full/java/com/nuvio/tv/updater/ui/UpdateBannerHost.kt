@@ -64,6 +64,23 @@ fun UpdateBannerHost(
     val update = state.update
     val showBanner = state.showBanner && update != null
 
+    // A newer release takes over the whole app: no banner, no way past it.
+    if (update != null && state.isUpdateAvailable) {
+        ForcedUpdateScreen(
+            state = state,
+            update = update,
+            onDownload = onDownload,
+            onInstall = onInstall
+        )
+        if (state.showUnknownSourcesDialog) {
+            UpdateUnknownSourcesDialog(
+                onOpenSettings = onOpenUnknownSources,
+                onDismiss = onDismissUnknownSources
+            )
+        }
+        return
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(
             visible = showBanner,

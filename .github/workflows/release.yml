@@ -1,0 +1,69 @@
+name: Release
+
+# Every push to main builds one universal, signed APK and publishes it as the newest stable release.
+# The app checks that release on start and makes everyone update to it.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Version
+        id: version
+        run: |
+          # First run is 1.0.0, then 1.0.1, 1.0.2 ... versionCode always goes up.
+          echo "name=1.0.$((GITHUB_RUN_NUMBER - 1))" >> "$GITHUB_OUTPUT"
+          echo "code=$((1100 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+
+      - name: Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/tivilatino.jks"
+
+      - name: Build
+        env:
+          NUVIO_RELEASE_STORE_FILE: ${{ runner.temp }}/tivilatino.jks
+          NUVIO_RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          NUVIO_RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          NUVIO_RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: >
+          ./gradlew :app:assembleFullRelease
+          -PappVersionName=${{ steps.version.outputs.name }}
+          -PappVersionCode=${{ steps.version.outputs.code }}
+
+      - name: Pick the universal APK
+        run: |
+          APK=$(find app/build/outputs/apk/full/release -name '*universal*.apk' | head -n 1)
+          test -n "$APK" || { echo "no universal APK built"; find app/build/outputs -name '*.apk'; exit 1; }
+          cp "$APK" tivilatino.apk
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.version.outputs.name }}" tivilatino.apk \
+            --title "tivilatino ${{ steps.version.outputs.name }}" \
+            --notes "$(git log -1 --pretty=%s)" \
+            --latest

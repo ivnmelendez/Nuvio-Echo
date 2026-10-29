@@ -89,6 +89,14 @@ internal object NewLookScroll {
         return (top + visiblePx - (viewportPx - bottomMarginPx)).coerceAtLeast(0)
     }
 
+    /** How far the page scrolls to rest row [index] [topMarginPx] below the top, so the next row shows under it. */
+    fun targetTop(headerPx: Int, rowHeightsPx: List<Int>, index: Int, topMarginPx: Int): Int {
+        if (index !in rowHeightsPx.indices) return 0
+        var top = headerPx
+        for (i in 0 until index) top += rowHeightsPx[i]
+        return (top - topMarginPx).coerceAtLeast(0)
+    }
+
     /** A scroll distance as the list's (item, offset): item 0 is the hero block, item n is row n - 1. */
     fun toItem(scrollPx: Int, headerPx: Int, rowHeightsPx: List<Int>): Pair<Int, Int> {
         var remaining = scrollPx.coerceAtLeast(0)

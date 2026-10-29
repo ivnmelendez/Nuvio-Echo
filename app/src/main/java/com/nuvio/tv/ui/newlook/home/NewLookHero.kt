@@ -220,7 +220,7 @@ internal fun HeroWindow(
                     muted = muted,
                     cropToFill = true,
                     // Burned-in black bars are cropped, so the picture fills the hero or card it plays in.
-                    autoCropLetterbox = true,
+                    autoCropLetterbox = false,
                     focusable = false,
                     overscanZoom = com.nuvio.tv.ui.screens.home.MODERN_TRAILER_OVERSCAN_ZOOM,
                     modifier = Modifier.fillMaxSize(),
@@ -238,7 +238,7 @@ internal fun HeroWindow(
                 muted = muted,
                 cropToFill = true,
                 // Burned-in black bars are cropped, so the picture fills the hero or card it plays in.
-                autoCropLetterbox = true,
+                autoCropLetterbox = false,
                 focusable = false,
                 overscanZoom = com.nuvio.tv.ui.screens.home.MODERN_TRAILER_OVERSCAN_ZOOM,
                 modifier = Modifier.fillMaxSize(),

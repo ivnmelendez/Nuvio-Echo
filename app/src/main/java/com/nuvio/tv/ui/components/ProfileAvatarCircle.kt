@@ -1,5 +1,6 @@
 package com.nuvio.tv.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -13,11 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import com.nuvio.tv.R
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -34,8 +34,6 @@ fun ProfileAvatarCircle(
 ) {
     val avatarColor = runCatching { Color(android.graphics.Color.parseColor(colorHex)) }
         .getOrDefault(Color(0xFF1E88E5))
-    val initial = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-    val fontSize = (size.value * 0.4f).sp
     val context = LocalContext.current
     val imageRequest = remember(context, avatarImageUrl, imageCrossfade) {
         avatarImageUrl?.let {
@@ -70,11 +68,12 @@ fun ProfileAvatarCircle(
                 contentScale = ContentScale.Crop
             )
         } else {
-            Text(
-                text = initial,
-                color = Color.White,
-                fontSize = fontSize,
-                fontWeight = FontWeight.Bold
+            // No picked avatar: the app's default face instead of the name's initial.
+            Image(
+                painter = painterResource(R.drawable.default_profile_avatar),
+                contentDescription = name,
+                modifier = Modifier.size(size).clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
         }
     }

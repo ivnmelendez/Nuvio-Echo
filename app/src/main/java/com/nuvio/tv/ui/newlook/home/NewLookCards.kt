@@ -83,8 +83,7 @@ import com.nuvio.tv.ui.newlook.focusRingColor
 
 internal val CardBackground = Color(0xFF222222)
 private val OpenEasing = CubicBezierEasing(0.2f, 0.8f, 0.2f, 1f)
-private val ImdbYellow = Color(0xFFF5C518)
-private val TmdbTeal = Color(0xFF01B4E4)
+private val LikeGreen = Color(0xFF2ECC71)
 
 /**
  * A focusable card with the new look's 1 px hairline (in the Appearance colour) instead of the thick white ring. A null [width] leaves
@@ -101,6 +100,8 @@ internal fun NewLookCard(
     radius: Dp = LocalNewLookCardRadius.current,
     /** Which of Layout's card depth switches covers this card; null draws none. */
     depth: CardDepthSurface? = null,
+    /** Whether quiet focus lifts the card (grows it a little) when it takes focus. */
+    lift: Boolean = true,
     content: @Composable BoxScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(radius)
@@ -119,7 +120,7 @@ internal fun NewLookCard(
         // or two before its picture came in. Now the artwork just fades in where the card is.
         colors = CardDefaults.colors(containerColor = Color.Transparent, focusedContainerColor = Color.Transparent),
         // Quiet focus lifts the card a little and lays a soft shadow under it, with the white hairline.
-        scale = CardDefaults.scale(focusedScale = if (quiet) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
+        scale = CardDefaults.scale(focusedScale = if (quiet && lift) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
         border = CardDefaults.border(
             border = Border.None,
             focusedBorder = Border(BorderStroke(1.dp, ring), shape = shape),
@@ -357,7 +358,9 @@ internal fun PosterCard(
             val placeable = measurable.measure(constraints.copy(minWidth = w, maxWidth = w))
             layout(placeable.width, placeable.height) { placeable.place(0, 0) }
         },
-        depth = CardDepthSurface.POSTERS
+        depth = CardDepthSurface.POSTERS,
+        // No lift: the card opens at once, and a lift animating on top of it read as a bounce (and overhung its slot).
+        lift = false
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = posterAlpha.value },
@@ -376,7 +379,7 @@ internal fun PosterCard(
                         muted = muted,
                         cropToFill = true,
                         // Burned-in black bars are cropped, so the picture fills the hero or card it plays in.
-                        autoCropLetterbox = true,
+                        autoCropLetterbox = false,
                         focusable = false,
                         overscanZoom = com.nuvio.tv.ui.screens.home.MODERN_TRAILER_OVERSCAN_ZOOM,
                         modifier = Modifier.fillMaxSize(),
@@ -435,7 +438,7 @@ internal fun HighlightCard(
                 muted = muted,
                 cropToFill = true,
                 // Burned-in black bars are cropped, so the picture fills the hero or card it plays in.
-                autoCropLetterbox = true,
+                autoCropLetterbox = false,
                 focusable = false,
                 overscanZoom = com.nuvio.tv.ui.screens.home.MODERN_TRAILER_OVERSCAN_ZOOM,
                 modifier = Modifier.fillMaxSize(),
@@ -561,7 +564,7 @@ internal fun SkeletonCard(
     }
 }
 
-/** "Show • Drama, Mystery • 2022 • 55m • IMDb 8.7", under a row's focused card. */
+/** "👍 63%  2026  Comedy  17m", under a row's focused card: the rating as a percentage, the year, one genre, the length. */
 @Composable
 internal fun DetailsLine(
     type: String?,
@@ -574,43 +577,40 @@ internal fun DetailsLine(
     color: Color = Color(0xFFCFCFCF),
     dotColor: Color = Color(0xFF777777)
 ) {
+    val percent = rating?.trim()?.takeWhile { it.isDigit() || it == '.' }?.toFloatOrNull()
+        ?.let { if (it <= 10f) it * 10f else it }
+        ?.takeIf { it > 0f }
+        ?.let { Math.round(it) }
     val parts = listOfNotNull(
-        type?.takeIf { it.isNotBlank() },
-        genres.take(2).joinToString(", ").takeIf { it.isNotBlank() },
         year?.takeIf { it.isNotBlank() },
+        genres.firstOrNull()?.takeIf { it.isNotBlank() },
         runtime?.takeIf { it.isNotBlank() }
     )
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        parts.forEachIndexed { index, part ->
-            if (index > 0) Dot(dotColor)
-            Text(text = part, color = color, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        if (percent != null) {
+            com.nuvio.tv.ui.screens.detail.DetailGlyphIcon(
+                com.nuvio.tv.ui.screens.detail.DetailGlyph.THUMB_UP, true, LikeGreen, 17.dp
+            )
+            Text(
+                text = " $percent%",
+                color = LikeGreen,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier.padding(end = 10.dp)
+            )
         }
-        if (!rating.isNullOrBlank()) {
-            if (parts.isNotEmpty()) Dot(dotColor)
-            RatingBadge(ratingIsImdb)
-            Text(text = " $rating", color = color, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        parts.forEachIndexed { index, part ->
+            Text(
+                text = part,
+                color = color,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier.padding(end = if (index < parts.lastIndex) 10.dp else 0.dp)
+            )
         }
     }
-}
-
-@Composable
-private fun Dot(color: Color) {
-    Text(text = "•", color = color, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 6.dp))
-}
-
-@Composable
-internal fun RatingBadge(imdb: Boolean) {
-    Text(
-        text = if (imdb) "IMDb" else "TMDB",
-        color = if (imdb) Color.Black else Color.White,
-        fontSize = 9.sp,
-        fontWeight = FontWeight.ExtraBold,
-        letterSpacing = (-0.02).em,
-        modifier = Modifier
-            .clip(RoundedCornerShape(3.dp))
-            .background(if (imdb) ImdbYellow else TmdbTeal)
-            .padding(horizontal = 3.dp, vertical = 1.dp)
-    )
 }
 
 internal fun formatRuntime(minutes: Int?): String? {
@@ -664,7 +664,7 @@ internal fun CollectionTile(
                     muted = true,
                     cropToFill = true,
                     // Burned-in black bars are cropped, so the picture fills the hero or card it plays in.
-                    autoCropLetterbox = true,
+                    autoCropLetterbox = false,
                     focusable = false,
                     modifier = Modifier.fillMaxSize()
                 )

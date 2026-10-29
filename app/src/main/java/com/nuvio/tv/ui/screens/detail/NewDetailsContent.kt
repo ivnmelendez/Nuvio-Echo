@@ -302,7 +302,6 @@ internal fun NewDetailsContent(
     val ratings by extras.ratings.collectAsStateWithLifecycle()
     val titleReviews by extras.titleReviews.collectAsStateWithLifecycle()
     val episodeReviews by extras.episodeReviews.collectAsStateWithLifecycle()
-    val titleRating = ratings.title(meta.id)
     val episodeRatings = remember(ratings, meta.id) { ratings.episodesOf(meta.id) }
     val reminders by extras.reminders.collectAsStateWithLifecycle()
     val credits by extras.credits.collectAsStateWithLifecycle()
@@ -551,10 +550,8 @@ internal fun NewDetailsContent(
                     playFocus = playFocus,
                     episodesItemFocus = episodesItemFocus,
                     castItemFocus = castItemFocus,
-                    titleRating = titleRating,
                     watched = watched,
                     watchedPending = state.isMovieWatchedPending,
-                    onRate = { extras.toggleTitleRating(meta, it) },
                     onToggleWatched = toggleWatched,
                     onToggleLibrary = onToggleLibrary,
                     onLibraryLongPress = onLibraryLongPress,
@@ -604,15 +601,6 @@ internal fun NewDetailsContent(
                         onClick = { onNavigateToDetail(it.id, it.apiType, null) },
                         onLongClick = onPosterLongPress
                     ) }
-                }
-            }
-            item(key = "nd_reviews", contentType = "nd_reviews") {
-                RowScroll(rowSpec) {
-                    NdReviewsRow(
-                        subtitle = null,
-                        reviews = titleReviews,
-                        onOpen = { list, index -> reviewDirection = 0; openReview = list to index }
-                    )
                 }
             }
         }
@@ -744,10 +732,8 @@ private fun NdHero(
     playFocus: FocusRequester,
     episodesItemFocus: FocusRequester,
     castItemFocus: FocusRequester,
-    titleRating: TitleRating?,
     watched: Boolean,
     watchedPending: Boolean,
-    onRate: (TitleRating) -> Unit,
     onToggleWatched: () -> Unit,
     onToggleLibrary: () -> Unit,
     onLibraryLongPress: () -> Unit,
@@ -770,7 +756,6 @@ private fun NdHero(
     var logoFailed by remember(meta.logo) { mutableStateOf(false) }
     val (castOnly, crew) = remember(meta) { meta.castAndCrew() }
     val dim by animateFloatAsState(if (synopsisOpen) 0.1f else 1f, tween(300), label = "ndDim")
-    val likeFocus = remember { FocusRequester() }
     // The column fits on the first screen: focus moving inside it never scrolls the page (it scrolls back to the
     // top instead, see onFocusedInHero).
     val noScroll = remember {
@@ -820,8 +805,6 @@ private fun NdHero(
                 Spacer(Modifier.height(14.dp))
                 val holding = state.bins.filter { it.id in state.titleBinIds }
                 NdRatingRow(
-                    firstFocus = likeFocus,
-                    titleRating = titleRating,
                     inBin = holding.isNotEmpty(),
                     inBinLabel = when (holding.size) {
                         0 -> null
@@ -832,7 +815,6 @@ private fun NdHero(
                     onBinBounds = onBinBounds,
                     watched = watched,
                     watchedPending = watchedPending,
-                    onRate = onRate,
                     onToggleLibrary = onToggleLibrary,
                     onLibraryLongPress = onLibraryLongPress,
                     onToggleWatched = onToggleWatched
@@ -842,17 +824,13 @@ private fun NdHero(
                     if (isSeries) add(NdMenuItem(Icons.Outlined.Tv, stringResource(R.string.nd_menu_episodes),
                         pluralStringResource(R.plurals.nd_seasons_count, state.seasons.count { it > 0 }, state.seasons.count { it > 0 }),
                         episodesItemFocus, onOpenEpisodes))
-                    add(NdMenuItem(Icons.Outlined.Group, stringResource(R.string.nd_menu_cast), null, castItemFocus, onOpenCast))
                     // A series' trailers are in the Episodes panel's Trailers tab instead.
                     if (state.trailerButtonEnabled && !state.trailerUrl.isNullOrBlank() && !hasTrailersTab) {
                         add(NdMenuItem(Icons.Outlined.Movie, stringResource(R.string.nd_menu_trailer), null, null, onTrailer))
                     }
-                    if (isSeries && meta.videos.isNotEmpty()) {
-                        add(NdMenuItem(Icons.Outlined.Shuffle, stringResource(R.string.nd_menu_random), null, null, onRandomEpisode))
-                    }
                 }
                 NdPlayMenu(
-                    upFocus = likeFocus,
+                    upFocus = binFocus,
                     playLabel = playLabel,
                     playIcon = playIcon,
                     playAside = playAside,
@@ -869,71 +847,31 @@ private fun NdHero(
     }
 }
 
+/** "👍 63%  2026  Comedy  17m": the rating as a percentage, the year, one genre and the length. */
 @Composable
 private fun NdMetaLines(meta: Meta, isSeries: Boolean, tmdbRating: Float?) {
     val context = LocalContext.current
-    val line1 = remember(meta, isSeries) {
-        buildList {
-            formatYearRange(meta.releaseInfo)?.let(::add)
-            meta.genres.take(2).takeIf { it.isNotEmpty() }?.joinToString(", ") { localizedGenreLabel(context, it) }?.let(::add)
-            if (isSeries) {
-                val seasons = meta.videos.mapNotNull { it.season }.filter { it > 0 }.distinct().size
-                if (seasons > 0) add(context.resources.getQuantityString(R.plurals.nd_seasons_title, seasons, seasons))
-            } else {
-                meta.runtime?.let { formatRuntime(it) }?.let(::add)
-            }
-        }
+    // A score of 0 means nobody has rated it yet (an unreleased title): leave it out.
+    val score = meta.imdbRating?.takeIf { it > 0f } ?: tmdbRating?.takeIf { it > 0f }
+    val percent = score?.let { Math.round(it * 10f) }
+    val parts = remember(meta, isSeries) {
+        listOfNotNull(
+            formatYearRange(meta.releaseInfo),
+            meta.genres.firstOrNull()?.let { localizedGenreLabel(context, it) },
+            meta.runtime?.let { formatRuntime(it) }
+        )
     }
     val text = Color(0xFFD6D6D6)
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        line1.forEachIndexed { i, part ->
-            if (i > 0) Box(Modifier.size(3.dp).clip(CircleShape).background(text.copy(alpha = 0.6f)))
-            Text(part, color = text, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+    val like = Color(0xFF2ECC71)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (percent != null) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                DetailGlyphIcon(DetailGlyph.THUMB_UP, true, like, 18.dp)
+                Text("$percent%", color = like, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            }
         }
-    }
-    val cert = meta.ageRating?.trim()?.takeIf { it.isNotBlank() }
-    // A score of 0 means nobody has rated it yet (an unreleased title): leave it out.
-    val imdb = meta.imdbRating?.takeIf { it > 0f }
-    @Suppress("NAME_SHADOWING") val tmdbRating = tmdbRating?.takeIf { it > 0f }
-    if (cert != null || imdb != null || tmdbRating != null) {
-        Spacer(Modifier.height(6.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (cert != null) {
-                Box(
-                    Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Transparent)
-                        .drawBehind {
-                            drawRoundRect(
-                                text.copy(alpha = 0.55f),
-                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(4.dp.toPx()),
-                                style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx())
-                            )
-                        }
-                        .padding(horizontal = 5.dp)
-                ) { Text(cert, color = text, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium) }
-            }
-            if (imdb != null) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    ImdbRatingSourceLabel(
-                        logoModifier = Modifier.size(26.dp),
-                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 13.sp),
-                        textColor = text
-                    )
-                    Text(String.format(java.util.Locale.US, "%.1f", imdb), color = text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                }
-            }
-            if (tmdbRating != null) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    AsyncImage(
-                        model = remember(context) { ImageRequest.Builder(context).data(R.raw.mdblist_tmdb).build() },
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                    Text((tmdbRating * 10).toInt().toString(), color = text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                }
-            }
+        parts.forEach { part ->
+            Text(part, color = text, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
         }
     }
 }
@@ -1156,32 +1094,20 @@ private data class NdRateButton(
     val onLongClick: (() -> Unit)? = null
 )
 
-/** Like, love, not for me, watchlist, watched: one row of glass circles with the focused one's meaning beside it. */
+/** Watchlist, watched: one row of glass circles with the focused one's meaning beside it. */
 @Composable
 private fun NdRatingRow(
-    firstFocus: FocusRequester,
-    titleRating: TitleRating?,
     inBin: Boolean,
     inBinLabel: String?,
     binFocus: FocusRequester,
     onBinBounds: (Rect) -> Unit,
     watched: Boolean,
     watchedPending: Boolean,
-    onRate: (TitleRating) -> Unit,
     onToggleLibrary: () -> Unit,
     onLibraryLongPress: () -> Unit,
     onToggleWatched: () -> Unit
 ) {
-    val likeLabel = stringResource(R.string.nd_rate_like)
-    val loveLabel = stringResource(R.string.nd_rate_love)
-    val dislikeLabel = stringResource(R.string.nd_rate_dislike)
     val buttons = listOf(
-        NdRateButton("like", likeLabel, stringResource(R.string.nd_rate_saved, likeLabel), titleRating == TitleRating.LIKE, true,
-            { on, c -> DetailGlyphIcon(DetailGlyph.THUMB_UP, on, c, 18.dp) }, { onRate(TitleRating.LIKE) }),
-        NdRateButton("love", loveLabel, stringResource(R.string.nd_rate_saved, loveLabel), titleRating == TitleRating.LOVE, true,
-            { on, c -> DetailGlyphIcon(DetailGlyph.THUMBS_UP_DOUBLE, on, c, 19.dp) }, { onRate(TitleRating.LOVE) }),
-        NdRateButton("dislike", dislikeLabel, stringResource(R.string.nd_rate_saved, dislikeLabel), titleRating == TitleRating.DISLIKE, true,
-            { on, c -> DetailGlyphIcon(DetailGlyph.THUMB_DOWN, on, c, 18.dp) }, { onRate(TitleRating.DISLIKE) }),
         // Bin (was Watchlist): press for the starred bin, hold for the list of bins.
         NdRateButton("bin", stringResource(R.string.nd_bin_add), inBinLabel, inBin, true,
             { on, c -> DetailGlyphIcon(DetailGlyph.STAR, on, c, 18.dp) }, onToggleLibrary, onLibraryLongPress),
@@ -1202,7 +1128,6 @@ private fun NdRatingRow(
                     .then(if (button.key == "bin") Modifier.onGloballyPositioned { onBinBounds(it.boundsInRoot()) } else Modifier)
                     .ndClickable(
                         focusRequester = when (button.key) {
-                            "like" -> firstFocus
                             "bin" -> binFocus
                             else -> null
                         },
@@ -1274,7 +1199,7 @@ private fun NdPlayMenu(
                         bounds[0] = it.boundsInParent()
                         onPlayBounds(it.boundsInRoot())
                     }
-                    .width(208.dp)
+                    .width(256.dp)
                     .height(36.dp)
                     // Up from Play goes to the first rating button, not whichever is nearest.
                     .focusProperties { up = upFocus }
@@ -1303,7 +1228,7 @@ private fun NdPlayMenu(
                 Row(
                     modifier = Modifier
                         .onGloballyPositioned { bounds[index] = it.boundsInParent() }
-                        .width(208.dp)
+                        .width(256.dp)
                         .height(30.dp)
                         .ndClickable(
                             focusRequester = item.focusRequester,

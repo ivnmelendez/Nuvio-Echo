@@ -33,10 +33,11 @@ class ExperienceModeDataStore @Inject constructor(
             factory.get(pid, FEATURE).data.map { prefs -> extract(prefs) }
         }
 
+    /** Essential until someone picks another, so a new install never stops on the mode picker. */
     val mode: Flow<ExperienceMode?> = profileFlow { prefs ->
         prefs[modeKey]?.let { value ->
             runCatching { ExperienceMode.valueOf(value) }.getOrNull()
-        }
+        } ?: ExperienceMode.ESSENTIAL
     }
 
     val addonSetupSkipped: Flow<Boolean> = profileFlow { prefs ->

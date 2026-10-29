@@ -53,8 +53,8 @@ private data class LayoutUiPrefs(
 
 /** Catalog See All's poster cards, which it reads from this ViewModel. */
 private data class SeeAllPrefs(
-    val posterLabelsEnabled: Boolean = true,
-    val catalogAddonNameEnabled: Boolean = true,
+    val posterLabelsEnabled: Boolean = false,
+    val catalogAddonNameEnabled: Boolean = false,
     val posterCardWidthDp: Int = 126,
     val posterCardCornerRadiusDp: Int = 12
 )

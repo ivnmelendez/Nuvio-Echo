@@ -104,6 +104,9 @@ class NewLookChrome internal constructor(
 
     val topBarFocused: Boolean get() = menuFocusedState.bar
 
+    /** Home's page has scrolled far enough that the hero's own bar is out of sight (the pinned one takes over). */
+    val pastHero: Boolean get() = pageScroll.floatValue >= 100_000f
+
     /**
      * How far Home's page has scrolled from the top, in px. With the menu on top and showing, the avatar moves up with
      * it, as the tab bar it sits beside is part of the page (it stayed put over the first row's title before).
@@ -162,7 +165,9 @@ internal fun NewLookScaffold(
     drawerIcon: @Composable (item: DrawerItem, tint: Color, modifier: Modifier) -> Unit
 ) {
     val showMenu = currentRoute in rootRoutes
-    val onHome = currentRoute == Screen.Home.route
+    // Movies and Series are Home's screen with other rows: same avatar, same bar.
+    val onHome = currentRoute == Screen.Home.route || currentRoute == Screen.Movies.route ||
+        currentRoute == Screen.SeriesTab.route
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val contentFocusRequester = remember { FocusRequester() }
@@ -256,6 +261,15 @@ internal fun NewLookScaffold(
             pageScroll = pageScroll
         )
     }
+
+    // Menu on top, Home scrolled past its hero: the bar and avatar left with it, so they come back pinned to the top.
+    val pastHero by remember { androidx.compose.runtime.derivedStateOf { pageScroll.floatValue >= 100_000f } }
+    val pinnedBar = menuOnTop && !hideMenu && showMenu && onHome && pastHero
+    val pinReveal by animateFloatAsState(
+        targetValue = if (pinnedBar) 1f else 0f,
+        animationSpec = tween(200, easing = FastOutSlowInEasing),
+        label = "pinnedBarReveal"
+    )
 
     Box(
         modifier = Modifier
@@ -389,6 +403,21 @@ internal fun NewLookScaffold(
             LaunchedEffect(Unit) { openMenu() }
         }
 
+        if (pinnedBar || pinReveal > 0f) {
+            // Home on a row with the menu on top: the bar stays at the top, over a scrim.
+            Box(modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = pinReveal }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .background(Brush.verticalGradient(listOf(Color(0xE0060606), Color.Transparent)))
+                )
+                Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop), contentAlignment = Alignment.TopCenter) {
+                    topBar({ closeMenu() }, Modifier)
+                }
+            }
+        }
+
         // Notifications: drawn under the avatar so style 2 grows out from behind it. Over the player only the
         // player's own ones show, always as the island (the avatar isn't drawn there); the rest wait for it to close.
         if (currentRoute?.startsWith("player") != true) {
@@ -427,7 +456,8 @@ internal fun NewLookScaffold(
                 colorHex = activeProfileColorHex,
                 avatarImageUrl = activeProfileAvatarImageUrl,
                 focusRequester = avatarFocus,
-                canFocus = focusState.any && showMenu && onHome,
+                // The profile picture is hidden for now: invisible and never focused.
+                canFocus = false,
                 onFocusChanged = { focusState.avatar = it },
                 onClick = { if (showProfileSelector) onSwitchProfile() },
                 onBackToMenu = {
@@ -437,13 +467,16 @@ internal fun NewLookScaffold(
                 modifier = Modifier
                     .offset { IntOffset(AvatarX.roundToPx(), AvatarY.roundToPx()) }
                     .graphicsLayer {
-                        alpha = avatarReveal
+                        alpha = 0f
                         val s = (0.82f + 0.18f * avatarReveal) * (1f + 0.08f * lift)
                         scaleX = s
                         scaleY = s
                         translationX = 6.dp.toPx() * lift
                         // A notification brings it back into view wherever the page is.
-                        if (scrollsWithPage && !avatarNotify.visible) translationY = -pageScroll.floatValue
+                        if (scrollsWithPage && !avatarNotify.visible) {
+                            // Past the hero it stays pinned beside the bar; before, it leaves with the page.
+                            if (!pinnedBar) translationY = -pageScroll.floatValue
+                        }
                     }
             )
         }

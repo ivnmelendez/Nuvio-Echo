@@ -73,7 +73,7 @@ data class BetaPerformanceSettings(
     /** With [homeAmbientBackground]: the details page's background takes its title's colours too. */
     val detailsAmbientBackground: Boolean = false,
     /** New look: the hero carousel fills the screen edge to edge and fades into the page, instead of a rounded window. */
-    val heroEdgeToEdge: Boolean = true,
+    val heroEdgeToEdge: Boolean = false,
     /** New look: focus is a white edge with a slight lift and soft shadow, instead of a ring in the theme's colour. */
     val quietFocus: Boolean = true,
     /**
@@ -82,13 +82,13 @@ data class BetaPerformanceSettings(
      */
     val trailerQuality: Int = 720,
     /** Player shows only play, next episode, subtitles, audio and quality; the rest sit behind the arrow. */
-    val minimalPlayer: Boolean = true,
+    val minimalPlayer: Boolean = false,
     /** Play the short logo intro while a stream loads; playback waits for it to finish. */
-    val playbackIntro: Boolean = true,
+    val playbackIntro: Boolean = false,
     /** How long the intro runs, in seconds: one of [INTRO_LENGTHS]. */
     val introLengthSeconds: Int = 5,
     /** While scrubbing, show a picture of the spot above the progress bar (MKV and MP4 streams). */
-    val seekThumbnails: Boolean = true,
+    val seekThumbnails: Boolean = false,
     /** Seek thumbnails: how much one stream may download for them, in MB (one of [SEEK_PREVIEW_BUDGETS]; 0 = no limit). */
     val seekPreviewBudgetMb: Int = 800,
     /**
@@ -116,15 +116,15 @@ data class BetaPerformanceSettings(
     /** New look: how long a focused poster waits before it opens out, in ms (one of [POSTER_OPEN_DELAYS]). */
     val posterOpenDelayMs: Int = 0,
     /** New look: how long a card, grand card, highlight or the hero waits, once focused, before its trailer starts (ms). */
-    val trailerStartDelayMs: Int = 2000,
+    val trailerStartDelayMs: Int = 4000,
     /** New look: the menu stays out of sight until it's selected (Left from a row, or Up for the top bar). */
     val hideMenuUntilSelected: Boolean = false,
     /** New look: the menu is a glass tab bar at the top instead of the sidebar. */
-    val menuOnTop: Boolean = false,
+    val menuOnTop: Boolean = true,
     /** New look: how opaque the menu's glass is, 0 (clear, as it was) to 2 (frosted): one of [MENU_GLASS_LEVELS]. */
     val menuGlass: Int = 0,
     /** New look: how notifications come in. */
-    val notificationStyle: NotificationStyle = NotificationStyle.ISLAND,
+    val notificationStyle: NotificationStyle = NotificationStyle.OFF,
     /** Because You Watched: when a title counts as viewed, in minutes or percent of its runtime. */
     val viewedThresholdUnit: ViewedThresholdUnit = ViewedThresholdUnit.MINUTES,
     val viewedThresholdMinutes: Int = 20,
@@ -157,9 +157,9 @@ data class BetaPerformanceSettings(
      * Smart Highlights also from Trakt (no sign-in needed): popular public lists under their own names, and what's
      * trending this week as the day's first, grand, row.
      */
-    val smartHighlightTrakt: Boolean = true,
+    val smartHighlightTrakt: Boolean = false,
     /** Smart Highlights also from MDBList, when it's connected: the account's own lists (one leads each day) and top lists. */
-    val smartHighlightMdbList: Boolean = true,
+    val smartHighlightMdbList: Boolean = false,
     /**
      * Smart Highlights the user blocked: theme ids, and AI-written names as [SMART_NAME_PREFIX] + their normalised
      * form (see [com.nuvio.tv.core.home.smart.HighlightNameFilter.normalise]).

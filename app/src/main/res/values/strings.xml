@@ -1,5 +1,5 @@
-<resources>
-    <string name="app_name">Nuvio</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">tivilatino</string>
     <string name="tv_channel_continue_watching">Continue Watching</string>
     <string name="type_movie">Movie</string>
     <string name="type_movies">Movies</string>
@@ -3207,4 +3207,19 @@
     <string name="collections_editor_view_mode_rows">Rows</string>
     <string name="collections_editor_show_all_tab">Show \"All\" Tab</string>
     <string name="collections_editor_show_all_tab_desc">Combine all catalogs into one tab</string>
+    <string name="nav_movies" tools:ignore="MissingTranslation">Movies</string>
+    <string name="nav_series" tools:ignore="MissingTranslation">Series</string>
+    <string name="activation_title" tools:ignore="MissingTranslation">Enter your code</string>
+    <string name="activation_subtitle" tools:ignore="MissingTranslation">Type the 6-character code you were given to set up your account.</string>
+    <string name="activation_step_code" tools:ignore="MissingTranslation">Type the 6-character code you were given</string>
+    <string name="activation_step_activate" tools:ignore="MissingTranslation">Press Activate to set up your account</string>
+    <string name="activation_placeholder" tools:ignore="MissingTranslation">Code</string>
+    <string name="activation_button" tools:ignore="MissingTranslation">Activate</string>
+    <string name="activation_working" tools:ignore="MissingTranslation">Activating…</string>
+    <string name="activation_error_invalid" tools:ignore="MissingTranslation">That code is not valid. Check it and try again.</string>
+    <string name="activation_error_network" tools:ignore="MissingTranslation">Could not reach the server. Check your connection and try again.</string>
+    <string name="update_forced_title">Update required</string>
+    <string name="update_forced_message">Version %1$s is ready. Update to keep using tivilatino.</string>
+    <string name="update_forced_button">Update now</string>
+    <string name="update_forced_retry">Try again</string>
 </resources>

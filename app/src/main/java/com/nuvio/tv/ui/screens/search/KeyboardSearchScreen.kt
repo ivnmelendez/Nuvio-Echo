@@ -273,20 +273,11 @@ fun KeyboardSearchScreen(
         }
     }
 
-    val leftAlpha = animateFloatAsState(if (gridHasFocus) 0f else 1f, tween(200), label = "keyboardAlpha")
-
     // Without a sidebar column (the menu hidden, or on top) the screen starts nearer the edge, as Home does, and the
     // grid takes the width that frees up.
     val edgeShift = if (LocalNewLookChrome.current?.let { it.menuOnTop || it.hideMenu } == true) FULL_WIDTH_SHIFT else 0.dp
     val screenStart = ScreenStart - edgeShift
     val gridStart = GridStart - edgeShift
-    val leftX = animateDpAsState(
-        targetValue = if (gridHasFocus) screenStart - BrowseSubColumnWidth / 2 else screenStart,
-        animationSpec = tween(240, easing = FastOutSlowInEasing),
-        label = "keyboardX"
-    )
-    val panelAlpha = animateFloatAsState(if (gridHasFocus) 1f else 0f, tween(200), label = "panelAlpha")
-
     val contentFocusRequester = LocalContentFocusRequester.current
     BoxWithConstraints(
         modifier = Modifier
@@ -323,8 +314,7 @@ fun KeyboardSearchScreen(
         // Left: query line, keyboard and keyword suggestions.
         Column(
             modifier = Modifier
-                .offset { IntOffset(leftX.value.roundToPx(), 0) }
-                .graphicsLayer { alpha = leftAlpha.value }
+                .offset { IntOffset(screenStart.roundToPx(), 0) }
                 .width(BrowseSubColumnWidth)
                 .fillMaxHeight()
         ) {
@@ -442,16 +432,6 @@ fun KeyboardSearchScreen(
             }
         }
 
-        // Details of the focused poster while browsing the grid.
-        BrowseInfoPanel(
-            details = viewModel.focusedDetails.details,
-            modifier = Modifier
-                .offset { IntOffset(24.dp.roundToPx(), 0) }
-                .graphicsLayer { alpha = panelAlpha.value }
-                .padding(top = 28.dp, bottom = 28.dp)
-                .fillMaxHeight()
-        )
-
         // Right: recent searches, header and grid. Posters are as wide as fits: the usual 128 dp with the classic
         // sidebar, a little narrower in the new look, whose menu keeps its inset (the fifth column was cut off).
         val cardWidth = browseCardWidthToFit(maxWidth - gridStart - 8.dp)
@@ -479,11 +459,14 @@ fun KeyboardSearchScreen(
                 state.usesTmdb -> stringResource(R.string.search_kb_trending_today)
                 else -> stringResource(R.string.search_kb_popular)
             }
-            BrowseHeader(
-                title = null,
-                subtitle = header,
-                modifier = Modifier.padding(start = 4.dp, top = 6.dp, bottom = 4.dp)
-            )
+            // Nothing to show until something is typed: no header over an empty grid.
+            if (showingResults || gridItems.isNotEmpty()) {
+                BrowseHeader(
+                    title = null,
+                    subtitle = header,
+                    modifier = Modifier.padding(start = 4.dp, top = 6.dp, bottom = 4.dp)
+                )
+            }
             val browseFailed = !showingResults && state.browseError && state.browseItems.isEmpty()
             if (browseFailed) {
                 Column(modifier = Modifier.padding(start = 4.dp, top = NuvioTheme.spacing.xl)) {
@@ -529,7 +512,7 @@ fun KeyboardSearchScreen(
                     cardWidth = cardWidth,
                     emptyText = when {
                         showingResults -> stringResource(R.string.search_kb_no_results, trimmedQuery)
-                        else -> stringResource(R.string.browse_empty)
+                        else -> null
                     },
                     isWatched = { item ->
                         if (item.apiType == "series" || item.apiType == "tv") item.id in watchedSeriesIds else item.id in watchedMovieIds

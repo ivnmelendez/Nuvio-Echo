@@ -280,6 +280,47 @@ private fun PlaybackNavHost(
             )
         }
 
+        // Movies and Series: the Home screen on Home's own ViewModel (already loaded, so no second round of catalog
+        // requests), showing the remote config's rows for that tab.
+        for ((route, tab) in listOf(
+            Screen.Movies.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_MOVIES,
+            Screen.SeriesTab.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_SERIES
+        )) {
+            composable(route) {
+                // Home stays on the back stack under the other root screens; if it somehow isn't there, this screen
+                // gets a ViewModel of its own.
+                val homeEntry = androidx.compose.runtime.remember(it) { runCatching { navController.getBackStackEntry(Screen.Home.route) }.getOrNull() }
+                val homeViewModel: com.nuvio.tv.ui.screens.home.HomeViewModel =
+                    if (homeEntry != null) androidx.hilt.navigation.compose.hiltViewModel(homeEntry)
+                    else androidx.hilt.navigation.compose.hiltViewModel()
+                HomeScreen(
+                    viewModel = homeViewModel,
+                    remoteTab = tab,
+                    onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
+                        val heroBackdrop = HeroBackdropState.consumeAndClear()
+                        navController.navigate(
+                            Screen.Detail.createRoute(
+                                itemId = itemId,
+                                itemType = itemType,
+                                addonBaseUrl = addonBaseUrl,
+                                heroBackdropUrl = heroBackdrop
+                            )
+                        )
+                    },
+                    onWatchNow = { itemId, itemType, addonBaseUrl ->
+                        navController.navigate(
+                            Screen.Detail.createRoute(
+                                itemId = itemId,
+                                itemType = itemType,
+                                addonBaseUrl = addonBaseUrl,
+                                playOnLoad = true
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
         composable(
             route = Screen.Detail.route,
             arguments = listOf(

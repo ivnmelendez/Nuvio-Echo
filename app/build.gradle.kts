@@ -106,8 +106,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1067
-        versionName = "1.1.0-beta.4"
+        // CI passes these on every release so each push gets a higher version; 1.0.0 is the local default.
+        versionCode = providers.gradleProperty("appVersionCode").orNull?.toIntOrNull() ?: 1100
+        versionName = providers.gradleProperty("appVersionName").orNull ?: "1.0.0"
 
         buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${localProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
         buildConfigField("String", "INTRODB_API_URL", "\"${localProperties.getProperty("INTRODB_API_URL", "").ifBlank { "https://api.introdb.app/" }}\"")
@@ -120,6 +121,26 @@ android {
             "String",
             "TMDB_API_KEY",
             buildConfigString((localProperties.getProperty("TMDB_API_KEY") ?: System.getenv("TMDB_API_KEY") ?: "").trim())
+        )
+        // Where the row lists for Home, Movies and Series are published (home-config.json). Same place for every
+        // install, so a viewer needs no setup; local.properties or the environment can point it elsewhere.
+        buildConfigField(
+            "String",
+            "REMOTE_CONFIG_URL",
+            buildConfigString(
+                (localProperties.getProperty("REMOTE_CONFIG_URL") ?: System.getenv("REMOTE_CONFIG_URL")
+                    ?: "https://raw.githubusercontent.com/ivnmelendez/nuvio-config/main/home-config.json").trim()
+            )
+        )
+        // The server that turns the short code a person types on first launch into their addon link. Same for every
+        // install; local.properties or the environment can point it elsewhere.
+        buildConfigField(
+            "String",
+            "ACTIVATION_BASE_URL",
+            buildConfigString(
+                (localProperties.getProperty("ACTIVATION_BASE_URL") ?: System.getenv("ACTIVATION_BASE_URL")
+                    ?: "https://tg.tivilatino.com").trim().trimEnd('/')
+            )
         )
         buildConfigField("String", "TRAKT_CLIENT_ID", "\"${localProperties.getProperty("TRAKT_CLIENT_ID", "")}\"")
         buildConfigField("String", "TRAKT_CLIENT_SECRET", "\"${localProperties.getProperty("TRAKT_CLIENT_SECRET", "")}\"")
@@ -154,9 +175,9 @@ android {
         buildConfigField("String", "SENTRY_DSN", buildConfigString(sentryDsn))
 
         // In-app updater (GitHub Releases)
-        buildConfigField("String", "GITHUB_OWNER", "\"NuvioMedia\"")
-        buildConfigField("String", "GITHUB_REPO", "\"NuvioTV\"")
-        // The beta must never offer to replace itself with an upstream Nuvio release.
+        buildConfigField("String", "GITHUB_OWNER", "\"ivnmelendez\"")
+        buildConfigField("String", "GITHUB_REPO", "\"Nuvio-Echo\"")
+        // Releases come from this fork's repo, never upstream Nuvio. Off for debug and release; on for beta.
         buildConfigField("boolean", "IN_APP_UPDATES_ALLOWED", "true")
     }
 
@@ -208,7 +229,8 @@ android {
 
             buildConfigField("boolean", "IS_DEBUG_BUILD", "true")
             buildConfigField("String", "SENTRY_ENVIRONMENT", buildConfigString("debug"))
-            buildConfigField("boolean", "IN_APP_UPDATES_ALLOWED", "false")
+            // Shows the Check for updates button; debug never checks on its own, only when asked.
+            buildConfigField("boolean", "IN_APP_UPDATES_ALLOWED", "true")
 
             // Dev environment (from local.dev.properties)
             buildConfigField("String", "SUPABASE_URL", buildConfigString(resolveProperty(devProperties, localProperties, "NUVIO_SUPABASE_URL")))
@@ -272,7 +294,8 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = false
             buildConfigField("String", "SENTRY_ENVIRONMENT", buildConfigString("beta"))
-            buildConfigField("boolean", "IN_APP_UPDATES_ALLOWED", "false")
+            // Family installs of the beta update themselves from this repo's GitHub Releases.
+            buildConfigField("boolean", "IN_APP_UPDATES_ALLOWED", "true")
             matchingFallbacks += "release"
         }
         create("benchmark") {

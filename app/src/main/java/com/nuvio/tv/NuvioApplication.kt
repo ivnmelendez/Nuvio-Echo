@@ -98,7 +98,8 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
         // SharedPreferences reads are fast (cached in memory after first access).
         val tag = getSharedPreferences("app_locale", Context.MODE_PRIVATE)
             .getString("locale_tag", null)
-        LocaleCache.localeTag = tag ?: ""
+        // Spanish (Latin America) until someone picks another language (or System) in Settings, which stores a value.
+        LocaleCache.localeTag = tag ?: DEFAULT_APP_LOCALE_TAG
     }
 
     override fun newImageLoader(context: android.content.Context): ImageLoader {
@@ -183,3 +184,6 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
             .build()
     }
 }
+
+/** The app language on a device where none has been chosen yet. */
+internal const val DEFAULT_APP_LOCALE_TAG = "es-419"

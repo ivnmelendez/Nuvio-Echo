@@ -49,7 +49,7 @@ data class FolderDetailUiState(
     val folder: CollectionFolder? = null,
     val collectionTitle: String = "",
     val viewMode: FolderViewMode = FolderViewMode.TABBED_GRID,
-    val catalogTypeSuffixEnabled: Boolean = true,
+    val catalogTypeSuffixEnabled: Boolean = false,
     val hideUnreleasedContent: Boolean = false,
     val posterCardCornerRadiusDp: Int = 12,
     val tabs: List<FolderTab> = emptyList(),

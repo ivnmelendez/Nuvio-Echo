@@ -57,19 +57,19 @@ class ThemeDataStore @Inject constructor(
 
     val amoledMode: Flow<Boolean> = profileManager.activeProfileId.flatMapLatest { pid ->
         factory.get(pid, FEATURE).data.map { prefs ->
-            prefs[amoledModeKey] ?: false
+            prefs[amoledModeKey] ?: true
         }
     }
 
     val amoledSurfacesMode: Flow<Boolean> = profileManager.activeProfileId.flatMapLatest { pid ->
         factory.get(pid, FEATURE).data.map { prefs ->
-            prefs[amoledSurfacesModeKey] ?: false
+            prefs[amoledSurfacesModeKey] ?: true
         }
     }
 
     val settingsUiStyle: Flow<SettingsUiStyle> = profileManager.activeProfileId.flatMapLatest { pid ->
         factory.get(pid, FEATURE).data.map { prefs ->
-            val styleName = prefs[settingsUiStyleKey] ?: SettingsUiStyle.CLASSIC.name
+            val styleName = prefs[settingsUiStyleKey] ?: SettingsUiStyle.HORIZON.name
             try {
                 SettingsUiStyle.valueOf(styleName)
             } catch (e: IllegalArgumentException) {

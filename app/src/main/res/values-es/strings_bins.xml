@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Listas de la biblioteca: carpetas que el usuario crea y nombra -->
+    <string name="bins_tab">Listas</string>
+    <string name="bins_default_name">Guardados</string>
+    <string name="bins_sort">Ordenar</string>
+    <string name="bins_sort_recent">Vistas recientemente</string>
+    <string name="bins_sort_custom">Orden personalizado</string>
+    <string name="bins_custom_order">Orden personalizado</string>
+    <string name="bins_custom_order_done">Listo</string>
+    <string name="bins_create">Crear lista</string>
+    <string name="bins_refresh">Actualizar</string>
+    <string name="bins_name_title">Nombra esta lista</string>
+    <string name="bins_rename_title">Renombrar lista</string>
+    <string name="bins_name_hint">p. ej. Maratón de terror</string>
+    <string name="bins_create_button">Crear</string>
+    <string name="bins_name_blank">Escribe primero un nombre para la lista.</string>
+    <string name="bins_name_taken">Ya tienes una lista llamada “%1$s”.</string>
+    <string name="bins_created">“%1$s” creada</string>
+    <string name="bins_deleted">“%1$s” eliminada</string>
+    <string name="bins_starred">“%1$s” es ahora tu lista predeterminada</string>
+    <string name="bins_unstarred">Sin lista predeterminada. El botón de lista preguntará dónde guardar los títulos</string>
+    <string name="bins_custom_order_saved">Orden personalizado guardado</string>
+    <string name="bins_reorder_hint_bins">Elige una lista y luego otra para intercambiarlas</string>
+    <string name="bins_reorder_hint_titles">Elige un título y luego otro para intercambiarlos</string>
+    <string name="bins_reorder_pick_bin">Elige una lista para mover · Atrás al terminar</string>
+    <string name="bins_reorder_pick_title">Elige un título para mover · Atrás al terminar</string>
+    <string name="bins_reorder_place">Ahora elige dónde va · Atrás para cancelar</string>
+    <plurals name="bins_title_count">
+        <item quantity="one">%d título</item>
+        <item quantity="other">%d títulos</item>
+    </plurals>
+    <string name="bins_empty_label">Vacía</string>
+    <string name="bins_viewed">Vista %1$s</string>
+    <string name="bins_not_viewed">Aún sin abrir</string>
+    <string name="bins_default_label">Lista predeterminada</string>
+    <string name="bins_star_cd">Estrella de lista predeterminada</string>
+    <string name="bins_empty_title">Aún no hay listas</string>
+    <string name="bins_empty_subtitle">Pulsa + para crear tu primera lista y luego añade títulos con el botón de lista en la página de cualquier título.</string>
+    <string name="bin_empty_title">Esta lista está vacía</string>
+    <string name="bin_empty_subtitle">Abre cualquier título y usa su botón de lista para añadirlo aquí.</string>
+    <string name="bin_back_hint">Atrás para ver todas las listas</string>
+    <string name="bins_menu_star">Hacer predeterminada</string>
+    <string name="bins_menu_unstar">Quitar estrella</string>
+    <string name="bins_menu_rename">Renombrar</string>
+    <string name="bins_menu_delete">Eliminar lista</string>
+    <string name="bins_delete_title">¿Eliminar “%1$s”?</string>
+    <string name="bins_delete_subtitle">Los títulos que solo están en esta lista también salen de tu biblioteca.</string>
+    <string name="bins_title_open">Abrir</string>
+    <string name="bins_title_remove">Quitar de %1$s</string>
+    <string name="bins_removed_from">Quitado de %1$s</string>
+
+    <!-- Botón de lista en el detalle (antes Watchlist) -->
+    <string name="detail_added_to_bin">Añadido a %1$s</string>
+    <string name="detail_removed_from_bin">Quitado de %1$s</string>
+    <!-- Inicio: mantener pulsado un título -->
+    <string name="home_poster_add_to_bin">Añadir a “%1$s”</string>
+    <string name="home_poster_remove_from_bin">Quitar de “%1$s”</string>
+    <string name="home_poster_choose_bin">Listas…</string>
+    <string name="home_poster_in_bins">En %1$d listas…</string>
+</resources>

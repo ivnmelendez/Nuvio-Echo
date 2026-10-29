@@ -217,7 +217,7 @@ enum class AudioOutputChannels(
 data class PlayerSettings(
     val playerPreference: PlayerPreference = PlayerPreference.INTERNAL,
     val internalPlayerEngine: InternalPlayerEngine = InternalPlayerEngine.EXOPLAYER,
-    val autoSwitchInternalPlayerOnError: Boolean = false,
+    val autoSwitchInternalPlayerOnError: Boolean = true,
     val useLibass: Boolean = true,
     val libassRenderType: LibassRenderType = LibassRenderType.OVERLAY_OPEN_GL,
     val subtitleStyle: SubtitleStyleSettings = SubtitleStyleSettings(),
@@ -236,13 +236,13 @@ data class PlayerSettings(
     val rememberAudioDelayPerDevice: Boolean = true,
     val preferredAudioLanguage: String = AudioLanguageOption.DEVICE,
     val secondaryPreferredAudioLanguage: String? = null,
-    val loadingOverlayEnabled: Boolean = true,
-    val showPlayerLoadingStatus: Boolean = true,
+    val loadingOverlayEnabled: Boolean = false,
+    val showPlayerLoadingStatus: Boolean = false,
     val playbackIssueReportsEnabled: Boolean = false,
-    val pauseOverlayEnabled: Boolean = true,
+    val pauseOverlayEnabled: Boolean = false,
     val osdClockEnabled: Boolean = true,
     val skipIntroEnabled: Boolean = true,
-    val parentalGuideEnabled: Boolean = true,
+    val parentalGuideEnabled: Boolean = false,
     val autoSkipSegmentTypes: Set<AutoSkipSegmentType> = emptySet(),
     /** What the playing file is asked about its own skip times, under Skip intro. */
     val skipTimeFileChecks: Set<SkipTimeFileCheck> = SkipTimeFileCheck.DEFAULT,
@@ -263,7 +263,7 @@ data class PlayerSettings(
     val frameRateMatchingMode: FrameRateMatchingMode = FrameRateMatchingMode.OFF,
     val resolutionMatchingEnabled: Boolean = false,
     // Stream selection settings
-    val streamAutoPlayMode: StreamAutoPlayMode = StreamAutoPlayMode.MANUAL,
+    val streamAutoPlayMode: StreamAutoPlayMode = StreamAutoPlayMode.FIRST_STREAM,
     val streamAutoPlaySource: StreamAutoPlaySource = StreamAutoPlaySource.ALL_SOURCES,
     val streamAutoPlaySelectedAddons: Set<String> = emptySet(),
     val streamAutoPlaySelectedPlugins: Set<String> = emptySet(),
@@ -276,7 +276,7 @@ data class PlayerSettings(
     val streamAutoPlayNextEpisodeFallbackEnabled: Boolean = true,
     val streamAutoPlayPreferBingeGroupForNextEpisode: Boolean = true,
     val streamAutoPlayReuseBingeGroup: Boolean = false,
-    val streamAutoPlayTimeoutSeconds: Int = 10,
+    val streamAutoPlayTimeoutSeconds: Int = 0,
     val preloadNextEpisodeSources: Boolean = false,
     val stillWatchingEnabled: Boolean = false,
     val stillWatchingEpisodeThreshold: Int = DEFAULT_STILL_WATCHING_EPISODE_THRESHOLD,
@@ -340,7 +340,7 @@ data class PlayerSettings(
             listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, STREAM_AUTOPLAY_TIMEOUT_UNLIMITED)
 
         fun applyLegacyTimeoutSentinelMigration(stored: Int?): Int {
-            val raw = stored ?: 3
+            val raw = stored ?: 0
             if (raw == 11) return STREAM_AUTOPLAY_TIMEOUT_UNLIMITED
             if (raw in STREAM_AUTOPLAY_TIMEOUT_VALUES) return raw
             return STREAM_AUTOPLAY_TIMEOUT_VALUES
@@ -874,7 +874,7 @@ class PlayerSettingsDataStore @Inject constructor(
                 internalPlayerEngine = prefs[internalPlayerEngineKey]?.let {
                     runCatching { InternalPlayerEngine.valueOf(it) }.getOrDefault(InternalPlayerEngine.EXOPLAYER)
                 } ?: InternalPlayerEngine.EXOPLAYER,
-                autoSwitchInternalPlayerOnError = prefs[autoSwitchInternalPlayerOnErrorKey] ?: false,
+                autoSwitchInternalPlayerOnError = prefs[autoSwitchInternalPlayerOnErrorKey] ?: true,
                 useLibass = prefs[useLibassKey] ?: false,
                 libassRenderType = prefs[libassRenderTypeKey]?.let {
                     try { LibassRenderType.valueOf(it) } catch (e: Exception) { LibassRenderType.OVERLAY_OPEN_GL }
@@ -911,13 +911,13 @@ class PlayerSettingsDataStore @Inject constructor(
                 ),
                 secondaryPreferredAudioLanguage = prefs[secondaryPreferredAudioLanguageKey]
                     ?.let(::normalizeSecondaryAudioLanguageCode),
-                loadingOverlayEnabled = prefs[loadingOverlayEnabledKey] ?: true,
-                showPlayerLoadingStatus = prefs[showPlayerLoadingStatusKey] ?: true,
+                loadingOverlayEnabled = prefs[loadingOverlayEnabledKey] ?: false,
+                showPlayerLoadingStatus = prefs[showPlayerLoadingStatusKey] ?: false,
                 playbackIssueReportsEnabled = prefs[playbackIssueReportsEnabledKey] ?: false,
-                pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: true,
+                pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: false,
                 osdClockEnabled = prefs[osdClockEnabledKey] ?: true,
                 skipIntroEnabled = prefs[skipIntroEnabledKey] ?: true,
-                parentalGuideEnabled = prefs[parentalGuideEnabledKey] ?: true,
+                parentalGuideEnabled = prefs[parentalGuideEnabledKey] ?: false,
                 autoSkipSegmentTypes = prefs[autoSkipSegmentTypesKey]
                     ?.mapNotNull(AutoSkipSegmentType::fromStoredValue)
                     ?.toSet()
@@ -944,8 +944,8 @@ class PlayerSettingsDataStore @Inject constructor(
                 } ?: if (prefs[frameRateMatchingKey] == true) FrameRateMatchingMode.START_STOP else FrameRateMatchingMode.OFF,
                 resolutionMatchingEnabled = prefs[resolutionMatchingEnabledKey] ?: false,
                 streamAutoPlayMode = prefs[streamAutoPlayModeKey]?.let {
-                    runCatching { StreamAutoPlayMode.valueOf(it) }.getOrDefault(StreamAutoPlayMode.MANUAL)
-                } ?: StreamAutoPlayMode.MANUAL,
+                    runCatching { StreamAutoPlayMode.valueOf(it) }.getOrDefault(StreamAutoPlayMode.FIRST_STREAM)
+                } ?: StreamAutoPlayMode.FIRST_STREAM,
                 streamAutoPlaySource = prefs[streamAutoPlaySourceKey]?.let {
                     runCatching { StreamAutoPlaySource.valueOf(it) }.getOrDefault(StreamAutoPlaySource.ALL_SOURCES)
                 } ?: StreamAutoPlaySource.ALL_SOURCES,

@@ -51,7 +51,7 @@ class TraktSettingsDataStore @Inject constructor(
         private const val FEATURE = "trakt_settings"
         const val CONTINUE_WATCHING_DAYS_CAP_ALL = 0
         const val DEFAULT_CONTINUE_WATCHING_DAYS_CAP = 60
-        const val DEFAULT_SHOW_UNAIRED_NEXT_UP = true
+        const val DEFAULT_SHOW_UNAIRED_NEXT_UP = false
         const val DEFAULT_SHOW_META_COMMENTS = true
         val DEFAULT_WATCH_PROGRESS_SOURCE = WatchProgressSource.TRAKT
         val DEFAULT_LIBRARY_SOURCE_MODE = LibrarySourceMode.TRAKT

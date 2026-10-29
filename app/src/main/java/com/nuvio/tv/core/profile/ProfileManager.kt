@@ -46,7 +46,7 @@ class ProfileManager @Inject constructor(
         .stateIn(scope, SharingStarted.Eagerly, false)
 
     val confirmExitEnabled: StateFlow<Boolean> = profileDataStore.confirmExitEnabled
-        .stateIn(scope, SharingStarted.Eagerly, false)
+        .stateIn(scope, SharingStarted.Eagerly, true)
 
     val startupSplashEnabled: StateFlow<Boolean> = profileDataStore.startupSplashEnabled
         .stateIn(scope, SharingStarted.Eagerly, true)

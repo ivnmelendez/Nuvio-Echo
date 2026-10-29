@@ -315,7 +315,7 @@ private val HeroCarouselRow.orderKey: String
         com.nuvio.tv.domain.model.catalogRowLegacyKey(addonId, apiType, catalogId)
     } else key
 
-private fun builtInItem(rowKey: String, item: MetaPreview, index: Int, titles: BuiltInTitles): ModernCarouselItem {
+internal fun builtInItem(rowKey: String, item: MetaPreview, index: Int, titles: BuiltInTitles): ModernCarouselItem {
     val isSeries = item.apiType.equals("series", true)
     return ModernCarouselItem(
         key = "${rowKey}_${item.id}_$index",
@@ -347,3 +347,37 @@ private fun builtInItem(rowKey: String, item: MetaPreview, index: Int, titles: B
         metaPreview = item
     )
 }
+
+/**
+ * Home, Movies or Series from the remote config: its rows only (no catalogs, built-in rows or Smart Highlights), in
+ * the order they were published. A row published with the Top 10 style becomes a ranked highlighted row, the same
+ * as Top 20 Movies Today. Continue Watching (and the upcoming episodes) lead when [withContinueWatching].
+ */
+internal fun buildRemoteNewLookRows(
+    remote: List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>,
+    presentation: List<HeroCarouselRow>,
+    withContinueWatching: Boolean,
+    titles: BuiltInTitles,
+    posterPattern: String
+): List<NewLookRow> {
+    val wide = if (withContinueWatching) {
+        presentation.filter { it.isWide }.map { NewLookRow(it.key, it.title, RowKind.WIDE, it.items.list, source = it) }
+    } else emptyList()
+    val rows = remote.mapIndexedNotNull { index, entry ->
+        val top10 = entry.row.isTop10
+        val items = (if (top10) entry.items.take(TOP_TEN) else entry.items).withCustomPosterUrls(posterPattern)
+        if (items.isEmpty()) return@mapIndexedNotNull null
+        // The index keeps keys unique when the same list is published twice.
+        val key = "remote:$index:${entry.row.list}"
+        NewLookRow(
+            key = key,
+            title = entry.row.title,
+            kind = if (top10) RowKind.HIGHLIGHT else RowKind.POSTER,
+            items = items.mapIndexed { i, item -> builtInItem(key, item, i, titles) },
+            ranked = top10
+        )
+    }
+    return wide + rows
+}
+
+private const val TOP_TEN = 10

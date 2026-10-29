@@ -120,6 +120,15 @@ class HomeViewModel @Inject constructor(
 
     /** The new look's Home: where focus was, kept while a details page is open. */
     val newLookMemory = com.nuvio.tv.ui.newlook.home.NewLookHomeMemory()
+    private val tabMemories = HashMap<String, com.nuvio.tv.ui.newlook.home.NewLookHomeMemory>()
+
+    /**
+     * Home's memory for the remote config's [tab]: Home keeps [newLookMemory]; Movies and Series, which show on this
+     * same ViewModel, each keep their own place (focus, scroll).
+     */
+    fun newLookMemoryFor(tab: String?): com.nuvio.tv.ui.newlook.home.NewLookHomeMemory =
+        if (tab == null || tab == com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_HOME) newLookMemory
+        else tabMemories.getOrPut(tab) { com.nuvio.tv.ui.newlook.home.NewLookHomeMemory() }
 
     internal val _modernHomePresentation = MutableStateFlow(ModernHomePresentationState())
     val modernHomePresentation: StateFlow<ModernHomePresentationState> = _modernHomePresentation.asStateFlow()

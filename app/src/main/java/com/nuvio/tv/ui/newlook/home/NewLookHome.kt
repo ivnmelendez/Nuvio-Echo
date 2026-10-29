@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,6 +113,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -122,6 +124,7 @@ interface NewLookHomeEntryPoint {
     fun streamPrefetcher(): dagger.Lazy<StreamPrefetcher>
     fun smartHighlights(): com.nuvio.tv.core.home.smart.SmartHighlightsRepository
     fun betaSettingsStore(): com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore
+    fun remoteTabRows(): com.nuvio.tv.data.remoteconfig.RemoteTabRowsRepository
 }
 
 /** What the user chose for a Smart Highlight from its long-press options. */
@@ -155,6 +158,9 @@ class NewLookHomeMemory {
     /** Load more asked per row, at the row's size then, so each size asks once. */
     internal val loadMoreRequested = HashMap<String, Int>()
 }
+
+/** Coming back to a tab, its remote rows are fetched again when the last fetch is older than this. */
+private const val REMOTE_REFRESH_MS = 5 * 60_000L
 
 /** Back in the app after this long away, the carousel picks new titles. */
 private const val RESHUFFLE_AFTER_MS = 20 * 60_000L
@@ -205,6 +211,10 @@ internal interface NewLookHomeSource {
      * and grand rows), the built-in rows and today's Smart Highlights.
      */
     suspend fun awaitStartupSources() {}
+    /** The rows the remote config publishes for [tab], from memory or disk only (no network). */
+    suspend fun cachedRemoteRows(tab: String): List<com.nuvio.tv.data.remoteconfig.RemoteRowItems> = emptyList()
+    /** The same, refreshed from the network. */
+    suspend fun loadRemoteRows(tab: String): List<com.nuvio.tv.data.remoteconfig.RemoteRowItems> = emptyList()
 }
 
 private fun viewModelSource(
@@ -213,9 +223,14 @@ private fun viewModelSource(
     enricher: NewLookEnricher,
     streamPrefetcher: dagger.Lazy<StreamPrefetcher>,
     smart: com.nuvio.tv.core.home.smart.SmartHighlightsRepository,
-    betaStore: com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore
+    betaStore: com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore,
+    remote: com.nuvio.tv.data.remoteconfig.RemoteTabRowsRepository,
+    remoteTab: String?
 ) = object : NewLookHomeSource {
-    override val memory get() = viewModel.newLookMemory
+    // Each tab keeps its own place (focus, scroll), as they share this ViewModel.
+    override val memory get() = viewModel.newLookMemoryFor(remoteTab)
+    override suspend fun cachedRemoteRows(tab: String) = remote.cached(tab)
+    override suspend fun loadRemoteRows(tab: String) = remote.load(tab)
     override val scrollToTop get() = viewModel.scrollToTopTrigger
     override val trailerUrls get() = viewModel.trailerPreviewUrls
     override val trailerAudioUrls get() = viewModel.trailerPreviewAudioUrls
@@ -284,16 +299,18 @@ internal fun NewLookHome(
     onNavigateToFolderDetail: (String, String) -> Unit,
     isCatalogItemWatched: (MetaPreview) -> Boolean,
     onCatalogItemLongPress: (MetaPreview, String) -> Unit,
+    /** The remote config's tab this Home shows (see RemoteHomeConfig.TAB_*); null keeps the catalogs and built-in rows. */
+    remoteTab: String? = null,
     onSettled: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val entryPoint = remember(context) {
         EntryPointAccessors.fromApplication(context.applicationContext, NewLookHomeEntryPoint::class.java)
     }
-    val source = remember(viewModel, entryPoint) {
+    val source = remember(viewModel, entryPoint, remoteTab) {
         viewModelSource(
             viewModel, entryPoint.builtInRows(), entryPoint.enricher(), entryPoint.streamPrefetcher(),
-            entryPoint.smartHighlights(), entryPoint.betaSettingsStore()
+            entryPoint.smartHighlights(), entryPoint.betaSettingsStore(), entryPoint.remoteTabRows(), remoteTab
         )
     }
     val settings by rememberBetaPerformanceSettings()
@@ -311,6 +328,7 @@ internal fun NewLookHome(
         onNavigateToFolderDetail = onNavigateToFolderDetail,
         isCatalogItemWatched = isCatalogItemWatched,
         onCatalogItemLongPress = onCatalogItemLongPress,
+        remoteTab = remoteTab,
         onSettled = onSettled
     )
 }
@@ -330,6 +348,8 @@ internal fun NewLookHomeContent(
     onNavigateToFolderDetail: (String, String) -> Unit,
     isCatalogItemWatched: (MetaPreview) -> Boolean,
     onCatalogItemLongPress: (MetaPreview, String) -> Unit,
+    /** The remote config's tab to show; null (and while nothing has been published) shows the catalogs and built-ins. */
+    remoteTab: String? = null,
     /**
      * Called once the rows have stopped moving: what decides them has come in and their layout has held still for
      * a moment (or [SETTLE_CAP_MS] has passed). The app keeps its splash up until then, so Home never opens on rows
@@ -346,13 +366,36 @@ internal fun NewLookHomeContent(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     // Layout's poster card width sizes the posters only; its corner radius rounds every row's cards.
     val dims = remember(uiState.posterCardWidthDp, uiState.posterCardCornerRadiusDp, screenWidth, contentStart) {
-        NewLookDimens.of(uiState.posterCardWidthDp, uiState.posterCardCornerRadiusDp).withGrandWidth(screenWidth, contentStart)
+        // Home draws its posters a fifth larger than the setting says, so three fit beside the opened one.
+        val posterWidthDp = (uiState.posterCardWidthDp * 1.2f).roundToInt()
+        NewLookDimens.of(posterWidthDp, uiState.posterCardCornerRadiusDp).withGrandWidth(screenWidth, contentStart)
     }
     val inset = chrome?.contentInset ?: 0.dp
     val memory = source.memory
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     val muted = uiState.focusedPosterBackdropTrailerMuted
+
+    // The rows published in the remote config for this tab: what's on the device first, then the fresh copy. While
+    // none have arrived (first run offline, nothing published) Home keeps its catalogs and built-in rows.
+    var remote by remember(source, remoteTab) { mutableStateOf<List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>?>(null) }
+    var remoteResolved by remember(source, remoteTab) { mutableStateOf(remoteTab == null) }
+    var remoteLoadedAt by remember(source, remoteTab) { mutableLongStateOf(0L) }
+    suspend fun refreshRemote(tab: String) {
+        val fresh = runCatching { source.loadRemoteRows(tab) }.getOrDefault(emptyList())
+        if (fresh.isNotEmpty() && fresh != remote) remote = fresh
+        remoteLoadedAt = android.os.SystemClock.elapsedRealtime()
+    }
+    LaunchedEffect(source, remoteTab) {
+        val tab = remoteTab ?: return@LaunchedEffect
+        val saved = runCatching { source.cachedRemoteRows(tab) }.getOrDefault(emptyList())
+        if (saved.isNotEmpty()) {
+            remote = saved
+            remoteResolved = true
+        }
+        refreshRemote(tab)
+        remoteResolved = true
+    }
 
     // Built-in rows: refreshed when Home opens and whenever it comes back to the front.
     val builtIns by source.builtInRows.collectAsState()
@@ -362,6 +405,9 @@ internal fun NewLookHomeContent(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
+                if (remoteTab != null && android.os.SystemClock.elapsedRealtime() - remoteLoadedAt >= REMOTE_REFRESH_MS) {
+                    scope.launch { refreshRemote(remoteTab) }
+                }
                 scope.launch { source.refreshBuiltIns() }
                 scope.launch { source.refreshSmartHighlights() }
                 val away = memory.stoppedAt.takeIf { it > 0 }?.let { android.os.SystemClock.elapsedRealtime() - it } ?: 0L
@@ -403,15 +449,27 @@ internal fun NewLookHomeContent(
         presentation.rows, builtIns, titles,
         settings.highlightedRows, settings.hiddenBuiltInRows, settings.plainBuiltInRows, settings.grandRows,
         settings.homeRowOrder, smartHighlights, settings.enrichment, settings.smartHighlightAiNames,
-        settings.blockedHighlights, settings.snoozedHighlights, settings.highlightExclusions, homePosterPattern
+        settings.blockedHighlights, settings.snoozedHighlights, settings.highlightExclusions, homePosterPattern, remote
     ) {
-        buildNewLookRows(
-            presentation.rows.list, builtIns.withCustomPosterUrls(homePosterPattern), settings, titles, smartHighlights
-        )
+        val published = remote
+        if (remoteTab != null && !published.isNullOrEmpty()) {
+            // Only the published rows; Continue Watching stays on Home.
+            buildRemoteNewLookRows(
+                published, presentation.rows.list,
+                withContinueWatching = remoteTab == com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_HOME,
+                titles = titles, posterPattern = homePosterPattern
+            )
+        } else {
+            buildNewLookRows(
+                presentation.rows.list, builtIns.withCustomPosterUrls(homePosterPattern), settings, titles, smartHighlights
+            )
+        }
     }
     var sourcesIn by remember { mutableStateOf(false) }
     LaunchedEffect(source) {
         source.awaitStartupSources()
+        // The published rows too, so Home never opens on the built-in ones and then swaps them.
+        snapshotFlow { remoteResolved }.first { it }
         sourcesIn = true
     }
     val rowLayout = remember(rows) { rows.map { it.key to it.kind } }
@@ -439,8 +497,12 @@ internal fun NewLookHomeContent(
     // ---- Featured titles (hero carousel) ----
     // The hero catalogs picked in Layout when there are; otherwise a wide pool (this week's trending, today's top
     // movies and shows, and a few titles from each catalog row), so the carousel isn't always this week's trending.
-    val featuredSource = remember(uiState.heroItems, uiState.heroSectionEnabled, builtIns, rows) {
-        val base = if (uiState.heroSectionEnabled && uiState.heroItems.size >= 3) {
+    val featuredSource = remember(uiState.heroItems, uiState.heroSectionEnabled, builtIns, rows, remote) {
+        val base = if (remoteTab != null && !remote.isNullOrEmpty()) {
+            // Published rows only: a few titles from each.
+            rows.filter { it.kind != RowKind.WIDE }
+                .flatMap { row -> row.items.take(FEATURED_FROM_ROW).mapNotNull { it.metaPreview } }
+        } else if (uiState.heroSectionEnabled && uiState.heroItems.size >= 3) {
             uiState.heroItems
         } else {
             builtIns.trendingWeek + builtIns.topMoviesToday.take(FEATURED_FROM_TOP) +
@@ -637,13 +699,17 @@ internal fun NewLookHomeContent(
 
     // ---- Page scrolling ----
     val listState = rememberLazyListState(memory.scrollIndex, memory.scrollOffset)
+    val barGonePx = with(density) { 100.dp.roundToPx() }
+    // With the menu showing, the scaffold pins its own bar once this is true; the hero's one steps aside.
+    val barPinned by remember(chrome) { derivedStateOf { chrome?.pastHero == true && !hideMenu } }
     LaunchedEffect(listState, chrome) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
             .collect { (index, offset) ->
                 memory.scrollIndex = index
                 memory.scrollOffset = offset
                 // Past the hero the avatar is long gone: any distance beyond the screen will do.
-                chrome?.reportPageScroll(if (index == 0) offset.toFloat() else 100_000f)
+                // The hero's bar is out of sight once the page is this far up, even with the hero's tail still showing.
+                chrome?.reportPageScroll(if (index == 0 && offset < barGonePx) offset.toFloat() else 100_000f)
             }
     }
     val headerHeightPx = with(density) { NewLookLayout.RowsTop.roundToPx() }
@@ -654,19 +720,12 @@ internal fun NewLookHomeContent(
     val targetScroll = remember(area, focusedRowKey, rowHeightsPx, screenHeightPx) {
         val index = rows.indexOfFirst { it.key == focusedRowKey }
         if (area == HomeArea.HERO || index < 0) 0 else with(density) {
-            val row = rows[index]
-            val visiblePx = (dims.rowHead + row.cardHeight(dims) + row.metaHeight(dims) + 6.dp).roundToPx()
-            NewLookScroll.target(
+            // The focused row rests near the top and the next one peeks in below it.
+            NewLookScroll.targetTop(
                 headerPx = headerHeightPx,
                 rowHeightsPx = rowHeightsPx,
                 index = index,
-                visiblePx = visiblePx,
-                viewportPx = screenHeightPx,
-                // A grand row sits in the middle of the screen rather than on its bottom edge, so the rows above and
-                // below show a little either side of it.
-                bottomMarginPx = if (row.kind == RowKind.GRAND) {
-                    ((screenHeightPx - visiblePx) / 2).coerceAtLeast(10.dp.roundToPx())
-                } else 10.dp.roundToPx()
+                topMarginPx = 56.dp.roundToPx()
             )
         }
     }
@@ -677,23 +736,30 @@ internal fun NewLookHomeContent(
         // One glide over the exact distance when the target is laid out (it nearly always is: the next row down or
         // up). animateScrollToItem stepped through items with a spring and ran longer for the same move.
         val laidOut = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
-        if (laidOut != null) {
-            val distance = (laidOut.offset + offset).toFloat()
-            if (distance != 0f) {
-                var travelled = 0f
-                val glide = AnimationState(initialValue = 0f, initialVelocity = pageVelocity[0])
-                listState.scroll {
-                    glide.animateTo(distance, Glide.scroll) {
-                        travelled += scrollBy(value - travelled)
-                        pageVelocity[0] = velocity
-                    }
+        // Target not laid out (up from the second row, the hero is off screen): the distance still comes from where
+        // the page is now, so it glides all the way instead of stepping item by item with pauses.
+        val distance = if (laidOut != null) {
+            (laidOut.offset + offset).toFloat()
+        } else {
+            val first = listState.firstVisibleItemIndex
+            var current = listState.firstVisibleItemScrollOffset
+            if (first > 0) {
+                current += headerHeightPx
+                for (i in 0 until (first - 1).coerceAtMost(rowHeightsPx.size)) current += rowHeightsPx[i]
+            }
+            (targetScroll - current).toFloat()
+        }
+        if (distance != 0f) {
+            var travelled = 0f
+            val glide = AnimationState(initialValue = 0f, initialVelocity = pageVelocity[0])
+            listState.scroll {
+                glide.animateTo(distance, Glide.scroll) {
+                    travelled += scrollBy(value - travelled)
+                    pageVelocity[0] = velocity
                 }
             }
-            pageVelocity[0] = 0f
-        } else {
-            pageVelocity[0] = 0f
-            listState.animateScrollToItem(index, offset)
         }
+        pageVelocity[0] = 0f
     }
 
     // Rows that haven't loaded yet load as they come near the screen.
@@ -817,7 +883,8 @@ internal fun NewLookHomeContent(
     }
 
     // The carousel always moves on: trailers in turn while the window is focused, else a new backdrop every 8 s.
-    val heroTrailerReady = heroHasFocus && trailerUrl != null
+    // The hero never plays a trailer: it rotates its backdrops.
+    val heroTrailerReady = false
     LaunchedEffect(heroHasFocus, slide, slides.size, heroTrailerReady) {
         if (slides.size <= 1) return@LaunchedEffect
         delay(
@@ -987,8 +1054,8 @@ internal fun NewLookHomeContent(
                         heroButton = if (heroHasFocus) heroButton else null,
                         watchFocus = watchFocus,
                         moreFocus = moreFocus,
-                        trailerUrl = if (heroHasFocus) trailerUrl else null,
-                        trailerAudioUrl = if (heroHasFocus) trailerTarget?.let { trailerAudioUrls[it.first] } else null,
+                        trailerUrl = null,
+                        trailerAudioUrl = null,
                         muted = muted,
                         onTrailerEnded = { nextSlide(1) },
                         onHeroFocus = { focused, button ->
@@ -1001,7 +1068,7 @@ internal fun NewLookHomeContent(
                         },
                         onWatchNow = { heroItem?.let { onWatchNow(it.id, it.apiType, "") } },
                         onMoreInfo = { heroItem?.let { onNavigateToDetail(it.id, it.apiType, "") } },
-                        topBar = if (menuOnTop && chrome != null) {
+                        topBar = if (menuOnTop && chrome != null && !barPinned) {
                             { modifier -> chrome.TopBar(onDown = { focusHero(heroButton) }, modifier = modifier) }
                         } else null,
                         topBarVisible = !hideMenu || chrome?.topBarFocused == true,
@@ -1092,6 +1159,23 @@ internal fun NewLookHomeContent(
                 }
             }
         }
+        // A fixed, light fade at the bottom (hero view included) that covers the row below the focused one. It never
+        // moves with the page and its brush is built once, so scrolling costs it nothing.
+        val shadeBrush = remember {
+            Brush.verticalGradient(
+                0f to Color.Transparent,
+                0.25f to Color(0x55000000),
+                0.6f to Color(0xC8000000),
+                1f to Color(0xF0000000)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(140.dp)
+                .background(shadeBrush)
+        )
     }
 
     smartOptions?.let { (row, item) ->
@@ -1222,8 +1306,6 @@ private val NoBringIntoView = object : BringIntoViewSpec {
     override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float = 0f
 }
 
-/** How long a row waits after focus moves before checking its focused card is at its start. */
-private const val ROW_PIN_CHECK_DELAY_MS = 300L
 
 /** Rows pin the focused card to their start, so a row always starts with its focused card. */
 internal class PinToStart(private val startPx: Float) : BringIntoViewSpec {
@@ -1407,18 +1489,22 @@ private fun NewLookRowView(
         }
         // The focused card is what asks to be scrolled into view; a ranked card sits rankPad into its item.
         val startPx = with(density) { (contentStart + if (row.ranked) dims.rankPad else 0.dp).toPx() }
-        // Now and then that scroll falls short (seen two cards short after quick moves), and the passed cards,
-        // faded out, leave a gap before the focused one. Once the row is still, put its card back at the start.
+        // The scroll that follows focus is worked out before the card that closes and the one that opens have changed
+        // width, so it can land off (the last card ended up left of its place, or cards short of it), and the passed
+        // cards, faded out, leave a gap before the focused one. Once the new widths are laid out (two frames), put the
+        // card back at the start at once, so the wrong spot is never on screen for more than a blink.
         LaunchedEffect(listState, col) {
-            delay(ROW_PIN_CHECK_DELAY_MS)
-            snapshotFlow { listState.isScrollInProgress }.first { !it }
+            withFrameNanos { }
+            withFrameNanos { }
             val item = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == col }
-            if (col < row.items.size && (item == null || abs(item.offset) > 2)) listState.animateScrollToItem(col)
+            if (col < row.items.size && (item == null || abs(item.offset) > 2)) listState.scrollToItem(col)
         }
         CompositionLocalProvider(LocalBringIntoViewSpec provides remember(startPx) { PinToStart(startPx) }) {
             LazyRow(
                 state = listState,
-                contentPadding = PaddingValues(start = contentStart, end = 720.dp),
+                // End room of a full screen, so the last card can always be pinned to the start (a fixed 720.dp fell short
+                // on denser screens, leaving the last card parked off its place).
+                contentPadding = PaddingValues(start = contentStart, end = LocalConfiguration.current.screenWidthDp.dp),
                 horizontalArrangement = Arrangement.spacedBy(dims.gap),
                 userScrollEnabled = false,
                 modifier = Modifier

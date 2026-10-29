@@ -198,9 +198,9 @@ class LayoutPreferenceDataStore @Inject constructor(
     }
 
     val discoverLocation: Flow<DiscoverLocation> = profileFlow { prefs ->
-        val stored = prefs[discoverLocationKey] ?: DiscoverLocation.IN_SEARCH.name
+        val stored = prefs[discoverLocationKey] ?: DiscoverLocation.OFF.name
         runCatching { DiscoverLocation.valueOf(stored) }
-            .getOrDefault(DiscoverLocation.IN_SEARCH)
+            .getOrDefault(DiscoverLocation.OFF)
     }
 
     val lastNonOffDiscoverLocation: Flow<DiscoverLocation> = profileFlow { prefs ->
@@ -214,19 +214,19 @@ class LayoutPreferenceDataStore @Inject constructor(
     }
 
     val posterLabelsEnabled: Flow<Boolean> = profileFlow { prefs ->
-        prefs[posterLabelsEnabledKey] ?: true
+        prefs[posterLabelsEnabledKey] ?: false
     }
 
     val catalogAddonNameEnabled: Flow<Boolean> = profileFlow { prefs ->
-        prefs[catalogAddonNameEnabledKey] ?: true
+        prefs[catalogAddonNameEnabledKey] ?: false
     }
 
     val catalogTypeSuffixEnabled: Flow<Boolean> = profileFlow { prefs ->
-        prefs[catalogTypeSuffixEnabledKey] ?: true
+        prefs[catalogTypeSuffixEnabledKey] ?: false
     }
 
     val focusedPosterBackdropTrailerMuted: Flow<Boolean> = profileFlow { prefs ->
-        prefs[focusedPosterBackdropTrailerMutedKey] ?: true
+        prefs[focusedPosterBackdropTrailerMutedKey] ?: false
     }
 
     val posterCardWidthDp: Flow<Int> = profileFlow { prefs ->
@@ -285,7 +285,7 @@ class LayoutPreferenceDataStore @Inject constructor(
     }
 
     val homeImdbRatingsVisibility: Flow<HomeImdbRatingsVisibility> = profileFlow { prefs ->
-        val stored = prefs[homeImdbRatingsVisibilityKey] ?: HomeImdbRatingsVisibility.SHOW_ALL.name
+        val stored = prefs[homeImdbRatingsVisibilityKey] ?: HomeImdbRatingsVisibility.HIDE_ALL.name
         runCatching { HomeImdbRatingsVisibility.valueOf(stored) }
             .getOrDefault(HomeImdbRatingsVisibility.SHOW_ALL)
     }
@@ -302,11 +302,11 @@ class LayoutPreferenceDataStore @Inject constructor(
     }
 
     val showUnairedNextUp: Flow<Boolean> = profileFlow { prefs ->
-        prefs[showUnairedNextUpKey] ?: true
+        prefs[showUnairedNextUpKey] ?: false
     }
 
     val nextUpFromFurthestEpisode: StateFlow<Boolean> = profileFlow { prefs ->
-        prefs[nextUpFromFurthestEpisodeKey] ?: true
+        prefs[nextUpFromFurthestEpisodeKey] ?: false
     }.stateIn(scope, SharingStarted.Eagerly, true)
 
     val blurContinueWatchingNextUp: Flow<Boolean> = profileFlow { prefs ->

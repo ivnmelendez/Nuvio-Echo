@@ -386,14 +386,7 @@ private fun LibraryHeader(
         // Right stops at the last pill instead of dropping into the grid below.
         val endOfRow = Modifier.focusProperties { right = FocusRequester.Cancel }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            BinsTextPill(
-                stringResource(R.string.bins_tab), selected = tab == LibraryTab.Bins, requester = focus["pill:bins"],
-                onClick = { onTab(LibraryTab.Bins) }
-            )
-            BinsTextPill(
-                stringResource(R.string.library_source_cloud), selected = tab == LibraryTab.Cloud, requester = focus["pill:cloud"],
-                onClick = { onTab(LibraryTab.Cloud) }
-            )
+            // The Lists and Cloud tabs are hidden: Library opens on Lists and stays there.
             if (tab == LibraryTab.Bins) {
                 BinsSortPill(sortLabel, focus["pill:sort"], onClick = onSort, onBounds = onSortBounds)
                 BinsIconPill(

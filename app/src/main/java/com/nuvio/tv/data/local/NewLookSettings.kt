@@ -9,7 +9,7 @@ enum class NotificationStyle(val key: String) {
     OFF("off");
 
     companion object {
-        fun fromKey(key: String?): NotificationStyle = entries.firstOrNull { it.key == key } ?: ISLAND
+        fun fromKey(key: String?): NotificationStyle = entries.firstOrNull { it.key == key } ?: OFF
     }
 }
 

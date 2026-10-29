@@ -56,10 +56,9 @@ class KeyboardSearchViewModel @Inject constructor(
     private val detailsLoader: BrowseDetailsLoader
 ) : ViewModel() {
 
-    private val defaultKeywords = if (repository.supportsKeywords()) BrowseCatalog.suggestedKeywords() else emptyList()
-
     private val _uiState = MutableStateFlow(
-        KeyboardSearchUiState(usesTmdb = repository.hasTmdb, keywords = defaultKeywords)
+        // Search only covers what the addon has: no TMDB trending, keywords or ranking, so nothing is fetched up front.
+        KeyboardSearchUiState(usesTmdb = false, browseLoading = false)
     )
     val uiState: StateFlow<KeyboardSearchUiState> = _uiState.asStateFlow()
 
@@ -74,41 +73,10 @@ class KeyboardSearchViewModel @Inject constructor(
     private var keywordJob: Job? = null
     private var titleJob: Job? = null
 
-    init {
-        reloadBrowse()
-    }
-
-    /** Typing replaces a picked keyword and refreshes the keyword list for what was typed. */
+    /** Typing replaces a picked keyword. Results come from the addon alone: no TMDB keywords or ranking. */
     fun onQueryChanged(query: String) {
-        val trimmed = query.trim()
-        if (trimmed.isNotEmpty() && _uiState.value.selectedKeyword != null) {
+        if (query.trim().isNotEmpty() && _uiState.value.selectedKeyword != null) {
             _uiState.update { it.copy(selectedKeyword = null) }
-            reloadBrowse()
-        }
-        keywordJob?.cancel()
-        titleJob?.cancel()
-        if (!repository.supportsKeywords()) return
-        if (trimmed.length >= 2) {
-            titleJob = viewModelScope.launch {
-                delay(TITLE_SEARCH_DEBOUNCE_MS)
-                val ranked = runCatching { repository.searchTitles(trimmed) }.getOrElse {
-                    if (it is CancellationException) throw it
-                    emptyList()
-                }
-                _uiState.update { it.copy(rankedTitles = ranked, rankedForQuery = trimmed) }
-            }
-        }
-        if (trimmed.length < 2) {
-            _uiState.update { it.copy(keywords = defaultKeywords, keywordsForQuery = "") }
-            return
-        }
-        keywordJob = viewModelScope.launch {
-            delay(KEYWORD_DEBOUNCE_MS)
-            val matches = runCatching { repository.searchKeywords(trimmed) }.getOrElse {
-                if (it is CancellationException) throw it
-                emptyList()
-            }
-            _uiState.update { it.copy(keywords = matches, keywordsForQuery = trimmed) }
         }
     }
 

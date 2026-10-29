@@ -646,41 +646,12 @@ open class MainActivity : ComponentActivity() {
                         !onboardingCompletedThisSession
                     ) {
                         startupDestination = StartupDestination.Setup
-                        AuthQrSignInScreen(
-                            onBackPress = { finish() },
-                            onContinue = {
+                        // First launch: the person's code replaces the account QR as the way in.
+                        com.nuvio.tv.ui.screens.account.CodeActivationScreen(
+                            onActivated = {
                                 lifecycleScope.launch {
-                                    val shouldRunRemoteOnboardingSync =
-                                        authManager.authState.value is AuthState.FullAccount
-
-                                    if (shouldRunRemoteOnboardingSync) {
-                                        if (onboardingProfileSyncInProgress) return@launch
-                                        onboardingProfileSyncInProgress = true
-                                        val maxAttempts = 3
-                                        var synced = false
-                                        for (attempt in 0 until maxAttempts) {
-                                            val result = profileSyncService.pullFromRemote()
-                                            if (result.isSuccess) {
-                                                synced = true
-                                                break
-                                            }
-                                            if (attempt < maxAttempts - 1) {
-                                                delay(1_000)
-                                            }
-                                        }
-                                        if (!synced) {
-                                            android.util.Log.w(
-                                                "MainActivity",
-                                                "Onboarding profile sync failed after retries; continuing"
-                                            )
-                                        }
-                                    }
                                     appOnboardingDataStore.setHasSeenAuthQrOnFirstLaunch(true)
                                     onboardingCompletedThisSession = true
-                                    onboardingProfileSyncInProgress = false
-                                }
-                                if (authManager.authState.value is AuthState.FullAccount) {
-                                    startupSyncService.requestSyncNow()
                                 }
                             }
                         )
@@ -733,10 +704,13 @@ open class MainActivity : ComponentActivity() {
                         ?: if (legacySetupDone) ExperienceMode.ADVANCED else null
                     val needsExperienceSelection = effectiveExperienceMode == null
                     val setupDone = !needsExperienceSelection
+                    // A device already set up with a code never shows the generic addon setup, not even for the
+                    // instant the addon list still reads empty right after activating.
                     val needsEssentialAddonSetup =
                         effectiveExperienceMode == ExperienceMode.ESSENTIAL &&
                             installedAddons.orEmpty().isEmpty() &&
-                            !mainUiPrefs.addonSetupSkipped
+                            !mainUiPrefs.addonSetupSkipped &&
+                            !com.nuvio.tv.ui.screens.account.ActivationPrefs.isDone(context)
                     val pendingDeepLink by pendingDeepLinkUrl.collectAsState()
 
                     LaunchedEffect(pendingDeepLink) {
@@ -752,7 +726,14 @@ open class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    if (needsEssentialAddonSetup) {
+                    // First launch on a device with no addons: the short code a person was given sets theirs up.
+                    val needsCodeActivation = installedAddons.orEmpty().isEmpty() &&
+                        !com.nuvio.tv.ui.screens.account.ActivationPrefs.isDone(context)
+
+                    if (needsCodeActivation) {
+                        startupDestination = StartupDestination.Setup
+                        com.nuvio.tv.ui.screens.account.CodeActivationScreen()
+                    } else if (needsEssentialAddonSetup) {
                         startupDestination = StartupDestination.Setup
                         EssentialAddonSetupScreen(
                             onSkip = {
@@ -943,6 +924,8 @@ open class MainActivity : ComponentActivity() {
                     val rootRoutes = remember(discoverLocation) {
                         buildSet {
                             add(Screen.Home.route)
+                            add(Screen.Movies.route)
+                            add(Screen.SeriesTab.route)
                             add(Screen.Search.route)
                             add(Screen.Genres.route)
                             add(Screen.Calendar.route)
@@ -957,6 +940,8 @@ open class MainActivity : ComponentActivity() {
                     val strNavHome = stringResource(R.string.nav_home)
                     val strNavDiscover = stringResource(R.string.nav_discover)
                     val strNavSearch = stringResource(R.string.nav_search)
+                    val strNavMovies = stringResource(R.string.nav_movies)
+                    val strNavSeries = stringResource(R.string.nav_series)
                     val strNavLibrary = stringResource(R.string.nav_library)
                     val strNavSettings = stringResource(R.string.nav_settings)
                     val strNavGenres = stringResource(R.string.nav_genres)
@@ -966,6 +951,8 @@ open class MainActivity : ComponentActivity() {
                         strNavHome,
                         strNavDiscover,
                         strNavSearch,
+                        strNavMovies,
+                        strNavSeries,
                         strNavLibrary,
                         strNavSettings,
                         strNavGenres,
@@ -979,6 +966,20 @@ open class MainActivity : ComponentActivity() {
                                     route = Screen.Home.route,
                                     label = strNavHome,
                                     icon = Icons.Default.Home
+                                )
+                            )
+                            add(
+                                DrawerItem(
+                                    route = Screen.Movies.route,
+                                    label = strNavMovies,
+                                    iconRes = R.raw.sidebar_movies
+                                )
+                            )
+                            add(
+                                DrawerItem(
+                                    route = Screen.SeriesTab.route,
+                                    label = strNavSeries,
+                                    iconRes = R.raw.sidebar_series
                                 )
                             )
                             if (discoverLocation == DiscoverLocation.IN_SIDEBAR) {

@@ -191,26 +191,28 @@ fun CodeActivationScreen(
             .padding(horizontal = 64.dp, vertical = 48.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(40.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.widthIn(max = 680.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.activation_title),
-                    color = NuvioTheme.colors.TextPrimary,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                CodeSlots(uiState.code)
-                Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = stringResource(R.string.activation_title),
+                color = NuvioTheme.colors.TextPrimary,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) { CodeSlots(uiState.code) }
                 var buttonFocused by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
+                        .width(168.dp)
+                        .height(76.dp)
                         .background(
                             when {
                                 buttonFocused -> Color.White
@@ -228,7 +230,7 @@ fun CodeActivationScreen(
                         text = stringResource(
                             if (uiState.isWorking) R.string.activation_working else R.string.activation_button
                         ),
-                        fontSize = 24.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = when {
                             buttonFocused -> Color.Black
@@ -237,24 +239,23 @@ fun CodeActivationScreen(
                         }
                     )
                 }
-                // The line is always there, so an error never moves anything.
-                Spacer(modifier = Modifier.height(14.dp))
-                val error = uiState.error
-                Text(
-                    text = if (error == null) "" else stringResource(
-                        if (error == ActivationError.INVALID) R.string.activation_error_invalid
-                        else R.string.activation_error_network
-                    ),
-                    fontSize = 16.sp,
-                    color = NuvioTheme.colors.Error,
-                    minLines = 2,
-                    maxLines = 2
-                )
             }
-            Column(
-                modifier = Modifier.weight(1.4f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            // The line is always there, so an error never moves anything.
+            Spacer(modifier = Modifier.height(10.dp))
+            val error = uiState.error
+            Text(
+                text = if (error == null) "" else stringResource(
+                    if (error == ActivationError.INVALID) R.string.activation_error_invalid
+                    else R.string.activation_error_network
+                ),
+                fontSize = 16.sp,
+                color = NuvioTheme.colors.Error,
+                textAlign = TextAlign.Center,
+                minLines = 2,
+                maxLines = 2
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 KEY_ROWS.forEachIndexed { row, chars ->
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         // The short bottom row is centred between two half-gaps.
@@ -294,7 +295,7 @@ private fun CodeSlots(code: String) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(80.dp)
+                    .height(76.dp)
                     .background(Color.White.copy(alpha = 0.08f), RoundedCornerShape(NuvioTheme.radii.md))
                     .border(
                         width = if (next) 2.dp else 1.dp,

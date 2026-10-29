@@ -50,10 +50,10 @@ class TmdbSettingsDataStore @Inject constructor(
     val settings: StateFlow<TmdbSettings> = profileManager.activeProfileId.flatMapLatest { pid ->
         factory.get(pid, FEATURE).data.map { prefs ->
             TmdbSettings(
-                enabled = prefs[enabledKey] ?: false,
-                modernHomeEnabled = prefs[modernHomeEnabledKey] ?: false,
+                enabled = prefs[enabledKey] ?: true,
+                modernHomeEnabled = prefs[modernHomeEnabledKey] ?: true,
                 enrichContinueWatching = prefs[enrichContinueWatchingKey] ?: true,
-                language = prefs[languageKey] ?: "en",
+                language = prefs[languageKey] ?: "es-419",
                 useArtwork = prefs[useArtworkKey] ?: true,
                 useBasicInfo = prefs[useBasicInfoKey] ?: true,
                 useDetails = prefs[useDetailsKey] ?: true,
@@ -62,8 +62,8 @@ class TmdbSettingsDataStore @Inject constructor(
                 useNetworks = prefs[useNetworksKey] ?: true,
                 useEpisodes = prefs[useEpisodesKey] ?: true,
                 useTrailers = prefs[useTrailersKey] ?: true,
-                useMoreLikeThis = prefs[useMoreLikeThisKey] ?: true,
-                useCollections = prefs[useCollectionsKey] ?: true
+                useMoreLikeThis = prefs[useMoreLikeThisKey] ?: false,
+                useCollections = prefs[useCollectionsKey] ?: false
             )
         }
     }.stateIn(scope, SharingStarted.Eagerly, TmdbSettings())
