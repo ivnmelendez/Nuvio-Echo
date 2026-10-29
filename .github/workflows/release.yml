@@ -27,15 +27,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
-
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Version
         id: version
         run: |
-          # First run is 1.0.0, then 1.0.1, 1.0.2 ... versionCode always goes up.
-          echo "name=1.0.$((GITHUB_RUN_NUMBER - 1))" >> "$GITHUB_OUTPUT"
+          # Run 2 was the first that could build, so it is 1.0.0; then 1.0.1, 1.0.2 ... versionCode always goes up.
+          echo "name=1.0.$((GITHUB_RUN_NUMBER - 2))" >> "$GITHUB_OUTPUT"
           echo "code=$((1100 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
 
       - name: Keystore
