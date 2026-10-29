@@ -758,6 +758,14 @@ open class MainActivity : ComponentActivity() {
                     LaunchedEffect(actualRoute) {
                         optimisticRoute = null
                     }
+                    // A tab that was picked but never opened (a navigation that went nowhere) must not stay
+                    // "current": it made the next pick of that same tab look like a click on where we already are.
+                    LaunchedEffect(optimisticRoute) {
+                        if (optimisticRoute != null) {
+                            delay(1_500L)
+                            optimisticRoute = null
+                        }
+                    }
 
                     // Auto-play next episode for EXTERNAL players: the tracker resolves the
                     // next episode and we navigate into the same Screen.Stream auto-play route
@@ -1105,7 +1113,7 @@ open class MainActivity : ComponentActivity() {
                                 onNavigate = { optimisticRoute = it },
                                 onExitApp = handleExitApp,
                                 navigateToRoute = { target ->
-                                    navigateToDrawerRoute(navController, currentRoute, target)
+                                    navigateToDrawerRoute(navController, actualRoute, target)
                                 },
                                 drawerIcon = { item, tint, modifier ->
                                     DrawerItemIcon(iconRes = item.iconRes, icon = item.icon, tint = tint, modifier = modifier)
