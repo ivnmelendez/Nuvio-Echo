@@ -50,11 +50,10 @@ class UpdateViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val enabled = updatePreferences.updateBannerEnabled.first()
             val channel = updatePreferences.getOrInitializeUpdateChannel()
             _uiState.update {
                 it.copy(
-                    updateBannerEnabled = enabled,
+                    updateBannerEnabled = true,
                     updateChannel = channel
                 )
             }

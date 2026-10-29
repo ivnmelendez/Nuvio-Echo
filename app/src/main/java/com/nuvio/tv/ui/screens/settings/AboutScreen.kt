@@ -125,13 +125,6 @@ fun AboutSettingsContent(
                             )
 
                             Text(
-                                text = stringResource(R.string.about_made_with_love),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = NuvioTheme.colors.TextSecondary,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Text(
                                 text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = NuvioTheme.colors.TextSecondary,
@@ -145,9 +138,9 @@ fun AboutSettingsContent(
                             }
 
                             SettingsActionRow(
-                                title = stringResource(R.string.about_privacy_policy),
-                                subtitle = stringResource(R.string.about_privacy_policy_subtitle),
-                                trailingIcon = Icons.Default.OpenInNew,
+                                title = stringResource(R.string.about_licenses_attributions),
+                                subtitle = stringResource(R.string.about_licenses_attributions_subtitle),
+                                trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                 modifier = if (!AppFeaturePolicy.inAppUpdatesEnabled) {
                                     firstRowModifier.then(
                                         if (initialFocusRequester != null) Modifier.focusRequester(initialFocusRequester)
@@ -156,28 +149,6 @@ fun AboutSettingsContent(
                                 } else {
                                     Modifier
                                 },
-                                onClick = {
-                                    val intent = Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://nuvio.tv/privacy-policy")
-                                    )
-                                    context.startActivity(intent)
-                                }
-                            )
-
-                            if (AppFeaturePolicy.supportNuvioEnabled) {
-                                SettingsActionRow(
-                                    title = stringResource(R.string.support_nuvio_name),
-                                    subtitle = stringResource(R.string.about_supporters_contributors_subtitle),
-                                    trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                    onClick = onNavigateToSupportersContributors
-                                )
-                            }
-
-                            SettingsActionRow(
-                                title = stringResource(R.string.about_licenses_attributions),
-                                subtitle = stringResource(R.string.about_licenses_attributions_subtitle),
-                                trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                 onClick = onNavigateToLicensesAttributions
                             )
                         }
