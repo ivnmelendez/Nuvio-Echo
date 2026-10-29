@@ -36,6 +36,9 @@ jobs:
           echo "name=1.0.$((GITHUB_RUN_NUMBER - 2))" >> "$GITHUB_OUTPUT"
           echo "code=$((1100 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
 
+      - name: Check TMDB key
+        run: test -n "${{ secrets.TMDB_API_KEY }}" || { echo "::error::Secret TMDB_API_KEY is missing, the app would ship without metadata"; exit 1; }
+
       - name: Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/tivilatino.jks"
 

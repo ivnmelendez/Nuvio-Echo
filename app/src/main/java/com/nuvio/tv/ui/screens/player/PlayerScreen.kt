@@ -2490,7 +2490,8 @@ private fun PlayerControlsOverlay(
                     }
 
                     val hasYear = !uiState.releaseYear.isNullOrBlank()
-                    val showVia = !uiState.isPlaying && !uiState.currentStreamName.isNullOrBlank()
+                    // The addon's stream name ("via ...") is never shown in the player.
+                    val showVia = false
                     val yearText = uiState.releaseYear.orEmpty()
 
                     if (hasYear || showVia) {

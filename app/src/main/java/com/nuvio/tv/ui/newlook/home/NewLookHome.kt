@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.runtime.SideEffect
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -1131,6 +1132,7 @@ internal fun NewLookHomeContent(
                         },
                         onPrefetch = { item -> loadDetails(item.metaPreview) },
                         openItemKey = openPosterNow?.takeIf { it.first == row.key }?.second,
+                        openAtOnce = settings.posterOpenDelayMs == 0,
                         onClick = { item ->
                             if (row.onlyPlaceholders) return@NewLookRowView
                             when (val payload = item.payload) {
@@ -1312,10 +1314,8 @@ internal class PinToStart(private val startPx: Float) : BringIntoViewSpec {
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override val scrollAnimationSpec: androidx.compose.animation.core.AnimationSpec<Float> = androidx.compose.animation.core.snap()
 
-    override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
-        val distance = offset - startPx
-        return if (abs(distance) < 1f) 0f else distance
-    }
+    // Focus no longer scrolls the row itself: the row puts its start card in place when it is measured.
+    override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float = 0f
 }
 
 @Composable
@@ -1439,7 +1439,9 @@ private fun NewLookRowView(
     onClick: (ModernCarouselItem) -> Unit,
     onLongClick: (ModernCarouselItem) -> Unit,
     /** The poster in this row that has opened out, if any. */
-    openItemKey: String?
+    openItemKey: String?,
+    /** No expand delay: a poster opens in the very frame it gets focus, off its own focus rather than the screen's. */
+    openAtOnce: Boolean
 ) {
     val density = LocalDensity.current
     val rowActive = focusedItemKey != null
@@ -1487,19 +1489,13 @@ private fun NewLookRowView(
                 }
             }
         }
-        // The focused card is what asks to be scrolled into view; a ranked card sits rankPad into its item.
-        val startPx = with(density) { (contentStart + if (row.ranked) dims.rankPad else 0.dp).toPx() }
-        // The scroll that follows focus is worked out before the card that closes and the one that opens have changed
-        // width, so it can land off (the last card ended up left of its place, or cards short of it), and the passed
-        // cards, faded out, leave a gap before the focused one. Once the new widths are laid out (two frames), put the
-        // card back at the start at once, so the wrong spot is never on screen for more than a blink.
-        LaunchedEffect(listState, col) {
-            withFrameNanos { }
-            withFrameNanos { }
-            val item = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == col }
-            if (col < row.items.size && (item == null || abs(item.offset) > 2)) listState.scrollToItem(col)
-        }
-        CompositionLocalProvider(LocalBringIntoViewSpec provides remember(startPx) { PinToStart(startPx) }) {
+        // The focused card sits at the row's start. Rather than letting focus scroll the row (worked out before the
+        // card that closes and the one that opens have changed width, so it landed off and was fixed two frames later),
+        // the start card is requested here and applied when the row is next measured, with the new widths in place.
+        // A ranked card sits rankPad into its item, so the item itself goes to the start.
+        val lastCol = (row.items.size - 1).coerceAtLeast(0)
+        SideEffect { listState.requestScrollToItem(col.coerceIn(0, lastCol)) }
+        CompositionLocalProvider(LocalBringIntoViewSpec provides remember { PinToStart(0f) }) {
             LazyRow(
                 state = listState,
                 // End room of a full screen, so the last card can always be pinned to the start (a fixed 720.dp fell short
@@ -1515,9 +1511,10 @@ private fun NewLookRowView(
                     .focusGroup()
             ) {
                 itemsIndexed(row.items, key = { _, item -> item.key }) { index, item ->
-                    val passed by animateFloatAsState(if (index < col) 0f else 1f, androidx.compose.animation.core.snap(), label = "passed")
                     val modifier = Modifier
-                        .graphicsLayer { alpha = passed }
+                        // Cards the row has scrolled past stay composed, so focus can go back to them, but aren't drawn. This
+                        // follows `col` directly (no animation in between), and the row scrolls to `col` in the same pass.
+                        .graphicsLayer { alpha = if (index < col) 0f else 1f }
                         .then(
                             when (index) {
                                 focusCol -> Modifier.focusRequester(focusRequester)
@@ -1542,7 +1539,8 @@ private fun NewLookRowView(
                         onClick = { onClick(item) },
                         onLongClick = { onLongClick(item) },
                         modifier = modifier,
-                        open = item.key == focusedItemKey && item.key == openItemKey
+                        open = item.key == focusedItemKey && item.key == openItemKey,
+                        openAtOnce = openAtOnce
                     )
                 }
             }
@@ -1583,7 +1581,8 @@ private fun RowCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     modifier: Modifier,
-    open: Boolean
+    open: Boolean,
+    openAtOnce: Boolean
 ) {
     val preview = item.heroPreview
     val backdrop = preview.backdrop ?: details?.backdrop ?: item.imageUrl
@@ -1662,6 +1661,7 @@ private fun RowCard(
             title = item.title,
             watched = item.metaPreview?.let(isWatched) == true,
             open = open,
+            openAtOnce = openAtOnce,
             dims = dims,
             onClick = onClick,
             onLongClick = onLongClick,

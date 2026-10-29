@@ -265,7 +265,7 @@ internal fun ContinueWatchingCard(
     modifier: Modifier = Modifier
 ) {
     val hasProgress = progress != null && progress > 0f
-    NewLookCard(dims.cwWidth, dims.cwHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.CONTINUE_WATCHING) {
+    NewLookCard(dims.cwWidth, dims.cwHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.CONTINUE_WATCHING, lift = false) {
         Artwork(image, Modifier.fillMaxSize(), fallbackTitle = title)
         Box(modifier = Modifier.fillMaxSize().bottomShade())
         Column(
@@ -321,6 +321,8 @@ internal fun PosterCard(
     title: String,
     watched: Boolean,
     open: Boolean,
+    /** Opens off this card's own focus, in the same frame, instead of waiting for [open] from the screen. */
+    openAtOnce: Boolean = false,
     dims: NewLookDimens,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -334,40 +336,29 @@ internal fun PosterCard(
     // A regular row stays on its card when the trailer ends: the backdrop comes back.
     var ended by remember(trailerUrl) { mutableStateOf(false) }
     val playing = open && trailerUrl != null && !ended
-    // Both animations are read in the layout and draw phases, so each frame of the opening re-measures the card but
-    // doesn't recompose it.
-    val width = animateDpAsState(
-        targetValue = if (open) dims.posterOpenWidth else dims.posterWidth,
-        animationSpec = snap(),
-        label = "posterOpen"
-    )
+    // With no
+    // delay it follows the card's own focus: the screen's state reaches the card a frame or two later, and a poster
+    // pinned to the row's start showed vertical for that long before widening. No animation sits in between either.
+    var focusedHere by remember { mutableStateOf(false) }
+    val isOpen = if (openAtOnce) focusedHere else open
     // As stock Nuvio does: the poster goes the moment the card starts opening, so it's never seen cropped and blown
-    // up to the wide shape; the card is black until the backdrop has loaded and faded in. Closing fades the backdrop
-    // out quickly and the poster back in once the card is narrow again.
-    val openAlpha = animateFloatAsState(
-        if (open) 1f else 0f, snap(), label = "posterOpenAlpha"
-    )
-    val posterAlpha = animateFloatAsState(
-        if (open) 0f else 1f, snap(), label = "posterAlpha"
-    )
-    val showOpen by remember { derivedStateOf { openAlpha.value > 0f } }
+    // up to the wide shape; the card is black until the backdrop has loaded and faded in.
+    val showOpen = isOpen
     NewLookCard(
-        null, dims.posterHeight, onClick, onLongClick, onFocusChanged,
-        modifier.layout { measurable, constraints ->
-            val w = width.value.roundToPx()
-            val placeable = measurable.measure(constraints.copy(minWidth = w, maxWidth = w))
-            layout(placeable.width, placeable.height) { placeable.place(0, 0) }
-        },
+        null, dims.posterHeight, onClick, onLongClick, { focusedHere = it; onFocusChanged(it) },
+        // Width, content and focus ring all follow the same state in the same composition, so the frame never shows
+        // narrow around a card that has already opened.
+        modifier.width(if (isOpen) dims.posterOpenWidth else dims.posterWidth),
         depth = CardDepthSurface.POSTERS,
         // No lift: the card opens at once, and a lift animating on top of it read as a bounce (and overhung its slot).
         lift = false
     ) {
         Artwork(
-            poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = posterAlpha.value },
+            poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
             fallbackTitle = title, fallbackUrl = posterFallback
         )
         if (showOpen) {
-            Box(modifier = Modifier.fillMaxSize().graphicsLayer { alpha = openAlpha.value }.background(Color.Black)) {
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                 Artwork(backdrop, Modifier.fillMaxSize())
                 HeldTrailer(active = playing, key = trailerUrl) { onFirstFrame ->
                     TrailerPlayer(
@@ -425,7 +416,7 @@ internal fun HighlightCard(
     chipLabel: String? = null,
     overlay: @Composable BoxScope.() -> Unit = {}
 ) {
-    NewLookCard(dims.highlightWidth, dims.highlightHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.FEATURED) {
+    NewLookCard(dims.highlightWidth, dims.highlightHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.FEATURED, lift = false) {
         Artwork(backdrop, Modifier.fillMaxSize(), fallbackTitle = title)
         overlay()
         HeldTrailer(active = playing && trailerUrl != null, key = trailerUrl) { onFirstFrame ->
