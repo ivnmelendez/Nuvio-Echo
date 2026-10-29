@@ -116,7 +116,7 @@ data class BetaPerformanceSettings(
     /** New look: how long a focused poster waits before it opens out, in ms (one of [POSTER_OPEN_DELAYS]). */
     val posterOpenDelayMs: Int = 0,
     /** New look: how long a card, grand card, highlight or the hero waits, once focused, before its trailer starts (ms). */
-    val trailerStartDelayMs: Int = 4000,
+    val trailerStartDelayMs: Int = 2500,
     /** New look: the menu stays out of sight until it's selected (Left from a row, or Up for the top bar). */
     val hideMenuUntilSelected: Boolean = false,
     /** New look: the menu is a glass tab bar at the top instead of the sidebar. */
@@ -194,7 +194,7 @@ data class BetaPerformanceSettings(
         val MENU_GLASS_LEVELS = listOf(0, 1, 2)
         const val TRAILER_QUALITY_AUTO = com.nuvio.tv.core.player.TrailerVideoPolicy.AUTO
         val TRAILER_QUALITIES = com.nuvio.tv.core.player.TrailerVideoPolicy.QUALITIES
-        val TRAILER_START_DELAYS = listOf(0, 1000, 2000, 3000, 4000, 5000, 8000)
+        val TRAILER_START_DELAYS = listOf(0, 1000, 2000, 2500, 3000, 4000, 5000, 8000)
         val POSTER_OPEN_DELAYS = listOf(0, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 5000)
 
         /** Seek preview data limits offered, in MB; 0 is no limit. */
