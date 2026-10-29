@@ -648,38 +648,6 @@ internal fun NewLookHomeContent(
         }
     }
 
-    // A loading row that has focus: once it loads, focus moves onto its real card (the skeleton it was on is gone).
-    // If a row disappears while focused (a catalog that failed and was dropped), focus goes to the row now in its place.
-    val focusedRowLoading = rows.firstOrNull { it.key == focusedRowKey }?.onlyPlaceholders == true
-    var lastRowIndex by remember { mutableIntStateOf(0) }
-    var wasLoading by remember(focusedRowKey) { mutableStateOf(focusedRowLoading) }
-    LaunchedEffect(focusedRowKey, focusedRowLoading, rows) {
-        val key = focusedRowKey ?: return@LaunchedEffect
-        val index = rows.indexOfFirst { it.key == key }
-        if (index >= 0) lastRowIndex = index
-        if (area != HomeArea.ROWS) {
-            wasLoading = focusedRowLoading
-            return@LaunchedEffect
-        }
-        when {
-            index < 0 && rows.isNotEmpty() -> focusRow(lastRowIndex.coerceAtMost(rows.lastIndex))
-            // The skeleton's removal may already have cleared focusedCard; only another row having focus rules it out.
-            wasLoading && !focusedRowLoading && (focusedCard == null || focusedCard?.first == key) -> {
-                val row = rows[index]
-                focusRow(index, (cols[key] ?: 0).coerceAtMost((row.items.size - 1).coerceAtLeast(0)))
-            }
-        }
-        wasLoading = focusedRowLoading
-    }
-
-    fun nextSlide(step: Int) {
-        if (slides.isEmpty()) return
-        slide = (slide + step).mod(slides.size)
-    }
-
-    // First focus: the window's Watch Now, or wherever Home was left.
-    var initialFocusDone by remember { mutableStateOf(false) }
-    val contentReady = slides.isNotEmpty() || rows.isNotEmpty()
     // Coming back to a row, the first focus waits for that row to be built: on the carousel alone it landed on the top.
     val savedRowKey = memory.rowKey.takeIf { memory.area == HomeArea.ROWS }
     val savedRowBuilt = savedRowKey == null || rows.any { it.key == savedRowKey }
@@ -699,6 +667,40 @@ internal fun NewLookHomeContent(
             restoringRow = false
         }
     }
+    // A loading row that has focus: once it loads, focus moves onto its real card (the skeleton it was on is gone).
+    // If a row disappears while focused (a catalog that failed and was dropped), focus goes to the row now in its place.
+    val focusedRowLoading = rows.firstOrNull { it.key == focusedRowKey }?.onlyPlaceholders == true
+    var lastRowIndex by remember { mutableIntStateOf(0) }
+    var wasLoading by remember(focusedRowKey) { mutableStateOf(focusedRowLoading) }
+    LaunchedEffect(focusedRowKey, focusedRowLoading, rows) {
+        val key = focusedRowKey ?: return@LaunchedEffect
+        val index = rows.indexOfFirst { it.key == key }
+        if (index >= 0) lastRowIndex = index
+        if (area != HomeArea.ROWS) {
+            wasLoading = focusedRowLoading
+            return@LaunchedEffect
+        }
+        when {
+            // Not while the saved row is still being waited for: the first rows built on return can lack it (the
+            // published rows arrive a moment later), and moving to the first row here overwrote the saved place.
+            index < 0 && rows.isNotEmpty() && !restoringRow -> focusRow(lastRowIndex.coerceAtMost(rows.lastIndex))
+            // The skeleton's removal may already have cleared focusedCard; only another row having focus rules it out.
+            wasLoading && !focusedRowLoading && (focusedCard == null || focusedCard?.first == key) -> {
+                val row = rows[index]
+                focusRow(index, (cols[key] ?: 0).coerceAtMost((row.items.size - 1).coerceAtLeast(0)))
+            }
+        }
+        wasLoading = focusedRowLoading
+    }
+
+    fun nextSlide(step: Int) {
+        if (slides.isEmpty()) return
+        slide = (slide + step).mod(slides.size)
+    }
+
+    // First focus: the window's Watch Now, or wherever Home was left.
+    var initialFocusDone by remember { mutableStateOf(false) }
+    val contentReady = slides.isNotEmpty() || rows.isNotEmpty()
     LaunchedEffect(contentReady, savedRowBuilt, savedRowWaitOver) {
         if (!contentReady || initialFocusDone) return@LaunchedEffect
         if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
@@ -756,6 +758,8 @@ internal fun NewLookHomeContent(
     // The page's speed when a glide is cut short by the next press, so the next one carries on from it.
     val pageVelocity = remember { floatArrayOf(0f) }
     LaunchedEffect(targetScroll) {
+        // The saved row isn't built yet: stay where Home was left rather than gliding to the top and back.
+        if (restoringRow && area == HomeArea.ROWS && rows.none { it.key == focusedRowKey }) return@LaunchedEffect
         val (index, offset) = NewLookScroll.toItem(targetScroll, headerHeightPx, rowHeightsPx)
         // One glide over the exact distance when the target is laid out (it nearly always is: the next row down or
         // up). animateScrollToItem stepped through items with a spring and ran longer for the same move.
