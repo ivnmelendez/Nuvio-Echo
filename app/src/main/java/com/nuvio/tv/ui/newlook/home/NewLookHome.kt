@@ -1529,8 +1529,8 @@ private fun NewLookRowView(
     Box(modifier = Modifier.fillMaxWidth().height(row.height(dims))) {
         // A seasonal banner behind the whole row, under a dark edge so the cards and their details stay readable.
         row.bannerUrl?.let { banner ->
-            // The whole row, its gap included, so the banner reaches below the last line of the synopsis.
-            Box(modifier = Modifier.fillMaxWidth().height(row.height(dims))) {
+            // Below the last line of the synopsis, but not into the next row's title.
+            Box(modifier = Modifier.fillMaxWidth().height(row.height(dims) - 12.dp)) {
                 Artwork(banner, Modifier.fillMaxSize())
                 Box(
                     modifier = Modifier.fillMaxSize().background(
