@@ -29,6 +29,7 @@ class MdbListListRepository @Inject constructor(
     private data class Entry(val items: List<MetaPreview>, val expiresAtMs: Long)
 
     private val cache = ConcurrentHashMap<String, Entry>()
+    private val sessionSeed = kotlin.random.Random.nextLong()
     private val baseUrl: String get() = BuildConfig.REMOTE_CONFIG_URL.substringBeforeLast('/') + "/"
 
     suspend fun items(row: RemoteRow): List<MetaPreview> = withContext(Dispatchers.IO) {
@@ -61,10 +62,18 @@ class MdbListListRepository @Inject constructor(
         order(items, row)
     }
 
+    /**
+     * The same shuffle for the whole app session, a new one each time the app opens. Shuffling on every read gave
+     * Home a different row each time it was built (coming back from a title, and again when the fresh copy
+     * arrived), so the card a person was on was gone and focus fell to the menu.
+     */
+    private fun shuffled(items: List<MetaPreview>, row: RemoteRow): List<MetaPreview> =
+        items.shuffled(kotlin.random.Random(sessionSeed xor (row.file?.hashCode()?.toLong() ?: 0L)))
+
     private fun order(items: List<MetaPreview>, row: RemoteRow): List<MetaPreview> = when {
-        // The file holds a larger pool; show a different `limit`-sized pick each time.
-        row.shuffle -> items.shuffled().take(row.limit)
-        row.sort.equals("random", ignoreCase = true) -> items.shuffled()
+        // The file holds a larger pool; show a different `limit`-sized pick each time the app opens.
+        row.shuffle -> shuffled(items, row).take(row.limit)
+        row.sort.equals("random", ignoreCase = true) -> shuffled(items, row)
         else -> items
     }
 
