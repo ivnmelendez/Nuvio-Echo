@@ -146,23 +146,17 @@ class StreamAudioTest {
             shownKeys = legacyMenuKeys,
             showUnknown = true
         )
-        // Original (Japanese, playing) first, English in this file, Korean from Comet, and Italian: every track of the
-        // file is listed, the chosen languages only narrow what other sources add.
-        assertEquals(listOf(JAPANESE, ENGLISH, KOREAN, ITALIAN), options.map { it.language })
+        // Only the file's own tracks: Original (Japanese, playing) first, then English and Italian. Korean, which only
+        // another source has, is not listed.
+        assertEquals(listOf(JAPANESE, ENGLISH, ITALIAN), options.map { it.language })
         assertTrue(options[0].isOriginal && options[0].isCurrent && options[0].trackIndex == 0)
         assertEquals(1, options[1].trackIndex)
-        assertEquals(null, options[2].trackIndex)
-        assertEquals(1, options[2].sourceCount)
-        assertEquals(2, options[3].trackIndex)
+        assertEquals(2, options[2].trackIndex)
 
-        val noUnknown = AudioLanguageMenu.buildOptions(
-            streams, { it === current }, emptyList(), -1, null, legacyMenuKeys, showUnknown = false
-        )
-        assertTrue(noUnknown.none { it.language == null })
-        val withUnknown = AudioLanguageMenu.buildOptions(
+        val noTracks = AudioLanguageMenu.buildOptions(
             streams, { it === current }, emptyList(), -1, null, legacyMenuKeys, showUnknown = true
         )
-        assertTrue(withUnknown.last().language == null && withUnknown.last().sourceCount > 0)
+        assertTrue(noTracks.isEmpty())
     }
 
     @Test

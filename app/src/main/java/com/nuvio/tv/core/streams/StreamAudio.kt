@@ -538,17 +538,7 @@ object AudioLanguageMenu {
                 isCurrent = selected
             )
         }
-        shownLanguages.filter { it !in inFile }.forEach { language ->
-            rows += AudioMenuOption(
-                language = language,
-                isOriginal = language == original,
-                sourceCount = others.count { language in it.languages }
-            )
-        }
-        if (showUnknown && null !in inFile) {
-            val unknownCount = others.count { it.unknown && it.languages.isEmpty() }
-            if (unknownCount > 0) rows += AudioMenuOption(language = null, isOriginal = false, sourceCount = unknownCount)
-        }
+        // Only what the playing file has: no rows for languages other sources offer.
         return rows.sortedWith(
             compareBy<AudioMenuOption> { row ->
                 when {
