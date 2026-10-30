@@ -266,7 +266,9 @@ class UpdateViewModel @Inject constructor(
                             isDownloading = false,
                             downloadProgress = null,
                             downloadedApkPath = null,
-                            errorMessage = error.message ?: context.getString(R.string.update_error_download_failed),
+                            errorMessage = (error as? InsufficientStorageException)?.let {
+                                context.getString(R.string.update_error_no_space, (it.neededBytes / (1024 * 1024)).toInt())
+                            } ?: error.message ?: context.getString(R.string.update_error_download_failed),
                             showBanner = true
                         )
                     }
