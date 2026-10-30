@@ -50,6 +50,11 @@ class UpdateViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            // Whatever an earlier update left in the cache is of no use once the app is running: it was installed or
+            // skipped. Without this each update leaves an APK of tens of MB behind on the device.
+            withContext(Dispatchers.IO) {
+                runCatching { File(context.cacheDir, "updates").deleteRecursively() }
+            }
             val channel = updatePreferences.getOrInitializeUpdateChannel()
             _uiState.update {
                 it.copy(
