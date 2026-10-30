@@ -1174,6 +1174,7 @@ internal fun NewLookHomeContent(
                         onPrefetch = { item -> loadDetails(item.metaPreview) },
                         openItemKey = openPosterNow?.takeIf { it.first == row.key }?.second,
                         openAtOnce = settings.posterOpenDelayMs == 0,
+                        holdOpen = leavingHome,
                         onClick = { item ->
                             if (row.onlyPlaceholders) return@NewLookRowView
                             // The card keeps its open frame while the screen leaves: losing focus as the next screen
@@ -1489,7 +1490,8 @@ private fun NewLookRowView(
     /** The poster in this row that has opened out, if any. */
     openItemKey: String?,
     /** No expand delay: a poster opens in the very frame it gets focus, off its own focus rather than the screen's. */
-    openAtOnce: Boolean
+    openAtOnce: Boolean,
+    holdOpen: Boolean
 ) {
     val density = LocalDensity.current
     val rowActive = focusedItemKey != null
@@ -1588,7 +1590,8 @@ private fun NewLookRowView(
                         onLongClick = { onLongClick(item) },
                         modifier = modifier,
                         open = item.key == focusedItemKey && item.key == openItemKey,
-                        openAtOnce = openAtOnce
+                        openAtOnce = openAtOnce,
+                        holdOpen = holdOpen
                     )
                 }
             }
@@ -1630,7 +1633,8 @@ private fun RowCard(
     onLongClick: () -> Unit,
     modifier: Modifier,
     open: Boolean,
-    openAtOnce: Boolean
+    openAtOnce: Boolean,
+    holdOpen: Boolean
 ) {
     val preview = item.heroPreview
     val backdrop = preview.backdrop ?: details?.backdrop ?: item.imageUrl
@@ -1710,6 +1714,7 @@ private fun RowCard(
             watched = item.metaPreview?.let(isWatched) == true,
             open = open,
             openAtOnce = openAtOnce,
+            holdOpen = holdOpen,
             dims = dims,
             onClick = onClick,
             onLongClick = onLongClick,

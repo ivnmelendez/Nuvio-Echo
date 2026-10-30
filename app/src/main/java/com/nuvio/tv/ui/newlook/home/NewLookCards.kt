@@ -323,6 +323,8 @@ internal fun PosterCard(
     open: Boolean,
     /** Opens off this card's own focus, in the same frame, instead of waiting for [open] from the screen. */
     openAtOnce: Boolean = false,
+    /** Home is going to another screen: losing focus to it must not close the card on its way out. */
+    holdOpen: Boolean = false,
     dims: NewLookDimens,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -340,12 +342,13 @@ internal fun PosterCard(
     // delay it follows the card's own focus: the screen's state reaches the card a frame or two later, and a poster
     // pinned to the row's start showed vertical for that long before widening. No animation sits in between either.
     var focusedHere by remember { mutableStateOf(false) }
+    val latestHoldOpen by androidx.compose.runtime.rememberUpdatedState(holdOpen)
     val isOpen = if (openAtOnce) focusedHere else open
     // As stock Nuvio does: the poster goes the moment the card starts opening, so it's never seen cropped and blown
     // up to the wide shape; the card is black until the backdrop has loaded and faded in.
     val showOpen = isOpen
     NewLookCard(
-        null, dims.posterHeight, onClick, onLongClick, { focusedHere = it; onFocusChanged(it) },
+        null, dims.posterHeight, onClick, onLongClick, { if (it || !latestHoldOpen) focusedHere = it; onFocusChanged(it) },
         // Width, content and focus ring all follow the same state in the same composition, so the frame never shows
         // narrow around a card that has already opened.
         modifier.width(if (isOpen) dims.posterOpenWidth else dims.posterWidth),
