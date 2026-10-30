@@ -130,6 +130,12 @@ class HomeViewModel @Inject constructor(
         if (tab == null || tab == com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_HOME) newLookMemory
         else tabMemories.getOrPut(tab) { com.nuvio.tv.ui.newlook.home.NewLookHomeMemory() }
 
+    /** Switching tabs from the menu: Home, Movies and Series each open from the top again. */
+    fun resetTabPlaces() {
+        newLookMemory.resetPlace()
+        tabMemories.values.forEach { it.resetPlace() }
+    }
+
     internal val _modernHomePresentation = MutableStateFlow(ModernHomePresentationState())
     val modernHomePresentation: StateFlow<ModernHomePresentationState> = _modernHomePresentation.asStateFlow()
 

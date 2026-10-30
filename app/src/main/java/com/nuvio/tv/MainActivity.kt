@@ -1310,6 +1310,12 @@ private fun navigateToDrawerRoute(
         }
         return
     }
+    // Changing tab from the menu starts the tabs from the top; coming back from a title doesn't come through here.
+    runCatching {
+        val homeEntry = navController.getBackStackEntry(Screen.Home.route)
+        androidx.lifecycle.ViewModelProvider(homeEntry)[com.nuvio.tv.ui.screens.home.HomeViewModel::class.java]
+            .resetTabPlaces()
+    }
     try {
         navController.navigate(targetRoute) {
             popUpTo(navController.graph.startDestinationId) {

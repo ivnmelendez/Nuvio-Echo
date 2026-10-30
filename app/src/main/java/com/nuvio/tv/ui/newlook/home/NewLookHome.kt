@@ -158,6 +158,17 @@ class NewLookHomeMemory {
     internal var scrollOffset = 0
     /** Load more asked per row, at the row's size then, so each size asks once. */
     internal val loadMoreRequested = HashMap<String, Int>()
+
+    /** Forgets where the person was (focus, columns, scroll): the page opens from the top. */
+    internal fun resetPlace() {
+        area = HomeArea.HERO
+        rowKey = null
+        cols.clear()
+        heroButton = 0
+        slide = 0
+        scrollIndex = 0
+        scrollOffset = 0
+    }
 }
 
 /** Coming back to a tab, its remote rows are fetched again when the last fetch is older than this. */
@@ -739,6 +750,12 @@ internal fun NewLookHomeContent(
 
     // ---- Page scrolling ----
     val listState = rememberLazyListState(memory.scrollIndex, memory.scrollOffset)
+    // Opening from the top (a tab picked from the menu): the page's saved scroll comes back with the tab's saved UI
+    // state, so it is put back at the top before anything is drawn from it.
+    val startedFromTop = remember {
+        memory.area == HomeArea.HERO && memory.rowKey == null && memory.scrollIndex == 0 && memory.scrollOffset == 0
+    }
+    LaunchedEffect(Unit) { if (startedFromTop) listState.scrollToItem(0) }
     val barGonePx = with(density) { 100.dp.roundToPx() }
     // With the menu showing, the scaffold pins its own bar once this is true; the hero's one steps aside.
     val barPinned by remember(chrome) { derivedStateOf { chrome?.pastHero == true && !hideMenu } }
