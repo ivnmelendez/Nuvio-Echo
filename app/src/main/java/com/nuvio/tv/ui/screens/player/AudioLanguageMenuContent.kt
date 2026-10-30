@@ -201,11 +201,8 @@ private fun AudioLanguageRow(
                     contentDescription = null,
                     tint = NuvioTheme.colors.OnSecondary
                 )
-                option.trackIndex != null -> Text(
-                    text = stringResource(R.string.audio_menu_in_file),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = secondary
-                )
+                // Every row is a track of the playing file: nothing to add beside it.
+                option.trackIndex != null -> Unit
                 else -> Text(
                     text = pluralStringResource(R.plurals.quality_source_count, option.sourceCount, option.sourceCount),
                     style = MaterialTheme.typography.bodySmall,

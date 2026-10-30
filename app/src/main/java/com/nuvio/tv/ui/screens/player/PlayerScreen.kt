@@ -3348,7 +3348,7 @@ private fun PlayerClockOverlay(
 ) {
     var nowMs by remember { mutableStateOf(System.currentTimeMillis()) }
     val context = LocalContext.current
-    val timeFormatter = remember(context) { DateFormat.getTimeFormat(context) }
+    val timeFormatter = remember(context) { java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault()) } // always 12 hours
 
     LaunchedEffect(Unit) {
         while (true) {

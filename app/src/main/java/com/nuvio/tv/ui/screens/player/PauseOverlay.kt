@@ -234,7 +234,7 @@ private fun PauseProgress(positionMs: Long, durationMs: Long) {
 private fun PauseOverlayClock(modifier: Modifier = Modifier) {
     var nowMillis by remember { mutableStateOf(System.currentTimeMillis()) }
     val context = LocalContext.current
-    val formatter = remember(context) { DateFormat.getTimeFormat(context) }
+    val formatter = remember(context) { java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault()) } // always 12 hours
 
     LaunchedEffect(Unit) {
         while (true) {
