@@ -90,7 +90,8 @@ internal data class NewLookRow(
     fun metaHeight(d: NewLookDimens): Dp = when (kind) {
         // Grand cards carry their details inside, as the hero does.
         RowKind.WIDE, RowKind.GRAND -> Dp(0f)
-        RowKind.POSTER -> if (collection) d.posterMeta else d.posterMeta + 48.dp
+        // Details line and three lines of synopsis: the same 84 dp a highlighted row takes.
+        RowKind.POSTER -> if (collection) d.posterMeta else d.posterMeta + 60.dp
         RowKind.COLLECTION -> d.posterMeta
         RowKind.HIGHLIGHT -> if (collection) d.posterMeta else d.highlightMeta
     }

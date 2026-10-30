@@ -1845,7 +1845,7 @@ private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookD
                     color = Color(0xFFB8B8B8),
                     fontSize = 13.5.sp,
                     lineHeight = 18.sp,
-                    maxLines = if (row.kind == RowKind.POSTER) 2 else 3,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.width(if (row.kind == RowKind.POSTER) dims.posterOpenWidth else dims.highlightWidth)
                 )
