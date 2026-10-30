@@ -708,16 +708,10 @@ internal fun NewLookHomeContent(
         val savedRow = memory.rowKey?.let { key -> rows.indexOfFirst { it.key == key } } ?: -1
         if (memory.area == HomeArea.ROWS && savedRow >= 0) {
             focusRow(savedRow)
-            // The row can be built but not yet focusable (the page still scrolling to the last rows, the cards not
-            // attached), and focus given up on then fell to the menu's search. Keep asking for a couple of seconds
-            // until a card has focus.
+            // Safety net: if the row never takes focus (focus fell to the menu), never leave the person there.
             val savedKey = rows[savedRow].key
             scope.launch {
-                repeat(120) {
-                    withFrameNanos { }
-                    if (focusedCard != null) return@launch
-                    tryFocus(rowRequester(savedKey))
-                }
+                delay(2_000)
                 // Still nothing focused (focus fell to the menu): never leave the person there, go to the first row.
                 if (focusedCard == null && !heroHasFocus) {
                     android.util.Log.d("HomeRestore", "saved row $savedKey could not take focus; falling back to the first row")
