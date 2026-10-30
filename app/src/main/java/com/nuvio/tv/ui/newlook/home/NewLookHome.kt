@@ -514,9 +514,10 @@ internal fun NewLookHomeContent(
     // movies and shows, and a few titles from each catalog row), so the carousel isn't always this week's trending.
     val featuredSource = remember(uiState.heroItems, uiState.heroSectionEnabled, builtIns, rows, remote) {
         val base = if (remoteTab != null && !remote.isNullOrEmpty()) {
-            // Published rows only: a few titles from each.
-            rows.filter { it.kind != RowKind.WIDE }
-                .flatMap { row -> row.items.take(FEATURED_FROM_ROW).mapNotNull { it.metaPreview } }
+            // Published rows: just the title in first place of the tab's first row (Trending on Home, the Top 10 on
+            // Movies and Series), so the carousel doesn't keep changing under the person.
+            val first = rows.firstOrNull { it.kind != RowKind.WIDE && !it.isPlaceholder }
+            listOfNotNull(first?.items?.firstNotNullOfOrNull { item -> item.metaPreview?.takeIf { !it.backdropUrl.isNullOrBlank() } })
         } else if (uiState.heroSectionEnabled && uiState.heroItems.size >= 3) {
             uiState.heroItems
         } else {

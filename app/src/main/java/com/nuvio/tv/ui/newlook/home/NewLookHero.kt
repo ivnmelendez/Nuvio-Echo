@@ -327,7 +327,7 @@ internal fun HeroWindow(
                     )
                 }
             }
-            CarouselDots(
+            if (slides.size > 1) CarouselDots(
                 count = slides.size,
                 current = index,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(end = if (edgeToEdge) 40.dp else 16.dp, bottom = textBottom)
