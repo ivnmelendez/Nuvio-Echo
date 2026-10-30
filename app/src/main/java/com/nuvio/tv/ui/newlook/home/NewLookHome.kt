@@ -706,8 +706,20 @@ internal fun NewLookHomeContent(
         if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
         initialFocusDone = true
         val savedRow = memory.rowKey?.let { key -> rows.indexOfFirst { it.key == key } } ?: -1
-        if (memory.area == HomeArea.ROWS && savedRow >= 0) focusRow(savedRow)
-        else if (slides.isNotEmpty()) { restoringRow = false; focusHero(memory.heroButton) }
+        if (memory.area == HomeArea.ROWS && savedRow >= 0) {
+            focusRow(savedRow)
+            // The row can be built but not yet focusable (the page still scrolling to the last rows, the cards not
+            // attached), and focus given up on then fell to the menu's search. Keep asking for a couple of seconds
+            // until a card has focus.
+            val savedKey = rows[savedRow].key
+            scope.launch {
+                repeat(120) {
+                    withFrameNanos { }
+                    if (focusedCard != null) return@launch
+                    tryFocus(rowRequester(savedKey))
+                }
+            }
+        } else if (slides.isNotEmpty()) { restoringRow = false; focusHero(memory.heroButton) }
         else { restoringRow = false; focusRow(0) }
     }
 
