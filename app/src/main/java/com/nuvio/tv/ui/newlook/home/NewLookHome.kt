@@ -718,6 +718,12 @@ internal fun NewLookHomeContent(
                     if (focusedCard != null) return@launch
                     tryFocus(rowRequester(savedKey))
                 }
+                // Still nothing focused (focus fell to the menu): never leave the person there, go to the first row.
+                if (focusedCard == null && !heroHasFocus) {
+                    android.util.Log.d("HomeRestore", "saved row $savedKey could not take focus; falling back to the first row")
+                    restoringRow = false
+                    focusRow(0)
+                }
             }
         } else if (slides.isNotEmpty()) { restoringRow = false; focusHero(memory.heroButton) }
         else { restoringRow = false; focusRow(0) }
