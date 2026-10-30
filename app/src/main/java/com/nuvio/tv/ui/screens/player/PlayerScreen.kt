@@ -1832,9 +1832,8 @@ private fun PlayerScreenContent(
             isLoadingSources = uiState.isLoadingSourceStreams,
             onLanguageSelected = { viewModel.onEvent(PlayerEvent.OnAudioMenuLanguageSelected(it)) },
             onLanguageSourcesRequested = { viewModel.onEvent(PlayerEvent.OnAudioMenuSourcesRequested(it)) },
-            sectionTabs = audioQualityTabs.let { tabs ->
-                { tabs(AudioQualitySection.AUDIO) }
-            }
+            // No Quality tab: the panel is the audio selection only.
+            sectionTabs = null
         )
 
         // Quality menu (Beta speed-ups)
@@ -2593,8 +2592,9 @@ private fun PlayerControlsOverlay(
                             PlayerButton.AUDIO -> hasAudioControl || showQualityButton
                             PlayerButton.QUALITY -> false
                             PlayerButton.EPISODES -> hasEpisodeContext
-                            PlayerButton.REPORT_ISSUE -> uiState.playbackIssueReportsEnabled
-                            else -> true
+                            // The bar keeps Play, Subtitles and Audio (and the episode buttons on a series); sources,
+                            // speed, aspect, engine, external player, stream info and report are left out.
+                            else -> false
                         }
                     }
                     val (rowButtons, tuckedButtons) = availableButtons.partition { it in PlayerButton.newLookMainRow }

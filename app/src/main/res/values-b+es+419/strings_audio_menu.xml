@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_menu_in_file">En este archivo</string>
+    <string name="audio_menu_hint">Mantén OK en un idioma para elegir su fuente</string>
+    <string name="audio_menu_loading">Buscando otras fuentes…</string>
+    <string name="audio_menu_no_sources">Sin fuentes</string>
+    <string name="audio_menu_original_named">Original · %1$s</string>
+    <string name="audio_menu_unknown">Desconocido</string>
+</resources>

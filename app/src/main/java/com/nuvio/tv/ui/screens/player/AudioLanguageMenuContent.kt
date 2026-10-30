@@ -82,14 +82,6 @@ internal fun AudioLanguageList(
     onLanguageSelected: (AudioMenuOption) -> Unit,
     onSourcesRequested: (AudioMenuOption) -> Unit
 ) {
-    Text(
-        text = stringResource(
-            if (isLoadingSources) R.string.audio_menu_loading else R.string.audio_menu_hint
-        ),
-        style = MaterialTheme.typography.bodySmall,
-        color = NuvioTheme.colors.TextTertiary,
-        modifier = Modifier.padding(bottom = NuvioTheme.spacing.xs)
-    )
     if (options.isEmpty()) {
         Text(
             text = stringResource(R.string.audio_lang_default),

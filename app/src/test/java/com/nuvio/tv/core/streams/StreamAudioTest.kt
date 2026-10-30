@@ -143,7 +143,7 @@ class StreamAudioTest {
             tracks = tracks,
             selectedTrackIndex = 0,
             original = JAPANESE,
-            shownKeys = AudioLanguage.defaultMenuKeys,
+            shownKeys = legacyMenuKeys,
             showUnknown = true
         )
         // Original (Japanese, playing) first, English in this file, Korean from Comet; Italian hidden.
@@ -154,11 +154,11 @@ class StreamAudioTest {
         assertEquals(1, options[2].sourceCount)
 
         val noUnknown = AudioLanguageMenu.buildOptions(
-            streams, { it === current }, emptyList(), -1, null, AudioLanguage.defaultMenuKeys, showUnknown = false
+            streams, { it === current }, emptyList(), -1, null, legacyMenuKeys, showUnknown = false
         )
         assertTrue(noUnknown.none { it.language == null })
         val withUnknown = AudioLanguageMenu.buildOptions(
-            streams, { it === current }, emptyList(), -1, null, AudioLanguage.defaultMenuKeys, showUnknown = true
+            streams, { it === current }, emptyList(), -1, null, legacyMenuKeys, showUnknown = true
         )
         assertTrue(withUnknown.last().language == null && withUnknown.last().sourceCount > 0)
     }
@@ -291,3 +291,27 @@ class StreamAudioTest {
         assertEquals(setOf(1 to 2), StreamEpisodeNames.named(stream("A", name = "Show Season 1 Episode 2")))
     }
 }
+
+@org.junit.Test
+fun menuAlwaysListsSpanishTracksOfTheFile() {
+    val tracks = listOf(
+        AudioTrackRef(0, "eng", "English", "E-AC-3 · 6 ch"),
+        AudioTrackRef(1, "spa", "Español", "E-AC-3 · 6 ch"),
+        AudioTrackRef(2, "es-419", "Español Latino", "AC-3 · 6 ch")
+    )
+    // Even if Beta speed-ups was set to English only, Spanish stays in the menu.
+    val options = AudioLanguageMenu.buildOptions(
+        streams = emptyList(),
+        isCurrentStream = { false },
+        tracks = tracks,
+        selectedTrackIndex = 0,
+        original = AudioLanguage.ENGLISH,
+        shownKeys = setOf("en") + AudioLanguage.alwaysShownKeys,
+        showUnknown = false
+    )
+    assertTrue(options.any { it.language == AudioLanguage.SPANISH && it.trackIndex == 1 })
+    assertTrue(options.any { it.language == AudioLanguage.LATIN_SPANISH && it.trackIndex == 2 })
+}
+
+/** The keys the menu listed before Spanish was added to the defaults: these tests are about Korean and Japanese. */
+private val legacyMenuKeys: Set<String> = setOf(AudioLanguage.ORIGINAL_KEY, "en", "ja", "ko")

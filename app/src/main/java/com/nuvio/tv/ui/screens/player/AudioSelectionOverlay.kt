@@ -210,11 +210,7 @@ internal fun AudioSelectionOverlay(
                             isLoadingSources = isLoadingSources,
                             listState = listState,
                             initialFocusRequester = tracksFocusRequester,
-                            rightFocusRequester = when {
-                                canDecreaseDelay -> delayMinusFocusRequester
-                                canIncreaseDelay -> delayPlusFocusRequester
-                                else -> persistFocusRequester
-                            },
+                            rightFocusRequester = FocusRequester.Default,
                             onTrackSelected = onTrackSelected,
                             onLanguageSelected = onLanguageSelected,
                             onSourcesRequested = onLanguageSourcesRequested
@@ -224,42 +220,9 @@ internal fun AudioSelectionOverlay(
                         selectedIndex = selectedIndex,
                         listState = listState,
                         initialFocusRequester = tracksFocusRequester,
-                        rightFocusRequester = when {
-                            canDecreaseDelay -> delayMinusFocusRequester
-                            canIncreaseDelay -> delayPlusFocusRequester
-                            canDecreaseAmp -> ampMinusFocusRequester
-                            canIncreaseAmp -> ampPlusFocusRequester
-                            canDecreaseCenterMix -> centerMinusFocusRequester
-                            canIncreaseCenterMix -> centerPlusFocusRequester
-                            else -> persistFocusRequester
-                        },
+                        rightFocusRequester = FocusRequester.Default,
                         onTrackFocused = { lastFocusedAudioIndex = it },
                         onTrackSelected = onTrackSelected
-                    )
-                }
-                Column(modifier = Modifier.width(268.dp)) {
-                    AudioControlsContent(
-                        audioDelayMs = audioDelayMs,
-                        audioAmplificationDb = audioAmplificationDb,
-                        isAmplificationAvailable = isAmplificationAvailable,
-                        centerMixLevelDb = centerMixLevelDb,
-                        isCenterMixAvailable = isCenterMixAvailable,
-                        persistAmplification = persistAmplification,
-                        delayMinusFocusRequester = delayMinusFocusRequester,
-                        delayPlusFocusRequester = delayPlusFocusRequester,
-                        ampMinusFocusRequester = ampMinusFocusRequester,
-                        ampPlusFocusRequester = ampPlusFocusRequester,
-                        centerMinusFocusRequester = centerMinusFocusRequester,
-                        centerPlusFocusRequester = centerPlusFocusRequester,
-                        persistFocusRequester = persistFocusRequester,
-                        leftFocusRequester = tracksFocusRequester,
-                        onAudioDelayChange = onAudioDelayChange,
-                        onAmplificationChange = { nextDb, focusTarget ->
-                            pendingControlFocusTarget = focusTarget
-                            onAmplificationChange(nextDb)
-                        },
-                        onCenterMixLevelChange = onCenterMixLevelChange,
-                        onPersistAmplificationChange = onPersistAmplificationChange
                     )
                 }
             }

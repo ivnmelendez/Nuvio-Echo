@@ -141,7 +141,7 @@ internal fun PlayerRuntimeController.startAudioLanguageMenu() {
                         tracks = inputs.tracks.map { it.toAudioTrackRef() },
                         selectedTrackIndex = inputs.selectedIndex,
                         original = original,
-                        shownKeys = settings.audioMenuLanguages,
+                        shownKeys = settings.audioMenuLanguages + AudioLanguage.alwaysShownKeys,
                         showUnknown = settings.showUnknownAudio,
                         titles = titles
                     )

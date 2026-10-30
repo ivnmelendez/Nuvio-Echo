@@ -250,7 +250,7 @@ internal fun SubtitleSelectionOverlay(
     val optionItemRequesters = rememberFocusRequesterMap(subtitleOptions.map { it.id })
     val styleRequesters = rememberStyleFocusRequesters()
     val optionRailVisible = selectedLanguageKey != SubtitleOffLanguageKey
-    val styleRailVisible = optionRailVisible && (revealStyleRail || selectedOptionId != null)
+    val styleRailVisible = StyleRailShown && optionRailVisible && (revealStyleRail || selectedOptionId != null)
     val languageTargetKey: String? = remember(languageItems, lastFocusedLanguageKey, selectedLanguageKey) {
         lastFocusedLanguageKey?.takeIf { key -> languageItems.any { it.key == key } }
             ?: selectedLanguageKey.takeIf { key -> languageItems.any { it.key == key } }
@@ -392,6 +392,7 @@ internal fun SubtitleSelectionOverlay(
     }
 
     fun moveFocusToStyleRail() {
+        if (!StyleRailShown) return
         if (isStyleDisabledByLibass) return
         styleEntryOptionId = optionFocusMemory[selectedLanguageKey]?.takeIf { id ->
             subtitleOptions.any { it.id == id }
@@ -613,6 +614,9 @@ internal fun SubtitleSelectionOverlay(
         }
     }
 }
+
+/** The subtitle style rail (delay, size, colour...) is left out of the panel: it only lists the languages and tracks. */
+private const val StyleRailShown = false
 
 @Composable
 private fun RailFadeIn(

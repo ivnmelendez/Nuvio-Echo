@@ -48,7 +48,10 @@ enum class AudioLanguage(val code: String, val englishName: String) {
         const val ORIGINAL_KEY = "original"
 
         /** Shown in the audio menu until changed in Beta speed-ups. */
-        val defaultMenuKeys: Set<String> = setOf(ORIGINAL_KEY, ENGLISH.code, JAPANESE.code, KOREAN.code)
+        val defaultMenuKeys: Set<String> = setOf(ORIGINAL_KEY, SPANISH.code, LATIN_SPANISH.code, ENGLISH.code)
+
+        /** Always listed, whatever Beta speed-ups says: the languages this app's titles are mostly offered in. */
+        val alwaysShownKeys: Set<String> = setOf(SPANISH.code, LATIN_SPANISH.code)
 
         private val byCode: Map<String, AudioLanguage> = buildMap {
             AudioLanguage.entries.forEach { put(it.code, it) }
