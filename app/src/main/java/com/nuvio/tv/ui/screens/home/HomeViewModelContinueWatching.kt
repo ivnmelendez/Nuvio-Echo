@@ -1202,9 +1202,16 @@ private fun deduplicateInProgress(items: List<WatchProgress>): List<WatchProgres
     return (nonSeries + latestPerShow).sortedByDescending { it.lastWatched }
 }
 
+/** Watched at least this much (0.15 = 15%) to appear in Continue Watching. */
+private const val CONTINUE_WATCHING_MIN_PROGRESS = 0.15f
+
 private fun shouldTreatAsInProgressForContinueWatching(progress: WatchProgress): Boolean {
     if (progress.isCompleted()) return false
-    if (progress.isInProgress() && progress.progressPercentage >= 0.02f) return true
+    // A title shows in Continue Watching only once it has been watched this far (15%), not for a few seconds. With no duration to
+    // measure by, anything started still counts (below).
+    if (progress.duration > 0L || progress.progressPercent != null) {
+        return progress.progressPercentage >= CONTINUE_WATCHING_MIN_PROGRESS
+    }
 
     val hasStartedPlayback = progress.position > 0L ||
         progress.progressPercent?.let { it > 0f } == true

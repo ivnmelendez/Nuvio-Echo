@@ -526,8 +526,8 @@ object AudioLanguageMenu {
             val language = StreamAudioParser.trackLanguage(track.language, track.name)
                 ?: if (tracks.size == 1) currentAudio?.takeIf { !it.unknown }?.languages?.singleOrNull() else null
             val selected = track.index == selectedTrackIndex
-            val visible = selected || if (language == null) showUnknown else language in shownLanguages
-            if (!visible) return@forEach
+            // Every track of the playing file is listed, whatever the chosen languages: the choice only narrows the
+            // languages offered from other sources.
             inFile += language
             rows += AudioMenuOption(
                 language = language,
