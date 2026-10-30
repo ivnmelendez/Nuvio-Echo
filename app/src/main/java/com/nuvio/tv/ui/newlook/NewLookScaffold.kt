@@ -205,6 +205,7 @@ internal fun NewLookScaffold(
     }
 
     fun click(route: String) {
+        android.util.Log.d("MenuNav", "click $route (current $currentRoute)")
         onNavigate(route)
         navigateToRoute(route)
         overlayBarShown = false

@@ -1296,6 +1296,7 @@ private fun navigateToDrawerRoute(
     currentRoute: String?,
     targetRoute: String
 ) {
+    Log.d("MenuNav", "pick $targetRoute while on $currentRoute (back stack top: ${navController.currentBackStackEntry?.destination?.route})")
     if (currentRoute == targetRoute) {
         if (targetRoute == Screen.Home.route) {
             // Scroll Home to top by clearing saved focus/scroll state on the ViewModel.
