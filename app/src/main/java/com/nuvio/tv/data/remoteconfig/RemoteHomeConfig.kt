@@ -27,7 +27,16 @@ data class RemoteRow(
     /** "top10" turns the row into the Netflix numbered Top 10 template. */
     val style: String? = null,
     /** Show a different random pick of the stored pool each time the app opens. */
-    val shuffle: Boolean = false
+    val shuffle: Boolean = false,
+    /** A banner drawn behind the row: a path in the config's repository (e.g. "banners/dia-de-muertos.webp"). */
+    val banner: String? = null,
+    /** The same banner for 4K screens; [banner] is used when this is missing. */
+    val banner4k: String? = null,
+    /** The banner row shows from this day (yyyy-MM-dd) until the other, both included; either can be missing. */
+    val from: String? = null,
+    val until: String? = null,
+    /** With a banner the row's own title is left out by default, as the banner carries it. */
+    val hideTitle: Boolean = true
 ) {
     val isTop10: Boolean get() = style.equals(STYLE_TOP10, ignoreCase = true)
 
@@ -105,6 +114,13 @@ class RemoteHomeConfigRepository @Inject constructor(
 
     private fun parse(text: String): RemoteHomeConfig? = runCatching {
         val tabs = JSONObject(text).getJSONObject("tabs")
+        fun RemoteRow.withBanner(o: JSONObject) = copy(
+            banner = o.optString("banner").ifBlank { null },
+            banner4k = o.optString("banner4k").ifBlank { null },
+            from = o.optString("from").ifBlank { null },
+            until = o.optString("until").ifBlank { null },
+            hideTitle = o.optBoolean("hideTitle", true)
+        )
         fun rows(name: String): List<RemoteRow> {
             val array = tabs.optJSONArray(name) ?: return emptyList()
             return buildList {
@@ -123,7 +139,7 @@ class RemoteHomeConfigRepository @Inject constructor(
                                 catalogId = catalogId,
                                 type = o.optString("type").ifBlank { "movie" },
                                 style = o.optString("style").ifBlank { null }
-                            )
+                            ).withBanner(o)
                         )
                     } else {
                         val list = o.optString("list").trim()
@@ -138,7 +154,7 @@ class RemoteHomeConfigRepository @Inject constructor(
                                 file = file,
                                 style = o.optString("style").ifBlank { null },
                                 shuffle = o.optBoolean("shuffle", false)
-                            )
+                            ).withBanner(o)
                         )
                     }
                 }

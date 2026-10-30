@@ -1527,10 +1527,21 @@ private fun NewLookRowView(
     }
 
     Box(modifier = Modifier.fillMaxWidth().height(row.height(dims))) {
+        // A seasonal banner behind the whole row, under a dark edge so the cards and their details stay readable.
+        row.bannerUrl?.let { banner ->
+            Box(modifier = Modifier.fillMaxWidth().height(row.height(dims) - dims.rowSpace)) {
+                Artwork(banner, Modifier.fillMaxSize())
+                Box(
+                    modifier = Modifier.fillMaxSize().background(
+                        Brush.verticalGradient(0f to Color.Black.copy(alpha = 0.35f), 1f to Color.Black.copy(alpha = 0.55f))
+                    )
+                )
+            }
+        }
         // The row with focus leads; the others' titles step back a little. Faded as a layer, read while drawing, so
         // moving between rows doesn't recompose both titles for every frame of the fade.
         val titleAlpha = animateFloatAsState(if (rowActive) 1f else 0.72f, tween(200), label = "rowTitle")
-        Text(
+        if (!row.hideTitle) Text(
             text = row.title,
             color = Color.White,
             fontSize = 17.sp,

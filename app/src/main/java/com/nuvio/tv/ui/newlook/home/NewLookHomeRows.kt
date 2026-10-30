@@ -52,7 +52,11 @@ internal data class NewLookRow(
     val builtIn: BuiltInRow? = null,
     val folderShape: PosterShape = PosterShape.SQUARE,
     /** Set on a Smart Highlight: holding a title offers to hide or block it. */
-    val smart: SmartRowInfo? = null
+    val smart: SmartRowInfo? = null,
+    /** A picture drawn behind the whole row (a seasonal banner), or null. */
+    val bannerUrl: String? = null,
+    /** The banner carries the row's title, so the text title is left out. */
+    val hideTitle: Boolean = false
 ) {
     val isPlaceholder: Boolean
         get() = source?.isLoading == true && onlyPlaceholders
@@ -364,7 +368,9 @@ internal fun buildRemoteNewLookRows(
     val wide = if (withContinueWatching) {
         presentation.filter { it.isWide }.map { NewLookRow(it.key, it.title, RowKind.WIDE, it.items.list, source = it) }
     } else emptyList()
+    val today = java.time.LocalDate.now()
     val rows = remote.mapIndexedNotNull { index, entry ->
+        if (!entry.row.isShownOn(today)) return@mapIndexedNotNull null
         val top10 = entry.row.isTop10
         val items = (if (top10) entry.items.take(TOP_TEN) else entry.items).withCustomPosterUrls(posterPattern)
         if (items.isEmpty()) return@mapIndexedNotNull null
@@ -375,10 +381,28 @@ internal fun buildRemoteNewLookRows(
             title = entry.row.title,
             kind = if (top10) RowKind.HIGHLIGHT else RowKind.POSTER,
             items = items.mapIndexed { i, item -> builtInItem(key, item, i, titles) },
-            ranked = top10
+            ranked = top10,
+            bannerUrl = entry.row.bannerUrl(),
+            hideTitle = entry.row.hideTitle && entry.row.bannerUrl() != null
         )
     }
     return wide + rows
+}
+
+/** Whether a row with a `from` / `until` window shows on [day]; a missing or unreadable date leaves that end open. */
+private fun com.nuvio.tv.data.remoteconfig.RemoteRow.isShownOn(day: java.time.LocalDate): Boolean {
+    fun parse(text: String?) = text?.let { runCatching { java.time.LocalDate.parse(it.trim()) }.getOrNull() }
+    val start = parse(from)
+    val end = parse(until)
+    return (start == null || !day.isBefore(start)) && (end == null || !day.isAfter(end))
+}
+
+/** The banner's address next to the config file; the 4K one on a 4K screen when the row has one. */
+private fun com.nuvio.tv.data.remoteconfig.RemoteRow.bannerUrl(): String? {
+    val wide = android.content.res.Resources.getSystem().displayMetrics.widthPixels >= 2560
+    val path = (if (wide) banner4k else null) ?: banner ?: return null
+    if (path.startsWith("http")) return path
+    return com.nuvio.tv.BuildConfig.REMOTE_CONFIG_URL.substringBeforeLast('/') + "/" + path.trimStart('/')
 }
 
 private const val TOP_TEN = 10
