@@ -570,6 +570,8 @@ internal fun NewLookHomeContent(
     var heroHasFocus by remember { mutableStateOf(false) }
     /** The card that holds focus (row key to item key), or null when none does. */
     var focusedCard by remember { mutableStateOf<Pair<String, String>?>(null) }
+    /** Set while a card's click takes the person to another screen, so the card isn't closed as focus leaves it. */
+    var leavingHome by remember { mutableStateOf(false) }
     var cwOptions by remember { mutableStateOf<ContinueWatchingItem?>(null) }
     /**
      * The poster that has opened out (row key to item key): focused for the expand delay. One state for the card's
@@ -1165,7 +1167,7 @@ internal fun NewLookHomeContent(
                                         source.prefetchContinueWatching(it.item)
                                     }
                                 }
-                            } else if (focusedCard == row.key to item.key) {
+                            } else if (!leavingHome && focusedCard == row.key to item.key) {
                                 focusedCard = null
                             }
                         },
@@ -1174,6 +1176,13 @@ internal fun NewLookHomeContent(
                         openAtOnce = settings.posterOpenDelayMs == 0,
                         onClick = { item ->
                             if (row.onlyPlaceholders) return@NewLookRowView
+                            // The card keeps its open frame while the screen leaves: losing focus as the next screen
+                            // comes in closed it to the vertical poster for a frame, breaking the transition.
+                            leavingHome = true
+                            scope.launch {
+                                delay(1_500)
+                                leavingHome = false
+                            }
                             when (val payload = item.payload) {
                                 is ModernPayload.ContinueWatching -> onContinueWatchingClick(payload.item)
                                 is ModernPayload.Catalog -> if (row.kind == RowKind.GRAND && grandButton == 0) {
