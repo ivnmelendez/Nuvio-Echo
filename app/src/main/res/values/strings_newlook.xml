@@ -87,7 +87,7 @@
     <string name="notif_sample_text">New episodes, reminders and updates show here</string>
 
     <!-- Player -->
-    <string name="player_btn_audio_quality">Audio &amp; Quality</string>
+    <string name="player_btn_audio_quality">Audio</string>
     <string name="player_btn_play">Play</string>
     <string name="player_btn_pause">Pause</string>
     <string name="player_btn_next_episode">Next episode</string>

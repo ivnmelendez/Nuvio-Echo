@@ -2439,31 +2439,6 @@ private fun PlayerControlsOverlay(
                         uiState.title
                     }
 
-                    // The title's logo, as on Home's hero and the details page; its name when it has none.
-                    var logoFailed by remember(uiState.logo) { mutableStateOf(false) }
-                    val logo = uiState.logo?.takeIf { it.isNotBlank() && !logoFailed }
-                    if (logo != null) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).data(logo).memoryCacheKey(logo).build(),
-                            contentDescription = displayName,
-                            contentScale = ContentScale.Fit,
-                            alignment = Alignment.BottomStart,
-                            onError = { logoFailed = true },
-                            modifier = Modifier
-                                .height(64.dp)
-                                .widthIn(max = 420.dp)
-                                .padding(bottom = NuvioTheme.spacing.xs)
-                        )
-                    } else {
-                        Text(
-                            text = displayName,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
                     if (uiState.currentSeason != null && uiState.currentEpisode != null) {
                         val seasonEpisodeCode = stringResource(
                             R.string.season_episode_format,
@@ -2486,37 +2461,6 @@ private fun PlayerControlsOverlay(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    }
-
-                    val hasYear = !uiState.releaseYear.isNullOrBlank()
-                    // The addon's stream name ("via ...") is never shown in the player.
-                    val showVia = false
-                    val yearText = uiState.releaseYear.orEmpty()
-
-                    if (hasYear || showVia) {
-                        Column {
-                            if (hasYear) {
-                                Text(
-                                    text = yearText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.68f)
-                                )
-                            }
-
-                            AnimatedVisibility(
-                                visible = showVia,
-                                enter = fadeIn(animationSpec = tween(durationMillis = 220)),
-                                exit = fadeOut(animationSpec = tween(durationMillis = NuvioMotion.tokens.durations.fast))
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.player_via, (uiState.currentStreamName ?: "").replace("\n", " · ")),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.68f),
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
                     }
                 }
             }
