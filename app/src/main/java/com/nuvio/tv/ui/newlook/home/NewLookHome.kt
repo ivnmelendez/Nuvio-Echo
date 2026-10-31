@@ -142,6 +142,15 @@ private val NoSmartHighlights = kotlinx.coroutines.flow.MutableStateFlow(
 
 internal enum class HomeArea { HERO, ROWS }
 
+/**
+ * The hero (the carousel window with Watch Now / More Info) at the top of Home. Off: Home opens on its first row under
+ * the menu bar, the way the page rests when scrolled past the hero. Everything the hero did stays in the code.
+ */
+private const val HERO_ENABLED = false
+
+/** What the first row sits under: the whole hero, or just the menu bar's room when there is no hero. */
+private val HomeHeaderHeight get() = if (HERO_ENABLED) NewLookLayout.RowsTop else 56.dp
+
 /** What Home keeps while a details page is open, so coming back lands where you were. Held by the ViewModel. */
 @Stable
 class NewLookHomeMemory {
@@ -512,8 +521,12 @@ internal fun NewLookHomeContent(
     // ---- Featured titles (hero carousel) ----
     // The hero catalogs picked in Layout when there are; otherwise a wide pool (this week's trending, today's top
     // movies and shows, and a few titles from each catalog row), so the carousel isn't always this week's trending.
-    val featuredSource = remember(uiState.heroItems, uiState.heroSectionEnabled, builtIns, rows, remote) {
-        val base = if (remoteTab != null && !remote.isNullOrEmpty()) {
+    val featuredSource = remember(uiState.heroItems, uiState.heroSectionEnabled, builtIns, rows, remote, remoteResolved) {
+        val base = if (!HERO_ENABLED || !remoteResolved) {
+            // The tab's published rows haven't been read yet (slow disk on a stick): no carousel from the wide pool, which
+            // would show other titles for a moment and then swap to the single one.
+            emptyList()
+        } else if (remoteTab != null && !remote.isNullOrEmpty()) {
             // Published rows: just the title in first place of the tab's first row (Trending on Home, the Top 10 on
             // Movies and Series), so the carousel doesn't keep changing under the person.
             val first = rows.firstOrNull { it.kind != RowKind.WIDE && !it.isPlaceholder }
@@ -633,16 +646,6 @@ internal fun NewLookHomeContent(
 
     fun tryFocus(requester: FocusRequester): Boolean = runCatching { requester.requestFocus() }.getOrDefault(false)
 
-    fun focusHero(button: Int = heroButton) {
-        area = HomeArea.HERO
-        scope.launch {
-            repeat(20) {
-                if (tryFocus(if (button == 1) moreFocus else watchFocus)) return@launch
-                withFrameNanos { }
-            }
-        }
-    }
-
     fun focusRow(index: Int, col: Int? = null) {
         val row = rows.getOrNull(index) ?: return
         if (col != null) cols[row.key] = col
@@ -658,6 +661,17 @@ internal fun NewLookHomeContent(
             repeat(40) {
                 withFrameNanos { }
                 if (tryFocus(rowRequester(row.key))) return@launch
+            }
+        }
+    }
+
+    fun focusHero(button: Int = heroButton) {
+        if (!HERO_ENABLED) { focusRow(0); return }
+        area = HomeArea.HERO
+        scope.launch {
+            repeat(20) {
+                if (tryFocus(if (button == 1) moreFocus else watchFocus)) return@launch
+                withFrameNanos { }
             }
         }
     }
@@ -767,10 +781,10 @@ internal fun NewLookHomeContent(
                 memory.scrollOffset = offset
                 // Past the hero the avatar is long gone: any distance beyond the screen will do.
                 // The hero's bar is out of sight once the page is this far up, even with the hero's tail still showing.
-                chrome?.reportPageScroll(if (index == 0 && offset < barGonePx) offset.toFloat() else 100_000f)
+                chrome?.reportPageScroll(if (HERO_ENABLED && index == 0 && offset < barGonePx) offset.toFloat() else 100_000f)
             }
     }
-    val headerHeightPx = with(density) { NewLookLayout.RowsTop.roundToPx() }
+    val headerHeightPx = with(density) { HomeHeaderHeight.roundToPx() }
     // The screen in pixels, so the focused row rests 10 dp above the bottom whatever the interface size.
     val screenHeightPx = (LocalConfiguration.current.screenHeightDp * context.resources.displayMetrics.density).toInt()
     val rowHeightsPx = remember(rows, dims, density) { rows.map { with(density) { it.height(dims).roundToPx() } } }
@@ -977,7 +991,8 @@ internal fun NewLookHomeContent(
     }
 
     // Back: to the start of the row, then up to the window; from the window Back opens the menu.
-    BackHandler(enabled = area == HomeArea.ROWS && focusedCard != null) {
+    // Without a hero, Back on a row's first card has nowhere to go on the page: it falls through to the menu.
+    BackHandler(enabled = area == HomeArea.ROWS && focusedCard != null && (HERO_ENABLED || (cols[focusedRowKey] ?: 0) > 0)) {
         val key = focusedRowKey ?: return@BackHandler
         val col = cols[key] ?: 0
         if (col > 0) {
@@ -1074,7 +1089,9 @@ internal fun NewLookHomeContent(
                             true
                         }
                         Key.DirectionUp -> {
-                            if (index > 0) focusRow(index - 1) else if (slides.isNotEmpty()) focusHero(heroButton)
+                            if (index > 0) focusRow(index - 1)
+                            else if (slides.isNotEmpty()) focusHero(heroButton)
+                            else if (menuOnTop) chrome?.focusTopBar()
                             true
                         }
                         Key.DirectionRight -> row != null && col >= row.items.lastIndex
@@ -1423,7 +1440,7 @@ private fun HeroBlock(
                 val placeable = measurable.measure(constraints)
                 layout(placeable.width, placeable.height + dropPx) { placeable.place(0, dropPx) }
             }
-            .height(NewLookLayout.RowsTop)
+            .height(HomeHeaderHeight)
     ) {
         if (slides.isNotEmpty()) {
             HeroWindow(

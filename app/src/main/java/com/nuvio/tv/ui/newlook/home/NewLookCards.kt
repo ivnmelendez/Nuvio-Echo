@@ -102,10 +102,13 @@ internal fun NewLookCard(
     depth: CardDepthSurface? = null,
     /** Whether quiet focus lifts the card (grows it a little) when it takes focus. */
     lift: Boolean = true,
+    /** The focus ring's thickness; the highlighted (wide) card draws a thicker, pure white one. */
+    ringWidth: Dp = 1.dp,
+    ringColor: Color? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(radius)
-    val ring = focusRingColor
+    val ring = ringColor ?: focusRingColor
     val quiet = com.nuvio.tv.ui.newlook.LocalQuietFocus.current
     // Whether the card's artwork is in (see [Artwork]; every card with depth draws its picture through it).
     val artwork = remember { mutableStateOf(false) }
@@ -123,8 +126,8 @@ internal fun NewLookCard(
         scale = CardDefaults.scale(focusedScale = if (quiet && lift) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
         border = CardDefaults.border(
             border = Border.None,
-            focusedBorder = Border(BorderStroke(1.dp, ring), shape = shape),
-            pressedBorder = Border(BorderStroke(1.dp, ring), shape = shape)
+            focusedBorder = Border(BorderStroke(ringWidth, ring), shape = shape),
+            pressedBorder = Border(BorderStroke(ringWidth, ring), shape = shape)
         ),
         glow = if (quiet) CardDefaults.glow(focusedGlow = QuietFocusShadow, pressedGlow = QuietFocusShadow) else CardDefaults.glow()
     ) {
@@ -419,7 +422,10 @@ internal fun HighlightCard(
     chipLabel: String? = null,
     overlay: @Composable BoxScope.() -> Unit = {}
 ) {
-    NewLookCard(dims.highlightWidth, dims.highlightHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.FEATURED, lift = false) {
+    NewLookCard(
+        dims.highlightWidth, dims.highlightHeight, onClick, onLongClick, onFocusChanged, modifier,
+        depth = CardDepthSurface.FEATURED, lift = false, ringWidth = 3.dp, ringColor = Color.White
+    ) {
         Artwork(backdrop, Modifier.fillMaxSize(), fallbackTitle = title)
         overlay()
         HeldTrailer(active = playing && trailerUrl != null, key = trailerUrl) { onFirstFrame ->
