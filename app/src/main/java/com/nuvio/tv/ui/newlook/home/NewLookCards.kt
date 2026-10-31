@@ -123,24 +123,30 @@ internal fun NewLookCard(
         // or two before its picture came in. Now the artwork just fades in where the card is.
         colors = CardDefaults.colors(containerColor = Color.Transparent, focusedContainerColor = Color.Transparent),
         // Quiet focus lifts the card a little and lays a soft shadow under it, with the white hairline.
-        scale = CardDefaults.scale(focusedScale = if (quiet && lift) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
+        scale = CardDefaults.scale(focusedScale = if (quiet && lift && !LIGHT_CARDS) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
         border = CardDefaults.border(
             border = Border.None,
             focusedBorder = Border(BorderStroke(ringWidth, ring), shape = shape),
             pressedBorder = Border(BorderStroke(ringWidth, ring), shape = shape)
         ),
-        glow = if (quiet) CardDefaults.glow(focusedGlow = QuietFocusShadow, pressedGlow = QuietFocusShadow) else CardDefaults.glow()
+        glow = if (quiet && !LIGHT_CARDS) CardDefaults.glow(focusedGlow = QuietFocusShadow, pressedGlow = QuietFocusShadow) else CardDefaults.glow()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             androidx.compose.runtime.CompositionLocalProvider(LocalArtworkShown provides artwork) { content() }
             // The depth's lit edge and sheen wait for the artwork: over a card still loading (a row sliding in new
             // cards) they drew a faint empty box for a frame or two.
-            if (depth != null && artwork.value) CardDepthOverlay(shape, depth)
+            if (!LIGHT_CARDS && depth != null && artwork.value) CardDepthOverlay(shape, depth)
         }
     }
 }
 
 /** How much a focused card grows with Quiet focus: enough to read as lifted, not enough to crowd its row. */
+/**
+ * Light cards for weak TV boxes: no shadow or zoom on focus, no fade-in on pictures, no depth overlay. The white
+ * ring alone shows the focus. False brings the old look back.
+ */
+private const val LIGHT_CARDS = true
+
 private const val QUIET_FOCUS_LIFT = 1.035f
 
 private val QuietFocusShadow = androidx.tv.material3.Glow(elevationColor = Color.Black.copy(alpha = 0.6f), elevation = 14.dp)
@@ -181,7 +187,7 @@ internal fun Artwork(
     val context = LocalContext.current
     // Built once per image, not on every recomposition of the card.
     val request = remember(url, fallbackUrl) {
-        ImageRequest.Builder(context).data(url).customPosterFallback(url, fallbackUrl).crossfade(200).build()
+        ImageRequest.Builder(context).data(url).customPosterFallback(url, fallbackUrl).crossfade(!LIGHT_CARDS).build()
     }
     // Tells the card when its picture is up (the card's depth waits for it). A card showing two pictures (a poster
     // under its backdrop) counts as in once the first is.
@@ -210,7 +216,7 @@ internal fun BoxScope.CardLogo(
     var failed by remember(logo) { mutableStateOf(false) }
     if (!logo.isNullOrBlank() && !failed) {
         val context = LocalContext.current
-        val request = remember(logo) { ImageRequest.Builder(context).data(logo).crossfade(200).build() }
+        val request = remember(logo) { ImageRequest.Builder(context).data(logo).crossfade(!LIGHT_CARDS).build() }
         AsyncImage(
             model = request,
             contentDescription = title,
