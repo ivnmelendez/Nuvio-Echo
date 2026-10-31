@@ -87,6 +87,7 @@ class BetaPerformanceSettingsViewModel @Inject constructor(
     fun setDetailsAmbientBackground(enabled: Boolean) = viewModelScope.launch { dataStore.setDetailsAmbientBackground(enabled) }
     fun setHeroEdgeToEdge(enabled: Boolean) = viewModelScope.launch { dataStore.setHeroEdgeToEdge(enabled) }
     fun setQuietFocus(enabled: Boolean) = viewModelScope.launch { dataStore.setQuietFocus(enabled) }
+    fun setLightMode(enabled: Boolean) = viewModelScope.launch { dataStore.setLightMode(enabled) }
     fun setTrailerQuality(height: Int) = viewModelScope.launch { dataStore.setTrailerQuality(height) }
     fun setTrailerVideoLayer(enabled: Boolean) = viewModelScope.launch { dataStore.setTrailerVideoLayer(enabled) }
     fun setEnrichment(level: Int) = viewModelScope.launch { dataStore.setEnrichment(level) }
@@ -210,6 +211,12 @@ internal fun LookAndFeelSettingsGroup(viewModel: BetaPerformanceSettingsViewMode
             subtitle = stringResource(R.string.quiet_focus_subtitle),
             checked = settings.quietFocus,
             onToggle = { viewModel.setQuietFocus(!settings.quietFocus) }
+        )
+        SettingsToggleRow(
+            title = stringResource(R.string.light_mode_title),
+            subtitle = stringResource(R.string.light_mode_subtitle),
+            checked = settings.lightMode,
+            onToggle = { viewModel.setLightMode(!settings.lightMode) }
         )
         SettingsToggleRow(
             title = stringResource(R.string.beta_poster_colour_mesh_title),

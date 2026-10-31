@@ -76,6 +76,8 @@ data class BetaPerformanceSettings(
     val heroEdgeToEdge: Boolean = false,
     /** New look: focus is a white edge with a slight lift and soft shadow, instead of a ring in the theme's colour. */
     val quietFocus: Boolean = true,
+    /** Light mode for weak TV boxes: shorter animations, and cards with no zoom, shadow or picture fade. Off brings the full look back. */
+    val lightMode: Boolean = true,
     /**
      * Trailer quality: [TRAILER_QUALITY_AUTO] fetches each trailer to match what it plays on (a card, a highlight, the
      * hero, full screen); otherwise the tallest picture to fetch, one of [TRAILER_QUALITIES].
@@ -228,6 +230,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
     private val detailsAmbientBackgroundKey = booleanPreferencesKey("details_ambient_background")
     private val heroEdgeToEdgeKey = booleanPreferencesKey("hero_edge_to_edge")
     private val quietFocusKey = booleanPreferencesKey("quiet_focus")
+    private val lightModeKey = booleanPreferencesKey("light_mode")
     private val trailerQualityKey = intPreferencesKey("trailer_quality")
     private val minimalPlayerKey = booleanPreferencesKey("minimal_player")
     private val playbackIntroKey = booleanPreferencesKey("playback_intro")
@@ -288,6 +291,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
             detailsAmbientBackground = prefs[detailsAmbientBackgroundKey] ?: defaults.detailsAmbientBackground,
             heroEdgeToEdge = prefs[heroEdgeToEdgeKey] ?: defaults.heroEdgeToEdge,
             quietFocus = prefs[quietFocusKey] ?: defaults.quietFocus,
+            lightMode = prefs[lightModeKey] ?: defaults.lightMode,
             trailerQuality = prefs[trailerQualityKey]?.takeIf { it in BetaPerformanceSettings.TRAILER_QUALITIES }
                 ?: defaults.trailerQuality,
             minimalPlayer = prefs[minimalPlayerKey] ?: defaults.minimalPlayer,
@@ -377,6 +381,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
     suspend fun setDetailsAmbientBackground(enabled: Boolean) = set(detailsAmbientBackgroundKey, enabled)
     suspend fun setHeroEdgeToEdge(enabled: Boolean) = set(heroEdgeToEdgeKey, enabled)
     suspend fun setQuietFocus(enabled: Boolean) = set(quietFocusKey, enabled)
+    suspend fun setLightMode(enabled: Boolean) = set(lightModeKey, enabled)
     suspend fun setTrailerQuality(height: Int) {
         if (height !in BetaPerformanceSettings.TRAILER_QUALITIES) return
         dataStore.edit { prefs -> prefs[trailerQualityKey] = height }

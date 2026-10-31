@@ -10,6 +10,9 @@ import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Immutable
 data class NuvioMotionDurations(
@@ -60,7 +63,23 @@ data class NuvioFocusTokens(
 )
 
 object NuvioMotion {
-    val tokens = NuvioMotionTokens(
+    /** Light mode: the durations are cut, so screens and rows settle sooner on a weak box. Read as state, so screens redraw when it flips. */
+    var lightMode by androidx.compose.runtime.mutableStateOf(true)
+
+    val tokens: NuvioMotionTokens get() = if (lightMode) lightTokens else fullTokens
+
+    private val lightTokens: NuvioMotionTokens by lazy {
+        val d = fullTokens.durations
+        fullTokens.copy(
+            durations = d.copy(
+                quick = 90, fast = 120, medium = 180, slow = 220, overlay = 200,
+                sidebarLabelIn = 90, sidebarLabelOut = 100, sidebarPanelIn = 180, sidebarPanelOut = 200,
+                sidebarBloomOut = 200, sidebarEnter = 200, sidebarExit = 100, hero = 220
+            )
+        )
+    }
+
+    private val fullTokens = NuvioMotionTokens(
         durations = NuvioMotionDurations(
             instant = 0,
             quick = 125,

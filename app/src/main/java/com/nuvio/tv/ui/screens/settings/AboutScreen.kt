@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -153,6 +154,16 @@ fun AboutSettingsContent(
                                     Modifier
                                 },
                                 onClick = onNavigateToLicensesAttributions
+                            )
+
+                            // Light mode lives here because About is the only settings page shown.
+                            val betaViewModel: BetaPerformanceSettingsViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+                            val betaSettings by betaViewModel.settings.collectAsStateWithLifecycle()
+                            SettingsToggleRow(
+                                title = stringResource(R.string.light_mode_title),
+                                subtitle = stringResource(R.string.light_mode_subtitle),
+                                checked = betaSettings.lightMode,
+                                onToggle = { betaViewModel.setLightMode(!betaSettings.lightMode) }
                             )
                         }
                     }

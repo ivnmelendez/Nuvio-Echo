@@ -181,6 +181,8 @@
     <string name="home_ambient_background_subtitle">Home takes on the colours of whatever the carousel is showing.</string>
     <string name="settings_label_starting_playback">Starting playback</string>
     <string name="ambient_details_page">Details pages too</string>
+    <string name="light_mode_title">Light mode</string>
+    <string name="light_mode_subtitle">Shorter animations and lighter cards, for weak TV boxes. Off brings the full look back.</string>
     <string name="quiet_focus_title">Quiet focus</string>
     <string name="quiet_focus_subtitle">A white edge, a slight lift and a soft shadow instead of a coloured ring.</string>
     <string name="hero_edge_to_edge_title">Edge-to-edge hero</string>

@@ -663,6 +663,7 @@ open class MainActivity : ComponentActivity() {
                     if (shouldShowProfileSelection) {
                         startupDestination = if (splashTriggered) StartupDestination.Loading else StartupDestination.ProfileSelection
                         val pickerBetaSettings by com.nuvio.tv.ui.screens.player.rememberBetaPerformanceSettings()
+                        androidx.compose.runtime.SideEffect { com.nuvio.tv.ui.theme.NuvioMotion.lightMode = pickerBetaSettings.lightMode }
                         androidx.compose.runtime.CompositionLocalProvider(
                             com.nuvio.tv.ui.newlook.LocalQuietFocus provides pickerBetaSettings.quietFocus
                         ) {
@@ -929,6 +930,7 @@ open class MainActivity : ComponentActivity() {
                     }
 
                     val betaSettings by com.nuvio.tv.ui.screens.player.rememberBetaPerformanceSettings()
+                    androidx.compose.runtime.SideEffect { com.nuvio.tv.ui.theme.NuvioMotion.lightMode = betaSettings.lightMode }
                     val rootRoutes = remember(discoverLocation) {
                         buildSet {
                             add(Screen.Home.route)
@@ -1090,6 +1092,7 @@ open class MainActivity : ComponentActivity() {
                               com.nuvio.tv.ui.screens.browse.LocalPosterColourMesh provides betaSettings.posterColourMesh,
                               com.nuvio.tv.ui.components.LocalTrailerVideoLayer provides betaSettings.trailerVideoLayer,
                               com.nuvio.tv.ui.newlook.LocalQuietFocus provides betaSettings.quietFocus,
+                              com.nuvio.tv.ui.newlook.LocalLightMode provides betaSettings.lightMode,
                               com.nuvio.tv.ui.newlook.LocalMenuGlass provides betaSettings.menuGlass,
                               com.nuvio.tv.ui.screens.detail.LocalDetailsAmbient provides
                                   (betaSettings.homeAmbientBackground && betaSettings.detailsAmbientBackground)

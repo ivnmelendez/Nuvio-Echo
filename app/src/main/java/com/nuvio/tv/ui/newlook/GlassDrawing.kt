@@ -27,6 +27,9 @@ internal val HairlineColor = Color(0xC7E8E8E8)
 /** Quiet focus (Appearance → Look & feel): a white edge, a slight lift and a soft shadow instead of a coloured ring. */
 val LocalQuietFocus = androidx.compose.runtime.staticCompositionLocalOf { false }
 
+/** Light mode (Appearance → Look & feel): cards without zoom, shadow, depth or picture fade. */
+val LocalLightMode = androidx.compose.runtime.staticCompositionLocalOf { true }
+
 /**
  * The new look's focus ring colour: the colour picked in Settings → Appearance. White, the default, keeps the
  * near-silver hairline, as Quiet focus does whatever the colour.

@@ -87,6 +87,8 @@
     <string name="notif_sample_text">Aquí aparecen nuevos episodios, recordatorios y actualizaciones</string>
 
     <!-- Reproductor -->
+    <string name="light_mode_title">Modo ligero</string>
+    <string name="light_mode_subtitle">Animaciones más cortas y tarjetas más ligeras, para cajas de TV lentas. Apagado, vuelve el aspecto completo.</string>
     <string name="player_btn_audio_quality">Audio</string>
     <string name="player_btn_play">Reproducir</string>
     <string name="player_btn_pause">Pausar</string>
