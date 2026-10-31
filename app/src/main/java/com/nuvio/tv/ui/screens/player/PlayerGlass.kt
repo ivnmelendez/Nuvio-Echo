@@ -125,19 +125,19 @@ internal fun PlayerGlassPillButton(
         shape = CardDefaults.shape(shape = PlayerPillShape),
         colors = CardDefaults.colors(
             containerColor = Color.Transparent,
-            focusedContainerColor = if (primary) Color.White else Color.Transparent
+            focusedContainerColor = Color.White
         ),
         border = CardDefaults.border(border = Border.None, focusedBorder = Border.None),
         scale = CardDefaults.scale(focusedScale = 1.04f),
         modifier = modifier
-            .playerGlass(PlayerPillShape, focused && !primary, ring)
+            .playerGlass(PlayerPillShape, false, ring)
             .onFocusChanged { focused = it.isFocused }
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.SemiBold,
-            color = if (focused && primary) Color.Black else Color.White,
+            color = if (focused) Color.Black else Color.White,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 26.dp, vertical = 13.dp)

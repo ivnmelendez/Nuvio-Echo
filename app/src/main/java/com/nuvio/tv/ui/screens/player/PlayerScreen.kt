@@ -2938,7 +2938,7 @@ private fun NamedControlButton(
     onFocused: (() -> Unit)?
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val content = Color.White.copy(alpha = if (enabled) 1f else 0.4f)
+    val content = if (isFocused) Color.Black else Color.White.copy(alpha = if (enabled) 1f else 0.4f)
     Row(
         modifier = Modifier
             .height(NuvioTheme.spacing.xxxl)
@@ -2963,7 +2963,7 @@ private fun NamedControlButton(
                 isFocused = it.isFocused
                 if (it.isFocused) onFocused?.invoke()
             }
-            .then(if (isFocused) Modifier.detailGlassLens(PlayerPillShape, lifted = false) else Modifier)
+            .then(if (isFocused) Modifier.clip(PlayerPillShape).background(Color.White) else Modifier)
             .clickable(
                 enabled = enabled,
                 interactionSource = remember { MutableInteractionSource() },
@@ -2983,7 +2983,7 @@ private fun NamedControlButton(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = label,
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,

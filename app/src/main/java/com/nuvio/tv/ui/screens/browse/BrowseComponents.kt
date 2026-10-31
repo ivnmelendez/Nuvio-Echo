@@ -46,7 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.nuvio.tv.ui.screens.detail.selectionSurface
+import com.nuvio.tv.ui.screens.detail.whiteSelectionSurface
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -126,7 +126,7 @@ internal fun BrowseListRow(
     // The selection that drives the grid: a faint frost, so it reads on glass as well as on the page.
     val container = if (selected) Color.White.copy(alpha = 0.12f) else Color.Transparent
     val content = when {
-        focused -> Color.White
+        focused -> Color.Black
         selected -> colors.TextPrimary
         else -> colors.TextSecondary
     }
@@ -134,7 +134,7 @@ internal fun BrowseListRow(
         modifier = modifier
             .fillMaxWidth()
             .height(28.dp)
-            .selectionSurface(focused, RoundedCornerShape(NuvioTheme.radii.sm), container, lifted = false)
+            .whiteSelectionSurface(focused, RoundedCornerShape(NuvioTheme.radii.sm), container)
             .onFocusChanged {
                 focused = it.isFocused
                 if (it.isFocused) onFocused()
@@ -181,7 +181,7 @@ internal fun BrowsePill(
     Box(
         modifier = modifier
             .height(28.dp)
-            .selectionSurface(focused, shape, idle)
+            .whiteSelectionSurface(focused, shape, idle)
             .then(
                 if (focused || !outlined) Modifier else Modifier.border(
                     BorderStroke(NuvioTheme.spacing.hairline, if (selected) Plain.focusRing.copy(alpha = 0.6f) else colors.Border),
@@ -204,7 +204,7 @@ internal fun BrowsePill(
             text = text,
             style = MaterialTheme.typography.titleSmall,
             color = when {
-                focused -> Color.White
+                focused -> Color.Black
                 selected -> colors.TextPrimary
                 else -> colors.TextSecondary
             },

@@ -77,7 +77,7 @@ import com.nuvio.tv.ui.components.NuvioDialog
 import com.nuvio.tv.ui.screens.detail.detailGlassPanel
 import com.nuvio.tv.ui.screens.detail.ignoreHeldSelect
 import com.nuvio.tv.ui.screens.detail.ndClickable
-import com.nuvio.tv.ui.screens.detail.selectionSurface
+import com.nuvio.tv.ui.screens.detail.whiteSelectionSurface
 import com.nuvio.tv.ui.screens.detail.trapDpadFocus
 import com.nuvio.tv.ui.theme.NuvioTheme
 import kotlinx.coroutines.delay
@@ -158,12 +158,12 @@ internal fun BinsTextPill(
         modifier = modifier
             .androidxScale(scale)
             .height(36.dp)
-            .selectionSurface(focused, BinsPillShape, if (selected) PillOn else PillIdle)
+            .whiteSelectionSurface(focused, BinsPillShape, if (selected) PillOn else PillIdle)
             .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val color = Color.White
+        val color = if (focused) Color.Black else Color.White
         if (content != null) content(color) else Text(label, color = color, fontSize = 15.sp, maxLines = 1)
     }
 }
@@ -195,12 +195,12 @@ internal fun BinsIconPill(
 ) {
     var focused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (focused) 1.04f else 1f, tween(160), label = "binsIconPillScale")
-    val color = Color.White
+    val color = if (focused) Color.Black else Color.White
     Row(
         modifier = modifier
             .androidxScale(scale)
             .height(36.dp)
-            .selectionSurface(focused, BinsPillShape, if (armed) PillOn else PillIdle)
+            .whiteSelectionSurface(focused, BinsPillShape, if (armed) PillOn else PillIdle)
             .then(if (armed && !focused) Modifier.border(1.5.dp, Color.White, BinsPillShape) else Modifier)
             .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onClick)
             .padding(horizontal = 9.dp),
@@ -282,18 +282,18 @@ internal fun BinPillMenu(
                     modifier = Modifier
                         .widthIn(min = width - 12.dp)
                         .height(38.dp)
-                        .selectionSurface(focused, BinsPillShape)
+                        .whiteSelectionSurface(focused, BinsPillShape)
                         .ndClickable(focusRequester = requesters[i], onFocusChanged = { focused = it }, onClick = item.onClick)
                         .padding(horizontal = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        item.label, color = Color.White, fontSize = 15.sp, maxLines = 1,
+                        item.label, color = if (focused) Color.Black else Color.White, fontSize = 15.sp, maxLines = 1,
                         overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
                     )
                     if (item.checked) {
                         Spacer(Modifier.width(18.dp))
-                        Text("✓", color = if (focused) Color.White else BinsMuted, fontSize = 14.sp)
+                        Text("✓", color = if (focused) Color.Black else BinsMuted, fontSize = 14.sp)
                     }
                 }
             }
@@ -406,12 +406,12 @@ private fun DialogPill(label: String, requester: FocusRequester?, onClick: () ->
     Box(
         modifier = Modifier
             .height(40.dp)
-            .selectionSurface(focused, BinsPillShape, if (primary) Color(0xFF3A3A3A) else PillOn)
+            .whiteSelectionSurface(focused, BinsPillShape, if (primary) Color(0xFF3A3A3A) else PillOn)
             .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onClick)
             .padding(horizontal = 22.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(label, color = Color.White, fontSize = 15.sp)
+        Text(label, color = if (focused) Color.Black else Color.White, fontSize = 15.sp)
     }
 }
 

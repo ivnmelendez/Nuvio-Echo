@@ -41,7 +41,7 @@ import coil3.request.ImageRequest
 import com.nuvio.tv.ui.screens.detail.detailGlassPanel
 import com.nuvio.tv.ui.screens.detail.ignoreHeldSelect
 import com.nuvio.tv.ui.screens.detail.ndClickable
-import com.nuvio.tv.ui.screens.detail.selectionSurface
+import com.nuvio.tv.ui.screens.detail.whiteSelectionSurface
 import kotlinx.coroutines.delay
 
 /** One pill in a [NewLookOptionsMenu]. A [checked] one shows a tick; a disabled one is dimmed and can't be picked. */
@@ -140,7 +140,7 @@ private fun OptionPill(option: NewLookOption, requester: FocusRequester) {
         modifier = Modifier
             .fillMaxWidth()
             .height(42.dp)
-            .selectionSurface(focused, PillShape)
+            .whiteSelectionSurface(focused, PillShape)
             .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = {
                 if (option.enabled) option.onClick()
             })
@@ -149,11 +149,11 @@ private fun OptionPill(option: NewLookOption, requester: FocusRequester) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            option.label, color = Color.White, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            option.label, color = if (focused) Color.Black else Color.White, fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
         if (option.checked) {
-            Text("✓", color = if (focused) Color.White else MutedText, fontSize = 14.sp)
+            Text("✓", color = if (focused) Color.Black else MutedText, fontSize = 14.sp)
         }
     }
 }
