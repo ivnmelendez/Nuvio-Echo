@@ -697,8 +697,10 @@ internal fun GlassTabBar(
     ) {
         val target = bounds[at]
         if (target != null) {
-            val x by animateFloatAsState(target.first, spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensX")
-            val w by animateFloatAsState(target.second, spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensW")
+            val light = LocalLightMode.current
+            // Light mode: a short straight slide and no swell, instead of the springy stretch.
+            val x by animateFloatAsState(target.first, if (light) tween(140) else spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensX")
+            val w by animateFloatAsState(target.second, if (light) tween(140) else spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensW")
             val alpha by animateFloatAsState(if (hasFocus) 1f else 0.55f, tween(200), label = "barLensAlpha")
             val density = LocalDensity.current
             Box(
@@ -707,13 +709,17 @@ internal fun GlassTabBar(
                     .offset { IntOffset(x.roundToInt(), 0) }
                     .graphicsLayer {
                         this.alpha = alpha
-                        val s = if (hasFocus) 1.06f else 1f
-                        scaleX = s
-                        scaleY = if (hasFocus) 1.14f else 1f
+                        val grow = hasFocus && !light
+                        scaleX = if (grow) 1.06f else 1f
+                        scaleY = if (grow) 1.14f else 1f
                     }
                     .width(with(density) { w.toDp() })
                     .height(30.dp)
-                    .glassLens(androidx.compose.foundation.shape.RoundedCornerShape(15.dp))
+                    .let {
+                        val pill = androidx.compose.foundation.shape.RoundedCornerShape(15.dp)
+                        // Focused: a solid white pill, as on Netflix; at rest the faint grey one on the current screen.
+                        if (hasFocus) it.solidLens(pill) else it.glassLens(pill)
+                    }
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -722,7 +728,7 @@ internal fun GlassTabBar(
                     var itemFocused by remember { mutableStateOf(false) }
                     val selected = item.route == selectedRoute
                     val color = when {
-                        itemFocused -> Color.White
+                        itemFocused -> Color.Black
                         selected -> Color(0xFFE6E6E6)
                         else -> Color(0xFF9E9E9E)
                     }

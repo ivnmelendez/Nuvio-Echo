@@ -360,7 +360,9 @@ internal fun PosterCard(
         modifier.width(if (isOpen) dims.posterOpenWidth else dims.posterWidth),
         depth = CardDepthSurface.POSTERS,
         // No lift: the card opens at once, and a lift animating on top of it read as a bounce (and overhung its slot).
-        lift = false
+        lift = false,
+        // The opened (wide) card wears a thick white frame; the closed poster keeps the thin one.
+        ringWidth = if (isOpen) 2.5.dp else 1.dp, ringColor = if (isOpen) Color.White else null
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
@@ -427,7 +429,7 @@ internal fun HighlightCard(
 ) {
     NewLookCard(
         dims.highlightWidth, dims.highlightHeight, onClick, onLongClick, onFocusChanged, modifier,
-        depth = CardDepthSurface.FEATURED, lift = false, ringWidth = 3.dp, ringColor = Color.White
+        depth = CardDepthSurface.FEATURED, lift = false, ringWidth = 2.5.dp, ringColor = Color.White
     ) {
         Artwork(backdrop, Modifier.fillMaxSize(), fallbackTitle = title)
         overlay()

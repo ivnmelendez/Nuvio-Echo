@@ -1124,7 +1124,9 @@ private fun NdRatingRow(
                 modifier = Modifier
                     .graphicsLayer { scaleX = scale; scaleY = scale }
                     .size(32.dp)
-                    .then(if (focused) Modifier.detailGlassLens(CircleShape) else Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.08f)))
+                    // Netflix-style: the focused button is solid white with a black icon.
+                    .clip(CircleShape)
+                    .background(if (focused) Color.White else Color.White.copy(alpha = 0.08f))
                     .then(if (button.key == "bin") Modifier.onGloballyPositioned { onBinBounds(it.boundsInRoot()) } else Modifier)
                     .ndClickable(
                         focusRequester = when (button.key) {
@@ -1139,7 +1141,7 @@ private fun NdRatingRow(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                button.icon(button.active, if (focused) Color.White else Color.White.copy(alpha = 0.88f))
+                button.icon(button.active, if (focused) Color.Black else Color.White.copy(alpha = 0.88f))
             }
         }
         val label = buttons.firstOrNull { it.key == focusedKey }?.let { if (it.active) it.activeLabel ?: it.label else it.label }
@@ -1176,10 +1178,11 @@ private fun NdPlayMenu(
     val bounds = remember { mutableStateMapOf<Int, Rect>() }
     var focused by remember { mutableIntStateOf(-1) }
     val target = bounds[focused]
-    val lensY by animateIntAsState(target?.top?.toInt() ?: 0, tween(260, easing = FastOutSlowInEasing), label = "ndLensY")
-    val lensH by animateIntAsState(target?.height?.toInt() ?: 0, tween(260, easing = FastOutSlowInEasing), label = "ndLensH")
-    val lensW by animateIntAsState(target?.width?.toInt() ?: 0, tween(260, easing = FastOutSlowInEasing), label = "ndLensW")
-    val lensAlpha by animateFloatAsState(if (target != null) 1f else 0f, tween(180), label = "ndLensAlpha")
+    // No sliding: the white pill is on whichever row has focus, at once.
+    val lensY = target?.top?.toInt() ?: 0
+    val lensH = target?.height?.toInt() ?: 0
+    val lensW = target?.width?.toInt() ?: 0
+    val lensAlpha = if (target != null) 1f else 0f
     Box {
         if (lensAlpha > 0f && lensW > 0) {
             Box(
@@ -1189,7 +1192,8 @@ private fun NdPlayMenu(
                         layout(0, 0) { p.place(IntOffset(0, lensY)) }
                     }
                     .alpha(lensAlpha)
-                    .detailGlassLens(NdPill)
+                    .clip(NdPill)
+                    .background(Color.White)
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -1216,11 +1220,12 @@ private fun NdPlayMenu(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(playIcon, null, tint = Color.White, modifier = Modifier.size(18.dp))
-                Text(playLabel, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1,
+                val playColor = if (focused == 0) Color.Black else Color.White
+                Icon(playIcon, null, tint = playColor, modifier = Modifier.size(18.dp))
+                Text(playLabel, color = playColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1,
                     modifier = Modifier.weight(1f))
                 if (playAside != null) {
-                    Text(playAside, color = NdText2, fontSize = 11.sp, maxLines = 1)
+                    Text(playAside, color = if (focused == 0) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 11.sp, maxLines = 1)
                 }
             }
             items.forEachIndexed { i, item ->
@@ -1229,7 +1234,7 @@ private fun NdPlayMenu(
                     modifier = Modifier
                         .onGloballyPositioned { bounds[index] = it.boundsInParent() }
                         .width(256.dp)
-                        .height(30.dp)
+                        .height(36.dp)
                         .ndClickable(
                             focusRequester = item.focusRequester,
                             onFocusChanged = { f -> if (f) focused = index else if (focused == index) focused = -1 },
@@ -1239,12 +1244,12 @@ private fun NdPlayMenu(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    val color = if (focused == index) Color.White else Color.White.copy(alpha = 0.84f)
+                    val color = if (focused == index) Color.Black else Color.White.copy(alpha = 0.84f)
                     Icon(item.icon, null, tint = color, modifier = Modifier.size(16.dp))
                     Text(item.label, color = color, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1,
                         modifier = Modifier.weight(1f))
                     if (item.aside != null) {
-                        Text(item.aside, color = if (focused == index) NdText2 else NdText3, fontSize = 11.sp, maxLines = 1)
+                        Text(item.aside, color = if (focused == index) Color.Black.copy(alpha = 0.6f) else NdText3, fontSize = 11.sp, maxLines = 1)
                     }
                 }
             }

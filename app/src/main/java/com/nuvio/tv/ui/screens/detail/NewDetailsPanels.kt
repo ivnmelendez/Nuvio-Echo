@@ -2,6 +2,7 @@ package com.nuvio.tv.ui.screens.detail
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -294,7 +295,7 @@ internal fun EpisodesPanel(
                                 .height(38.dp)
                                 .then(
                                     when {
-                                        focused -> Modifier.detailGlassLens(RowShape)
+                                        focused -> Modifier.clip(RowShape).background(Color.White)
                                         selected -> Modifier.clip(RowShape).background(Color(0xFF1C1C1C))
                                         else -> Modifier
                                     }
@@ -320,14 +321,14 @@ internal fun EpisodesPanel(
                                     0 -> stringResource(R.string.nd_panel_specials)
                                     else -> stringResource(R.string.nd_panel_season, s)
                                 },
-                                color = if (selected || focused) Color.White else Color.White.copy(alpha = 0.85f),
+                                color = if (focused) Color.Black else if (selected) Color.White else Color.White.copy(alpha = 0.85f),
                                 fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f)
                             )
                             if (s == TRAILERS_TAB) {
-                                Text(pluralStringResource(R.plurals.nd_panel_videos_count, trailers.size, trailers.size), color = NdText2, fontSize = 12.sp)
+                                Text(pluralStringResource(R.plurals.nd_panel_videos_count, trailers.size, trailers.size), color = if (focused) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 12.sp)
                             } else {
                                 val count = bySeason[s].orEmpty().size
-                                Text(pluralStringResource(R.plurals.nd_panel_episodes_count, count, count), color = NdText2, fontSize = 12.sp)
+                                Text(pluralStringResource(R.plurals.nd_panel_episodes_count, count, count), color = if (focused) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 12.sp)
                             }
                         }
                     }
@@ -522,7 +523,7 @@ private fun TrailerRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (focused) Modifier.detailGlassLens(EpisodeShape) else Modifier)
+            .then(if (focused) Modifier.border(2.5.dp, Color.White, EpisodeShape) else Modifier)
             .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onPlay)
             .padding(6.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -637,7 +638,7 @@ private fun EpisodeRow(
         modifier = modifier
             .fillMaxWidth()
             .onGloballyPositioned { bounds = it.boundsInRoot() }
-            .then(if (focused) Modifier.detailGlassLens(EpisodeShape) else Modifier)
+            .then(if (focused) Modifier.border(2.5.dp, Color.White, EpisodeShape) else Modifier)
             .ndClickable(
                 focusRequester = requester,
                 onFocusChanged = { focused = it },

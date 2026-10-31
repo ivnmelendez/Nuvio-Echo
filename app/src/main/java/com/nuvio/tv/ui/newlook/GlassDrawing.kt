@@ -99,6 +99,13 @@ internal fun Modifier.glassLens(shape: Shape): Modifier = this
         }
     }
 
+/** The focused menu item's solid white pill (black text goes on it), as on Netflix. */
+internal fun Modifier.solidLens(shape: Shape): Modifier = this
+    .drawWithCache {
+        val outline = shape.createOutline(size, layoutDirection, this)
+        onDrawBehind { drawOutline(outline, Color.White) }
+    }
+
 /** The new look's focus ring: a 1 px hairline drawn on the shape's edge. */
 internal fun Modifier.hairlineRing(shape: Shape, color: Color = HairlineColor): Modifier = this
     .drawWithCache {
