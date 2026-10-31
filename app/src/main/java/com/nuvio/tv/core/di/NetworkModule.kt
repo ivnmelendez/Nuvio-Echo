@@ -97,6 +97,8 @@ private fun buildAcceptLanguageHeader(): String {
     }
 }
 
+private const val TMDB_CACHE_SECONDS = 6 * 60 * 60
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -323,7 +325,23 @@ object NetworkModule {
     fun provideTmdbRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://api.themoviedb.org/3/")
-            .client(okHttpClient)
+            .client(
+                // TMDB answers carry no useful cache headers, so the shared disk cache never reused them.
+                // Metadata barely changes: a successful GET is fresh for 6 hours, across app restarts.
+                okHttpClient.newBuilder()
+                    .addNetworkInterceptor { chain ->
+                        val response = chain.proceed(chain.request())
+                        if (chain.request().method == "GET" && response.isSuccessful) {
+                            response.newBuilder()
+                                .removeHeader("Pragma")
+                                .header("Cache-Control", "public, max-age=$TMDB_CACHE_SECONDS")
+                                .build()
+                        } else {
+                            response
+                        }
+                    }
+                    .build()
+            )
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
