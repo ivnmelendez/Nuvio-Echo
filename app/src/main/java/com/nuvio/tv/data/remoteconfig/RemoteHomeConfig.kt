@@ -150,7 +150,7 @@ class RemoteHomeConfigRepository @Inject constructor(
                                 list = list,
                                 title = title.ifBlank { list },
                                 sort = o.optString("sort").ifBlank { "added" },
-                                limit = o.optInt("limit", 30).coerceIn(1, 100),
+                                limit = o.optInt("limit", 30).coerceIn(1, 300),
                                 file = file,
                                 style = o.optString("style").ifBlank { null },
                                 shuffle = o.optBoolean("shuffle", false)
