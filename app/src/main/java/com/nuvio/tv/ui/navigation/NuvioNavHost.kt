@@ -95,6 +95,13 @@ fun NuvioNavHost(
     }
 }
 
+/**
+ * Screens change through black, one after the other: the old one fades out, then the new one fades in. Crossfading
+ * them at once drew both on top of each other for a moment (titles over titles), which read as a flash.
+ */
+private const val FADE_OUT_MS = 110
+private const val FADE_IN_MS = 170
+
 /** Opens the Speed Test screen; a no-op outside the nav host. */
 val LocalOpenSpeedTest = staticCompositionLocalOf<() -> Unit> { {} }
 
@@ -125,7 +132,7 @@ private fun PlaybackNavHost(
             if (isStreamToPlayer(from, to) && isAutoPlayNav) {
                 EnterTransition.None
             } else {
-                fadeIn(animationSpec = tween(NuvioMotion.tokens.durations.medium))
+                fadeIn(animationSpec = tween(FADE_IN_MS, delayMillis = FADE_OUT_MS))
             }
         },
         exitTransition = {
@@ -137,7 +144,7 @@ private fun PlaybackNavHost(
             if (isStreamToPlayer(from, to) && isAutoPlayNav) {
                 ExitTransition.None
             } else {
-                fadeOut(animationSpec = tween(NuvioMotion.tokens.durations.medium))
+                fadeOut(animationSpec = tween(FADE_OUT_MS))
             }
         },
         popEnterTransition = {
@@ -149,7 +156,7 @@ private fun PlaybackNavHost(
             if (isPlayerToStream(from, to) && isAutoPlayNav) {
                 EnterTransition.None
             } else {
-                fadeIn(animationSpec = tween(NuvioMotion.tokens.durations.medium))
+                fadeIn(animationSpec = tween(FADE_IN_MS, delayMillis = FADE_OUT_MS))
             }
         },
         popExitTransition = {
@@ -161,7 +168,7 @@ private fun PlaybackNavHost(
             if (isPlayerToStream(from, to) && isAutoPlayNav) {
                 ExitTransition.None
             } else {
-                fadeOut(animationSpec = tween(NuvioMotion.tokens.durations.medium))
+                fadeOut(animationSpec = tween(FADE_OUT_MS))
             }
         }
     ) {
