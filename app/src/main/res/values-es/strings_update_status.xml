@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_forced_status_downloading">Descargando la actualización. Mantén la app abierta hasta que termine.</string>
+    <string name="update_forced_status_ready">La actualización está descargada. Pulsa Instalar para terminar.</string>
+    <string name="update_forced_status_installing">Completa la instalación en la ventana del sistema.</string>
+</resources>

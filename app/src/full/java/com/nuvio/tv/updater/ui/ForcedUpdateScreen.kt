@@ -6,7 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -74,6 +80,33 @@ fun ForcedUpdateScreen(
             Spacer(Modifier.height(8.dp))
             Text(text = it, color = Color(0xFFFF8A80), fontSize = 14.sp, textAlign = TextAlign.Center)
         }
+        // Which step this is, so a wait never looks like a hang: downloading (with a bar), or ready to install.
+        val status = when {
+            state.isDownloading -> R.string.update_forced_status_downloading
+            state.downloadedApkPath != null && state.errorMessage == null -> R.string.update_forced_status_ready
+            else -> null
+        }
+        status?.let {
+            Spacer(Modifier.height(20.dp))
+            Text(text = stringResource(it), color = Color.White.copy(alpha = 0.85f), fontSize = 16.sp, textAlign = TextAlign.Center)
+        }
+        if (state.isDownloading) {
+            Spacer(Modifier.height(16.dp))
+            Box(
+                modifier = Modifier
+                    .width(360.dp)
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(Color.White.copy(alpha = 0.18f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth((state.downloadProgress ?: 0f).coerceIn(0f, 1f))
+                        .background(Color.White)
+                )
+            }
+        }
         Spacer(Modifier.height(28.dp))
         Button(
             onClick = {
@@ -91,6 +124,7 @@ fun ForcedUpdateScreen(
                     ?.let { stringResource(R.string.update_downloading_progress, (it * 100).toInt()) }
                     ?: stringResource(R.string.update_downloading_ellipsis)
                 state.errorMessage != null -> stringResource(R.string.update_forced_retry)
+                state.downloadedApkPath != null -> stringResource(R.string.update_install)
                 else -> stringResource(R.string.update_forced_button)
             }
             Text(label)

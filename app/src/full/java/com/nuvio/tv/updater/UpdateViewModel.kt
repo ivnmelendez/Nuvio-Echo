@@ -50,11 +50,6 @@ class UpdateViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Whatever an earlier update left in the cache is of no use once the app is running: it was installed or
-            // skipped. Without this each update leaves an APK of tens of MB behind on the device.
-            withContext(Dispatchers.IO) {
-                runCatching { File(context.cacheDir, "updates").deleteRecursively() }
-            }
             val channel = updatePreferences.getOrInitializeUpdateChannel()
             _uiState.update {
                 it.copy(
@@ -89,6 +84,12 @@ class UpdateViewModel @Inject constructor(
             result
                 .onSuccess { update ->
                     val remoteNewer = VersionUtils.isRemoteNewer(update.tag, BuildConfig.VERSION_NAME)
+                    // An APK downloaded earlier for this very update is kept, so leaving the app and coming back
+                    // goes straight to Install instead of downloading it again. Anything else in the cache (older
+                    // updates, a half download a killed app left) is cleared, so each update doesn't leave tens of MB.
+                    // (Not while one is downloading: its half-written file is the one being worked on.)
+                    val keptApk = if (_uiState.value.isDownloading) null
+                    else withContext(Dispatchers.IO) { pruneUpdateCache(update, remoteNewer) }
                     val shouldShow = UpdateBannerPolicy.shouldShow(
                         isRemoteNewer = remoteNewer,
                         force = force,
@@ -104,7 +105,7 @@ class UpdateViewModel @Inject constructor(
                             isUpdateAvailable = remoteNewer,
                             isDownloading = false,
                             downloadProgress = null,
-                            downloadedApkPath = state.downloadedApkPath.takeIf {
+                            downloadedApkPath = keptApk?.absolutePath ?: state.downloadedApkPath.takeIf {
                                 remoteNewer && state.update?.tag == update.tag
                             },
                             showBanner = shouldShow,
@@ -144,6 +145,21 @@ class UpdateViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun updateFile(update: AppUpdate): File {
+        val safeName = update.assetName.replace(Regex("[^a-zA-Z0-9._-]"), "_")
+        return File(File(context.cacheDir, "updates"), safeName)
+    }
+
+    /** Clears the update cache except a complete APK of [update] (when it is newer); returns that file, if kept. */
+    private fun pruneUpdateCache(update: AppUpdate, remoteNewer: Boolean): File? = runCatching {
+        val dir = File(context.cacheDir, "updates")
+        val wanted = updateFile(update)
+        val size = update.assetSizeBytes
+        val complete = remoteNewer && wanted.isFile && size != null && size > 0 && wanted.length() == size
+        dir.listFiles()?.forEach { file -> if (!(complete && file == wanted)) file.deleteRecursively() }
+        wanted.takeIf { complete }
+    }.getOrNull()
 
     private fun noUpdateFeedback(channel: UpdateChannel): String =
         if (channel == UpdateChannel.STABLE && VersionUtils.isPrerelease(BuildConfig.VERSION_NAME)) {
@@ -235,8 +251,7 @@ class UpdateViewModel @Inject constructor(
                 )
             }
 
-            val safeName = update.assetName.replace(Regex("[^a-zA-Z0-9._-]"), "_")
-            val destination = File(File(context.cacheDir, "updates"), safeName)
+            val destination = updateFile(update)
             val result = withContext(Dispatchers.IO) {
                 apkDownloader.download(update.assetUrl, destination) { downloaded, total ->
                     val progress = if (total != null && total > 0) {
