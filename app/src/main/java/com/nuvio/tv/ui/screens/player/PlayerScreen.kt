@@ -1574,20 +1574,6 @@ private fun PlayerScreenContent(
             StreamSourceIndicator(text = uiState.streamSourceIndicatorText)
         }
 
-        AnimatedVisibility(
-            visible = uiState.showPlayerEngineSwitchInfo && uiState.error == null,
-            enter = fadeIn(animationSpec = tween(NuvioMotion.tokens.durations.fast)),
-            exit = fadeOut(animationSpec = tween(NuvioMotion.tokens.durations.fast)),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .zIndex(2.35f)
-        ) {
-            PlayerEngineSwitchIndicator(
-                title = stringResource(R.string.player_engine_switching_title),
-                message = uiState.playerEngineSwitchInfoText
-            )
-        }
-
         // Seek-only overlay (progress bar + time) when controls are hidden
         AnimatedVisibility(
             visible = uiState.showSubtitleDelayOverlay &&
