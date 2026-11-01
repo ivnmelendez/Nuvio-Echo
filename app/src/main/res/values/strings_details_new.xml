@@ -57,7 +57,6 @@
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>
     </plurals>
-    <string name="nd_panel_hold_hint">Hold OK on an episode for more</string>
     <string name="nd_panel_episode_tag">E%1$02d</string>
     <string name="nd_panel_minutes">%1$d min</string>
 

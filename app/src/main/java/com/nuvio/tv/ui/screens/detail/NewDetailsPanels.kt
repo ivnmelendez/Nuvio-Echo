@@ -427,8 +427,7 @@ private fun EpisodeList(
                 if (season == 0) stringResource(R.string.nd_panel_specials) else stringResource(R.string.nd_panel_season, season),
                 color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
             )
-            Spacer(Modifier.width(12.dp))
-            Text(stringResource(R.string.nd_panel_hold_hint), color = NdText3, fontSize = 11.sp, modifier = Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             if (average != null) {
                 Text("★", color = Color(0xFFF5C518), fontSize = 13.sp)
                 Spacer(Modifier.width(4.dp))
