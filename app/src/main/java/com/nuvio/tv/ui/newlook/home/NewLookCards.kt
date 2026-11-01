@@ -331,6 +331,8 @@ internal fun PosterCard(
     openAtOnce: Boolean = false,
     /** Home is going to another screen: losing focus to it must not close the card on its way out. */
     holdOpen: Boolean = false,
+    /** The row's resting card: wide while the row has no focus too, with the thin ring, so every row shows one open. */
+    restingOpen: Boolean = false,
     dims: NewLookDimens,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -349,7 +351,8 @@ internal fun PosterCard(
     // pinned to the row's start showed vertical for that long before widening. No animation sits in between either.
     var focusedHere by remember { mutableStateOf(false) }
     val latestHoldOpen by androidx.compose.runtime.rememberUpdatedState(holdOpen)
-    val isOpen = if (openAtOnce) focusedHere else open
+    val activeOpen = if (openAtOnce) focusedHere else open
+    val isOpen = activeOpen || restingOpen
     // As stock Nuvio does: the poster goes the moment the card starts opening, so it's never seen cropped and blown
     // up to the wide shape; the card is black until the backdrop has loaded and faded in.
     val showOpen = isOpen
@@ -361,8 +364,8 @@ internal fun PosterCard(
         depth = CardDepthSurface.POSTERS,
         // No lift: the card opens at once, and a lift animating on top of it read as a bounce (and overhung its slot).
         lift = false,
-        // The opened (wide) card wears a thick white frame; the closed poster keeps the thin one.
-        ringWidth = if (isOpen) 2.5.dp else 1.dp, ringColor = if (isOpen) Color.White else null
+        // The opened (wide) card wears a white frame; the closed poster keeps the thin one.
+        ringWidth = if (activeOpen) 2.dp else 1.dp, ringColor = if (activeOpen) Color.White else null
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
@@ -521,9 +524,12 @@ internal fun RankNumber(rank: Int, dims: NewLookDimens, focused: Boolean, modifi
             style = base.copy(color = outline, drawStyle = Stroke(width = 6.4f)),
             maxLines = 1,
             softWrap = false,
+            // Visible: the tight letter spacing puts the digit's edge a little outside its text box, and the default
+            // clip cut it flat on the left.
+            overflow = TextOverflow.Visible,
             onTextLayout = { descentPx = (it.size.height - it.lastBaseline).toInt() }
         )
-        Text(text = rank.toString(), style = base.copy(color = Color(0xFF171717)), maxLines = 1, softWrap = false)
+        Text(text = rank.toString(), style = base.copy(color = Color(0xFF171717)), maxLines = 1, softWrap = false, overflow = TextOverflow.Visible)
         Text(
             text = rank.toString(),
             style = base.copy(
@@ -534,7 +540,8 @@ internal fun RankNumber(rank: Int, dims: NewLookDimens, focused: Boolean, modifi
                 )
             ),
             maxLines = 1,
-            softWrap = false
+            softWrap = false,
+            overflow = TextOverflow.Visible
         )
     }
 }

@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
@@ -165,6 +166,8 @@ class NewLookHomeMemory {
     internal var stoppedAt = 0L
     internal var scrollIndex = 0
     internal var scrollOffset = 0
+    /** The card (row key to item key) that held focus when Home was left, to show it open again on the first frame back. */
+    internal var card: Pair<String, String>? = null
     /** Load more asked per row, at the row's size then, so each size asks once. */
     internal val loadMoreRequested = HashMap<String, Int>()
 
@@ -172,6 +175,7 @@ class NewLookHomeMemory {
     internal fun resetPlace() {
         area = HomeArea.HERO
         rowKey = null
+        card = null
         cols.clear()
         heroButton = 0
         slide = 0
@@ -498,14 +502,19 @@ internal fun NewLookHomeContent(
     }
     val rowLayout = remember(rows) { rows.map { it.key to it.kind } }
     val currentOnSettled by rememberUpdatedState(onSettled)
+    // True once the rows have held still (or the cap passed): the first focus waits for it, so it lands on the row that
+    // ends up first and not on one that was first only until the rest arrived.
+    var rowsSettled by remember { mutableStateOf(false) }
     LaunchedEffect(sourcesIn, rowLayout) {
         if (sourcesIn) {
             delay(SETTLE_QUIET_MS)
+            rowsSettled = true
             currentOnSettled()
         }
     }
     LaunchedEffect(Unit) {
         delay(SETTLE_CAP_MS)
+        rowsSettled = true
         currentOnSettled()
     }
 
@@ -603,13 +612,37 @@ internal fun NewLookHomeContent(
      * opening and its trailer, so the trailer is asked for only once a poster opens, not for each one passed.
      */
     var openPoster by remember { mutableStateOf<Pair<String, String>?>(null) }
+    /**
+     * The card that was open when Home was left. Back on Home, focus lands on it a moment after the first frame, and
+     * until then it showed closed (vertical) and then opened. It is drawn open from the first frame, and dropped once
+     * focus has landed (or settled elsewhere).
+     */
+    var restoredCard by remember { mutableStateOf(memory.card.takeIf { memory.area == HomeArea.ROWS }) }
+    // The grace runs only while Home is on screen, so a long look at the details or a film does not use it up.
+    // When Home stays composed under the other screen, it is armed again as Home stops.
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) restoredCard = memory.card.takeIf { memory.area == HomeArea.ROWS }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            delay(1500)
+            restoredCard = null
+        }
+    }
     LaunchedEffect(focusedCard, settings.posterOpenDelayMs) {
-        openPoster = null
-        val card = focusedCard ?: return@LaunchedEffect
+        val card = focusedCard
+        val comingBack = card != null && card == restoredCard
+        if (!comingBack) openPoster = null
+        if (card == null) return@LaunchedEffect
         val row = rows.firstOrNull { it.key == card.first } ?: return@LaunchedEffect
         if (row.kind != RowKind.POSTER || row.isPlaceholder) return@LaunchedEffect
-        if (settings.posterOpenDelayMs > 0) delay(settings.posterOpenDelayMs.toLong())
+        if (!comingBack && settings.posterOpenDelayMs > 0) delay(settings.posterOpenDelayMs.toLong())
         openPoster = card
+        restoredCard = null
     }
     // With no delay the card opens in the same frame it gets focus, not a frame later through the effect above: that
     // frame showed the closed vertical poster before it opened.
@@ -619,6 +652,9 @@ internal fun NewLookHomeContent(
         }
     } else {
         openPoster
+    } ?: restoredCard?.takeIf { card ->
+        focusedCard == null &&
+            rows.firstOrNull { it.key == card.first }?.let { it.kind == RowKind.POSTER && !it.isPlaceholder } == true
     }
     /** On a grand card, which pill is lit: 0 Watch Now, 1 More Info. Back to Watch Now on every new card. */
     var grandButton by remember { mutableIntStateOf(0) }
@@ -728,7 +764,7 @@ internal fun NewLookHomeContent(
 
     // First focus: the window's Watch Now, or wherever Home was left.
     var initialFocusDone by remember { mutableStateOf(false) }
-    val contentReady = slides.isNotEmpty() || rows.isNotEmpty()
+    val contentReady = rowsSettled && (slides.isNotEmpty() || rows.isNotEmpty())
     LaunchedEffect(contentReady, savedRowBuilt, savedRowWaitOver) {
         if (!contentReady || initialFocusDone) return@LaunchedEffect
         if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
@@ -990,18 +1026,9 @@ internal fun NewLookHomeContent(
         advanceHighlight()
     }
 
-    // Back: to the start of the row, then up to the window; from the window Back opens the menu.
-    // Without a hero, Back on a row's first card has nowhere to go on the page: it falls through to the menu.
-    BackHandler(enabled = area == HomeArea.ROWS && focusedCard != null && (HERO_ENABLED || (cols[focusedRowKey] ?: 0) > 0)) {
-        val key = focusedRowKey ?: return@BackHandler
-        val col = cols[key] ?: 0
-        if (col > 0) {
-            val index = rows.indexOfFirst { it.key == key }
-            scope.launch { rowStates[key]?.scrollToItem(0) }
-            focusRow(index, 0)
-        } else {
-            focusHero(0)
-        }
+    // Back from a row goes straight up: to the window when there is a hero, otherwise it falls through to the menu.
+    BackHandler(enabled = HERO_ENABLED && area == HomeArea.ROWS && focusedCard != null) {
+        focusHero(0)
     }
 
     // ---- Layout ----
@@ -1141,6 +1168,8 @@ internal fun NewLookHomeContent(
                                 area = HomeArea.HERO
                                 heroButton = button
                                 focusedCard = null
+                                memory.card = null
+                                restoredCard = null
                             }
                         },
                         onWatchNow = { heroItem?.let { onWatchNow(it.id, it.apiType, "") } },
@@ -1161,7 +1190,7 @@ internal fun NewLookHomeContent(
                         contentStart = contentStart,
                         listState = state,
                         col = cols[row.key] ?: 0,
-                        focusedItemKey = focusedCard?.takeIf { it.first == row.key }?.second,
+                        focusedItemKey = (focusedCard ?: restoredCard)?.takeIf { it.first == row.key }?.second,
                         // Only the focused row sees it change, so moving between pills recomposes one row.
                         grandButton = if (focusedCard?.first == row.key) grandButton else 0,
                         focusRequester = rowRequester(row.key),
@@ -1193,6 +1222,7 @@ internal fun NewLookHomeContent(
                                 cols[row.key] = index
                                 memory.cols[row.key] = index
                                 focusedCard = row.key to item.key
+                                memory.card = focusedCard
                                 loadDetails(item.metaPreview)
                                 loadDetails(row.items.getOrNull(index + 1)?.metaPreview)
                                 maybeLoadMore(source, row, index)
@@ -1204,12 +1234,14 @@ internal fun NewLookHomeContent(
                                 }
                             } else if (!leavingHome && focusedCard == row.key to item.key) {
                                 focusedCard = null
+                                memory.card = null
                             }
                         },
                         onPrefetch = { item -> loadDetails(item.metaPreview) },
                         openItemKey = openPosterNow?.takeIf { it.first == row.key }?.second,
                         openAtOnce = settings.posterOpenDelayMs == 0,
                         holdOpen = leavingHome,
+                        anchor = area == HomeArea.ROWS && focusedRowKey == row.key,
                         onClick = { item ->
                             if (row.onlyPlaceholders) return@NewLookRowView
                             // The card keeps its open frame while the screen leaves: losing focus as the next screen
@@ -1526,10 +1558,13 @@ private fun NewLookRowView(
     openItemKey: String?,
     /** No expand delay: a poster opens in the very frame it gets focus, off its own focus rather than the screen's. */
     openAtOnce: Boolean,
-    holdOpen: Boolean
+    holdOpen: Boolean,
+    /** The row Home is on while focus is up in the menu: it keeps its title and its details, so the page isn't left bare. */
+    anchor: Boolean = false
 ) {
     val density = LocalDensity.current
     val rowActive = focusedItemKey != null
+    val rowShown = rowActive || anchor
     val cardTop = dims.rowHead + 3.dp
     val focusedIndex = row.items.indexOfFirst { it.key == focusedItemKey }
     val shownItem = row.items.getOrNull(if (focusedIndex >= 0) focusedIndex else col)
@@ -1537,6 +1572,10 @@ private fun NewLookRowView(
     // has fewer (Continue Watching fills in after startup). Without a card to hold it, moving into the row did nothing.
     val focusCol = col.coerceAtMost((row.items.size - 1).coerceAtLeast(0))
 
+    // Each poster row keeps one card open, the one at its start: its backdrop and logo are fetched as the row shows.
+    if (row.kind == RowKind.POSTER && !row.isPlaceholder) {
+        LaunchedEffect(row.key, focusCol, row.items.size) { row.items.getOrNull(focusCol)?.let(onPrefetch) }
+    }
     // Highlighted rows show logos on every card: fetch the first few as the row comes on screen.
     if ((row.kind == RowKind.HIGHLIGHT || row.kind == RowKind.GRAND) && !row.collection) {
         LaunchedEffect(row.key, col) {
@@ -1559,7 +1598,7 @@ private fun NewLookRowView(
         }
         // The row with focus leads; the others' titles step back a little. Faded as a layer, read while drawing, so
         // moving between rows doesn't recompose both titles for every frame of the fade.
-        val titleAlpha = animateFloatAsState(if (rowActive) 1f else 0.72f, tween(200), label = "rowTitle")
+        val titleAlpha = animateFloatAsState(if (rowShown) 1f else 0.72f, tween(200), label = "rowTitle")
         if (!row.hideTitle) Text(
             text = row.title,
             color = Color.White,
@@ -1638,17 +1677,18 @@ private fun NewLookRowView(
                         modifier = modifier,
                         open = item.key == focusedItemKey && item.key == openItemKey,
                         openAtOnce = openAtOnce,
-                        holdOpen = holdOpen
+                        holdOpen = holdOpen,
+                        resting = row.kind == RowKind.POSTER && !row.isPlaceholder && index == focusCol
                     )
                 }
             }
         }
         if (row.kind != RowKind.WIDE && row.kind != RowKind.GRAND && shownItem != null) {
-            val metaAlpha = animateFloatAsState(if (rowActive) 1f else 0f, tween(200), label = "rowMeta")
+            val metaAlpha = animateFloatAsState(if (rowShown) 1f else 0f, tween(200), label = "rowMeta")
             // Only the focused row (and one fading out) has its details composed: rows coming on screen as the page
             // scrolls don't lay out a synopsis nobody sees.
             val fading by remember { derivedStateOf { metaAlpha.value > 0f } }
-            if (rowActive || fading) {
+            if (rowShown || fading) {
                 Box(
                     modifier = Modifier
                         .offset(x = contentStart + if (row.ranked) dims.rankPad else 0.dp, y = dims.rowHead + row.cardHeight(dims) + 10.dp)
@@ -1681,7 +1721,8 @@ private fun RowCard(
     modifier: Modifier,
     open: Boolean,
     openAtOnce: Boolean,
-    holdOpen: Boolean
+    holdOpen: Boolean,
+    resting: Boolean
 ) {
     val preview = item.heroPreview
     val backdrop = preview.backdrop ?: details?.backdrop ?: item.imageUrl
@@ -1762,6 +1803,8 @@ private fun RowCard(
             open = open,
             openAtOnce = openAtOnce,
             holdOpen = holdOpen,
+            // Wide only once its backdrop is known: until then a wide card would be black.
+            restingOpen = resting && (preview.backdrop ?: details?.backdrop) != null,
             dims = dims,
             onClick = onClick,
             onLongClick = onLongClick,
