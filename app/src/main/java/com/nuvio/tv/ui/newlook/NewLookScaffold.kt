@@ -593,35 +593,14 @@ internal fun GlassPill(
 
 /**
  * The glass lens behind the icons. At rest it sits faintly on the current screen's icon; with the menu focused it
- * brightens, swells past the pill's sides and flows to the focused icon, stretching toward where it's going first.
+ * brightens and slides straight to the focused icon.
  */
 @Composable
 private fun PillLens(at: Int, focused: Boolean) {
     val density = LocalDensity.current
     val step = with(density) { (IconSlot + IconGap).toPx() }
-    val y by animateFloatAsState(
-        targetValue = at * step,
-        animationSpec = spring(dampingRatio = 0.62f, stiffness = 320f),
-        label = "lensY"
-    )
-    val grow by animateFloatAsState(if (focused) 1.14f else 1f, spring(dampingRatio = 0.6f, stiffness = 400f), label = "lensGrow")
+    val y by animateFloatAsState(targetValue = at * step, animationSpec = tween(140), label = "lensY")
     val alpha by animateFloatAsState(if (focused) 1f else 0.55f, tween(200), label = "lensAlpha")
-    val stretchX = remember { Animatable(1f) }
-    val stretchY = remember { Animatable(1f) }
-    var lastAt by remember { mutableIntStateOf(at) }
-    var originY by remember { mutableStateOf(0.5f) }
-    LaunchedEffect(at) {
-        if (at == lastAt) return@LaunchedEffect
-        originY = if (at < lastAt) 1f else 0f
-        lastAt = at
-        launch {
-            stretchX.animateTo(0.88f, tween(110))
-            stretchX.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 420f))
-        }
-        stretchY.animateTo(1.3f, tween(110))
-        originY = 0.5f
-        stretchY.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 420f))
-    }
     Box(
         modifier = Modifier
             // 48 wide in the pill's 40-wide content: requiredSize keeps it a full circle, centred on the icon (size
@@ -630,12 +609,7 @@ private fun PillLens(at: Int, focused: Boolean) {
             // Moved by layout, not the layer's translation: a translated layer here was drawn clipped to where it
             // started (the top bar's lens, in the JVM preview), so it showed as a stub off the first item.
             .offset { IntOffset(0, y.roundToInt()) }
-            .graphicsLayer {
-                this.alpha = alpha
-                scaleX = grow * stretchX.value
-                scaleY = grow * stretchY.value
-                transformOrigin = TransformOrigin(0.5f, originY)
-            }
+            .graphicsLayer { this.alpha = alpha }
             .requiredSize(48.dp)
             .glassLens(androidx.compose.foundation.shape.CircleShape)
     )
@@ -697,22 +671,16 @@ internal fun GlassTabBar(
     ) {
         val target = bounds[at]
         if (target != null) {
-            val light = LocalLightMode.current
-            // Light mode: a short straight slide and no swell, instead of the springy stretch.
-            val x by animateFloatAsState(target.first, if (light) tween(140) else spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensX")
-            val w by animateFloatAsState(target.second, if (light) tween(140) else spring(dampingRatio = 0.62f, stiffness = 320f), label = "barLensW")
+            // A short straight slide: no spring, no swell.
+            val x by animateFloatAsState(target.first, tween(140), label = "barLensX")
+            val w by animateFloatAsState(target.second, tween(140), label = "barLensW")
             val alpha by animateFloatAsState(if (hasFocus) 1f else 0.55f, tween(200), label = "barLensAlpha")
             val density = LocalDensity.current
             Box(
                 modifier = Modifier
                     // Moved by layout, not the layer's translation (see PillLens).
                     .offset { IntOffset(x.roundToInt(), 0) }
-                    .graphicsLayer {
-                        this.alpha = alpha
-                        val grow = hasFocus && !light
-                        scaleX = if (grow) 1.06f else 1f
-                        scaleY = if (grow) 1.14f else 1f
-                    }
+                    .graphicsLayer { this.alpha = alpha }
                     .width(with(density) { w.toDp() })
                     .height(30.dp)
                     .let {
