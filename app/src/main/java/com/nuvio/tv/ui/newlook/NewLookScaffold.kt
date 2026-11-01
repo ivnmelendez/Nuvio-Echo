@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -179,6 +180,9 @@ internal fun NewLookScaffold(
     var overlayBarShown by remember { mutableStateOf(false) }
     val avatarNotify = remember { AvatarNotifyState() }
 
+    // When the last D-pad move was made, and when the menu was last opened on purpose.
+    val trace = remember { BarTrace() }
+
     val barItems = remember(drawerItems) { topBarOrder(drawerItems) }
     val leftGate = remember { SidebarLeftGate() }
     val pageScroll = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
@@ -194,6 +198,7 @@ internal fun NewLookScaffold(
         selectedDrawerRoute?.takeIf { route -> drawerItems.any { it.route == route } } ?: drawerItems.firstOrNull()?.route
 
     fun openMenu() {
+        trace.openedAt = android.os.SystemClock.uptimeMillis()
         val route = selectedOrFirst() ?: return
         if (menuOnTop && !onHome) overlayBarShown = true
         focusAfterLayout(itemFocus.getValue(route))
@@ -241,7 +246,8 @@ internal fun NewLookScaffold(
             },
             onDown = onDown,
             drawerIcon = drawerIcon,
-            modifier = modifier
+            modifier = modifier,
+            litAllowed = { trace.recent() }
         )
     }
     // The chrome is remembered, so it reaches the bar and the menu through the latest lambdas (which see the
@@ -276,6 +282,10 @@ internal fun NewLookScaffold(
         modifier = Modifier
             .fillMaxSize()
             .onPreviewKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown &&
+                    (event.key == Key.DirectionUp || event.key == Key.DirectionDown ||
+                        event.key == Key.DirectionLeft || event.key == Key.DirectionRight)
+                ) trace.movedAt = android.os.SystemClock.uptimeMillis()
                 if (longPressBackHeld.value && event.key == Key.Back) {
                     if (event.type == KeyEventType.KeyUp) longPressBackHeld.value = false
                     return@onPreviewKeyEvent true
@@ -511,7 +521,10 @@ internal fun GlassPill(
     mayEnterWithLeft: () -> Boolean = { true },
     drawerIcon: @Composable (item: DrawerItem, tint: Color, modifier: Modifier) -> Unit
 ) {
-    val selectedIndex = items.indexOfFirst { it.route == selectedRoute }.coerceAtLeast(0)
+    val lastSelected = remember { IntArray(1) }
+    val selectedFound = items.indexOfFirst { it.route == selectedRoute }
+    if (selectedFound >= 0) lastSelected[0] = selectedFound
+    val selectedIndex = if (selectedFound >= 0) selectedFound else lastSelected[0].coerceIn(0, (items.size - 1).coerceAtLeast(0))
     val at = if (focused && focusedIndex in items.indices) focusedIndex else selectedIndex
     val shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp)
     Box(
@@ -615,6 +628,16 @@ private fun PillLens(at: Int, focused: Boolean) {
     )
 }
 
+/** What the top bar needs to tell the person's own focus moves from focus that lands by itself. */
+internal class BarTrace {
+    var movedAt = 0L
+    var openedAt = 0L
+    fun recent(): Boolean {
+        val now = android.os.SystemClock.uptimeMillis()
+        return now - movedAt < 700L || now - openedAt < 700L
+    }
+}
+
 // ---------------------------------------------------------------------------------------------
 // The top bar
 // ---------------------------------------------------------------------------------------------
@@ -629,12 +652,23 @@ internal fun GlassTabBar(
     onLeftFromFirst: () -> Unit,
     onDown: () -> Unit,
     drawerIcon: @Composable (item: DrawerItem, tint: Color, modifier: Modifier) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Whether focus arriving now was the person's doing (see [lit]); true when the caller can't tell. */
+    litAllowed: () -> Boolean = { true }
 ) {
     var hasFocus by remember { mutableStateOf(false) }
     var focusedIndex by remember { mutableIntStateOf(-1) }
+    // The white pill shows when the person drives the bar: focus that came by a D-pad move or by the menu being opened
+    // on purpose, or any key pressed in the bar. Focus that lands by itself (Back or a tab click replaces the screen)
+    // stays grey, so it doesn't flash white for a moment.
+    var lit by remember { mutableStateOf(false) }
     val bounds = remember { mutableStateMapOf<Int, Pair<Float, Float>>() }
-    val selectedIndex = items.indexOfFirst { it.route == selectedRoute }.coerceAtLeast(0)
+    // While the screen changes the route briefly matches no tab; the lens stays on the last tab it knew rather than
+    // falling back to the first one (Search) and coming back.
+    val lastSelected = remember { IntArray(1) }
+    val selectedFound = items.indexOfFirst { it.route == selectedRoute }
+    if (selectedFound >= 0) lastSelected[0] = selectedFound
+    val selectedIndex = if (selectedFound >= 0) selectedFound else lastSelected[0].coerceIn(0, (items.size - 1).coerceAtLeast(0))
     val at = if (hasFocus && focusedIndex in items.indices) focusedIndex else selectedIndex
     val shape = androidx.compose.foundation.shape.RoundedCornerShape(19.dp)
     Box(
@@ -644,11 +678,23 @@ internal fun GlassTabBar(
             .glassSurface(shape)
             .onFocusChanged {
                 hasFocus = it.hasFocus
+                lit = it.hasFocus && (lit || litAllowed())
+                // Forget the last item: the bar gets focus a moment before the item does, and the lens followed the
+                // old index (the Search button, say) before settling on the one that really took focus.
+                if (!it.hasFocus) focusedIndex = -1
                 onFocusChanged(it.hasFocus)
+            }
+            // Focus that falls into the bar without being asked (the screen's own bar is replaced on a tab change,
+            // and the system looks for the first focusable) goes to the current tab, not to Search.
+            .focusProperties {
+                onEnter = {
+                    items.getOrNull(selectedIndex)?.let { runCatching { itemFocus.getValue(it.route).requestFocus() } }
+                }
             }
             .focusGroup()
             .onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                lit = true
                 when (event.key) {
                     Key.DirectionDown -> {
                         onDown()
@@ -674,7 +720,7 @@ internal fun GlassTabBar(
             // A short straight slide: no spring, no swell.
             val x by animateFloatAsState(target.first, tween(140), label = "barLensX")
             val w by animateFloatAsState(target.second, tween(140), label = "barLensW")
-            val alpha by animateFloatAsState(if (hasFocus) 1f else 0.55f, tween(200), label = "barLensAlpha")
+            val alpha by animateFloatAsState(if (hasFocus && lit) 1f else 0.55f, tween(200), label = "barLensAlpha")
             val density = LocalDensity.current
             Box(
                 modifier = Modifier
@@ -686,7 +732,7 @@ internal fun GlassTabBar(
                     .let {
                         val pill = androidx.compose.foundation.shape.RoundedCornerShape(15.dp)
                         // Focused: a solid white pill, as on Netflix; at rest the faint grey one on the current screen.
-                        if (hasFocus) it.solidLens(pill) else it.glassLens(pill)
+                        if (hasFocus && lit) it.solidLens(pill) else it.glassLens(pill)
                     }
             )
         }
@@ -696,7 +742,7 @@ internal fun GlassTabBar(
                     var itemFocused by remember { mutableStateOf(false) }
                     val selected = item.route == selectedRoute
                     val color = when {
-                        itemFocused -> Color.Black
+                        itemFocused && lit -> Color.Black
                         selected -> Color(0xFFE6E6E6)
                         else -> Color(0xFF9E9E9E)
                     }
