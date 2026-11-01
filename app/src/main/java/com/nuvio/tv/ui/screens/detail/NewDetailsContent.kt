@@ -284,9 +284,6 @@ internal fun NewDetailsContent(
     onPlayButtonFocused: () -> Unit,
     onToggleLibrary: () -> Unit,
     onLibraryLongPress: () -> Unit,
-    onBinPicked: (String) -> Unit,
-    onBinPickerDismiss: () -> Unit,
-    onCreateBin: suspend (String) -> String?,
     onToggleMovieWatched: () -> Unit,
     onMarkSeasonWatched: (Int) -> Unit,
     onMarkSeasonUnwatched: (Int) -> Unit,
@@ -328,17 +325,6 @@ internal fun NewDetailsContent(
     val binFocus = remember { FocusRequester() }
     var binBounds by remember { mutableStateOf(Rect.Zero) }
     var pageOrigin by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
-    // However the list closes (a pick, Back, a new bin), focus goes back to the Bin button.
-    var binPickerWasOpen by remember { mutableStateOf(false) }
-    LaunchedEffect(state.showBinPicker) {
-        if (state.showBinPicker) {
-            binPickerWasOpen = true
-        } else if (binPickerWasOpen) {
-            binPickerWasOpen = false
-            delay(40)
-            runCatching { binFocus.requestFocus() }
-        }
-    }
     val playManually: () -> Unit = {
         if (heroVideo != null) onPlayEpisodeManually(heroVideo) else onPlayTitleManually(meta.id)
     }
@@ -403,9 +389,9 @@ internal fun NewDetailsContent(
     var immersive by remember { mutableStateOf(false) }
     var keyTick by remember { mutableIntStateOf(0) }
     var swallowKeyUp by remember { mutableStateOf<Int?>(null) }
-    LaunchedEffect(trailerShowing, keyTick, panel, playOptionsOpen, state.showBinPicker) {
+    LaunchedEffect(trailerShowing, keyTick, panel, playOptionsOpen) {
         immersive = false
-        if (trailerShowing && panel == null && !playOptionsOpen && !state.showBinPicker) {
+        if (trailerShowing && panel == null && !playOptionsOpen) {
             delay(com.nuvio.tv.ui.newlook.home.TRAILER_FADE_DELAY_MS)
             immersive = true
         }
@@ -637,21 +623,6 @@ internal fun NewDetailsContent(
             null -> Unit
         }
 
-        if (state.showBinPicker) {
-            val bounds = binBounds.translate(-pageOrigin)
-            com.nuvio.tv.ui.screens.library.BinPicker(
-                // Under the button, so it doesn't cover the buttons beside it.
-                anchor = bounds,
-                title = stringResource(R.string.nd_bin_picker_title),
-                bins = state.bins,
-                holding = state.titleBinIds,
-                openedByHold = true,
-                onPick = onBinPicked,
-                onCreate = onCreateBin,
-                onDismiss = onBinPickerDismiss
-            )
-        }
-
         if (playOptionsOpen) {
             PlayOptionsMenu(
                 anchor = playBounds,
@@ -803,14 +774,9 @@ private fun NdHero(
                 Spacer(Modifier.height(8.dp))
                 NdCredits(isSeries = isSeries, castOnly = castOnly, crew = crew)
                 Spacer(Modifier.height(14.dp))
-                val holding = state.bins.filter { it.id in state.titleBinIds }
                 NdRatingRow(
-                    inBin = holding.isNotEmpty(),
-                    inBinLabel = when (holding.size) {
-                        0 -> null
-                        1 -> stringResource(R.string.nd_bin_in, holding.single().name)
-                        else -> stringResource(R.string.nd_bin_in_many, holding.size)
-                    },
+                    inBin = state.isInLibrary,
+                    inBinLabel = if (state.isInLibrary) stringResource(R.string.watch_later_in) else null,
                     binFocus = binFocus,
                     onBinBounds = onBinBounds,
                     watched = watched,
@@ -1108,8 +1074,8 @@ private fun NdRatingRow(
     onToggleWatched: () -> Unit
 ) {
     val buttons = listOf(
-        // Bin (was Watchlist): press for the starred bin, hold for the list of bins.
-        NdRateButton("bin", stringResource(R.string.nd_bin_add), inBinLabel, inBin, true,
+        // Watch later: press to save the title or take it out.
+        NdRateButton("bin", stringResource(R.string.watch_later_add), inBinLabel, inBin, true,
             { on, c -> DetailGlyphIcon(DetailGlyph.STAR, on, c, 18.dp) }, onToggleLibrary, onLibraryLongPress),
         NdRateButton("watched", stringResource(R.string.nd_mark_watched), stringResource(R.string.nd_watched), watched, !watchedPending,
             { on, c -> Icon(if (on) Icons.Filled.Visibility else Icons.Outlined.Visibility, null, tint = c, modifier = Modifier.size(19.dp)) },

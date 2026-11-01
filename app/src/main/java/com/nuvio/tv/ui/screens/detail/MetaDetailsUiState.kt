@@ -50,11 +50,6 @@ data class MetaDetailsUiState(
     val selectedSharedTrailer: MetaTrailer? = null,
     val trailerButtonEnabled: Boolean = false,
     val librarySourceMode: LibrarySourceMode = LibrarySourceMode.LOCAL,
-    /** Every bin, in custom order, for the Bin button's hold-down list. */
-    val bins: List<com.nuvio.tv.core.bins.Bin> = emptyList(),
-    /** The bins holding this title. */
-    val titleBinIds: Set<String> = emptySet(),
-    val showBinPicker: Boolean = false,
     val binPending: Boolean = false,
     val isMovieWatched: Boolean = false,
     val isMovieWatchedPending: Boolean = false,
@@ -122,8 +117,6 @@ sealed class MetaDetailsEvent {
     data class OnMarkPreviousEpisodesWatched(val video: Video) : MetaDetailsEvent()
     data class OnMarkPreviousSeasonsWatched(val season: Int) : MetaDetailsEvent()
     data object OnLibraryLongPress : MetaDetailsEvent()
-    data class OnBinPicked(val binId: String) : MetaDetailsEvent()
-    data object OnBinPickerDismiss : MetaDetailsEvent()
     data object OnClearMessage : MetaDetailsEvent()
     data object OnLifecyclePause : MetaDetailsEvent()
 }

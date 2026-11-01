@@ -424,9 +424,7 @@ class MetaDetailsViewModel @Inject constructor(
             is MetaDetailsEvent.OnMarkSeasonUnwatched -> markSeasonUnwatched(event.season)
             is MetaDetailsEvent.OnMarkPreviousEpisodesWatched -> markPreviousEpisodesWatched(event.video)
             is MetaDetailsEvent.OnMarkPreviousSeasonsWatched -> markPreviousSeasonsWatched(event.season)
-            MetaDetailsEvent.OnLibraryLongPress -> openBinPicker()
-            is MetaDetailsEvent.OnBinPicked -> pickBin(event.binId)
-            MetaDetailsEvent.OnBinPickerDismiss -> dismissBinPicker()
+            MetaDetailsEvent.OnLibraryLongPress -> Unit
             MetaDetailsEvent.OnClearMessage -> clearMessage()
             MetaDetailsEvent.OnLifecyclePause -> handleLifecyclePause()
         }
@@ -459,18 +457,15 @@ class MetaDetailsViewModel @Inject constructor(
             }
             .distinctUntilChanged()
 
-        // The Bin button follows the bins: which ones hold this title, and every bin for the hold-down list.
+        // The Watch later button follows the saved titles.
         viewModelScope.launch {
             combine(binsRepository.state, canonicalKey) { bins, (id, type) ->
                 val key = com.nuvio.tv.core.bins.binKey(id, type)
-                com.nuvio.tv.core.bins.BinsReducer.sortedBins(bins.bins, com.nuvio.tv.core.bins.BinSort.CUSTOM) to
-                    bins.bins.filter { it.contains(key) }.mapTo(linkedSetOf()) { it.id }
+                bins.bins.any { it.contains(key) }
             }
                 .distinctUntilChanged()
-                .collectLatest { (bins, holding) ->
-                    _uiState.update { state ->
-                        state.copy(bins = bins, titleBinIds = holding, isInLibrary = holding.isNotEmpty())
-                    }
+                .collectLatest { saved ->
+                    _uiState.update { state -> state.copy(isInLibrary = saved) }
                 }
         }
     }
@@ -2179,66 +2174,19 @@ class MetaDetailsViewModel @Inject constructor(
             progress.source != WatchProgress.SOURCE_TRAKT_SHOW_PROGRESS
     }
 
-    /**
-     * The Bin button: not in a bin yet → into the starred bin (or the list of bins when none is starred); in one bin →
-     * out of it; in several → the list, so one press never empties more than one bin.
-     */
+    /** The Watch later button: saves the title, or takes it out of every list that holds it. */
     private fun onBinButton() {
         val state = _uiState.value
-        if (state.meta == null || state.binPending) return
-        val holding = state.bins.filter { it.id in state.titleBinIds }
-        when {
-            holding.size == 1 -> setInBin(holding.single(), add = false)
-            holding.size > 1 -> openBinPicker()
-            else -> state.bins.firstOrNull { it.starred }?.let { setInBin(it, add = true) } ?: openBinPicker()
-        }
-    }
-
-    private fun openBinPicker() {
-        if (_uiState.value.meta == null) return
-        _uiState.update { it.copy(showBinPicker = true) }
-    }
-
-    private fun dismissBinPicker() {
-        _uiState.update { it.copy(showBinPicker = false) }
-    }
-
-    /** From the list: a bin that holds the title lets it go; any other takes it. */
-    private fun pickBin(binId: String) {
-        val state = _uiState.value
-        val bin = state.bins.firstOrNull { it.id == binId } ?: return
-        _uiState.update { it.copy(showBinPicker = false) }
-        setInBin(bin, add = binId !in state.titleBinIds)
-    }
-
-    /** "New bin" from the list: makes it and puts the title in. Null when done, else why not. */
-    suspend fun createBinAndAdd(name: String): String? {
-        val meta = _uiState.value.meta ?: return null
-        return when (val result = binsRepository.createBin(name)) {
-            is com.nuvio.tv.core.bins.BinNameResult.Ok -> {
-                _uiState.update { it.copy(showBinPicker = false) }
-                runCatching { binsRepository.add(result.binId, meta.toLibraryEntryInput()) }
-                    .onSuccess { showMessage(localizedContext.getString(R.string.detail_added_to_bin, com.nuvio.tv.core.bins.cleanBinName(name))) }
-                    .onFailure { showMessage(it.message ?: context.getString(com.nuvio.tv.R.string.detail_error_update_library_failed), isError = true) }
-                null
-            }
-            com.nuvio.tv.core.bins.BinNameResult.Blank -> localizedContext.getString(R.string.bins_name_blank)
-            com.nuvio.tv.core.bins.BinNameResult.Duplicate ->
-                localizedContext.getString(R.string.bins_name_taken, com.nuvio.tv.core.bins.cleanBinName(name))
-        }
-    }
-
-    private fun setInBin(bin: com.nuvio.tv.core.bins.Bin, add: Boolean) {
-        val meta = _uiState.value.meta ?: return
+        val meta = state.meta ?: return
+        if (state.binPending) return
+        val add = !state.isInLibrary
         viewModelScope.launch {
             _uiState.update { it.copy(binPending = true) }
             runCatching {
-                if (add) binsRepository.add(bin.id, meta.toLibraryEntryInput())
-                else binsRepository.remove(bin.id, meta.id, meta.apiType)
+                if (add) binsRepository.addToWatchLater(meta.toLibraryEntryInput())
+                else binsRepository.removeFromWatchLater(meta.id, meta.apiType)
             }.onSuccess {
-                showMessage(
-                    localizedContext.getString(if (add) R.string.detail_added_to_bin else R.string.detail_removed_from_bin, bin.name)
-                )
+                showMessage(localizedContext.getString(if (add) R.string.watch_later_added else R.string.watch_later_removed))
             }.onFailure { error ->
                 showMessage(error.message ?: context.getString(com.nuvio.tv.R.string.detail_error_update_library_failed), isError = true)
             }

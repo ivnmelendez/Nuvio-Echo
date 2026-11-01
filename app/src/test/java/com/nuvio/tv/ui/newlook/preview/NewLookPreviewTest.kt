@@ -306,7 +306,7 @@ class NewLookPreviewTest {
     }
 
     @Test
-    fun `library bins`() {
+    fun `library watch later`() {
         // The app's own Library over a real bins view model, with the bins kept in memory.
         fun titles(prefix: String, vararg names: String) = names(prefix, *names).mapIndexed { i, m ->
             com.nuvio.tv.core.bins.BinEntry(
@@ -351,69 +351,23 @@ class NewLookPreviewTest {
             watchedSeriesStateHolder = seriesWatched,
             metaRepository = io.mockk.mockk(relaxed = true)
         )
-        val cloud = io.mockk.mockk<com.nuvio.tv.ui.screens.library.CloudLibraryViewModel>(relaxed = true)
-        io.mockk.every { cloud.uiState } returns MutableStateFlow(com.nuvio.tv.ui.screens.library.CloudUiState())
         var opened: String? = null
 
         show(menuOnTop = false, hideMenu = false, route = Screen.Library.route) {
             com.nuvio.tv.ui.screens.library.LibraryScreen(
                 onNavigateToDetail = { id, _, _ -> opened = id },
-                binsViewModel = viewModel,
-                cloudViewModel = cloud
+                binsViewModel = viewModel
             )
         }
-        // The bins' backdrops cycle forever; the clock moves only when the test says so.
         rule.mainClock.autoAdvance = false
         settle(2500)
-        shot("61-library-bins")
-        assertFocused("Horror Binge")
+        shot("61-library-watch-later")
+        rule.onAllNodesWithText("Watch later", useUnmergedTree = true).fetchSemanticsNodes()
+            .let { assertTrue("the Watch later title shows", it.isNotEmpty()) }
 
-        // Up from a bin reaches its star; OK stars it (only one bin is starred).
-        key(KeyEvent.KEYCODE_DPAD_RIGHT)
-        assertFocused("Sci-Fi Comfort")
-        key(KeyEvent.KEYCODE_DPAD_UP)
-        assertFocused("star:Sci-Fi Comfort")
-        shot("62-library-star-focused")
-        key(KeyEvent.KEYCODE_DPAD_CENTER, settleMs = 1200)
-        assertEquals(listOf("scifi"), bins.flow.value.bins.filter { it.starred }.map { it.id })
-        shot("63-library-starred")
-        key(KeyEvent.KEYCODE_DPAD_DOWN)
-        assertFocused("Sci-Fi Comfort")
-
-        // The pills: Custom order opens up to show its name; the pills after it slide over.
-        key(KeyEvent.KEYCODE_DPAD_UP); key(KeyEvent.KEYCODE_DPAD_UP)
-        repeat(4) { key(KeyEvent.KEYCODE_DPAD_RIGHT, settleMs = 500) }
-        settle(600)
-        rule.onAllNodesWithText("Create bin", useUnmergedTree = true).fetchSemanticsNodes().let { assertTrue("Create bin label shows", it.isNotEmpty()) }
-        shot("64-library-create-focused")
-        key(KeyEvent.KEYCODE_DPAD_LEFT, settleMs = 900)
-        rule.onAllNodesWithText("Custom order", useUnmergedTree = true).fetchSemanticsNodes().let { assertTrue("Custom order label shows", it.isNotEmpty()) }
-        shot("65-library-custom-order-focused")
-
-        // Custom order: pick a bin, pick another, and they swap.
-        key(KeyEvent.KEYCODE_DPAD_CENTER, settleMs = 1200)
-        key(KeyEvent.KEYCODE_DPAD_DOWN, settleMs = 900)
-        val first = focusedBinName()
-        key(KeyEvent.KEYCODE_DPAD_CENTER, settleMs = 800)
-        shot("66-library-picked")
-        key(KeyEvent.KEYCODE_DPAD_RIGHT)
-        val second = focusedBinName()
-        key(KeyEvent.KEYCODE_DPAD_CENTER, settleMs = 1500)
-        shot("67-library-swapped")
-        val order = com.nuvio.tv.core.bins.BinsReducer.sortedBins(bins.flow.value.bins, com.nuvio.tv.core.bins.BinSort.CUSTOM).map { it.name }
-        assertTrue("$first and $second swapped in $order", order.indexOf(first) == order.indexOf(second) + 1)
-        assertFocused(first)
-        key(KeyEvent.KEYCODE_BACK, settleMs = 1200)
-
-        // Open a bin, then come back to it.
-        key(KeyEvent.KEYCODE_DPAD_CENTER, settleMs = 1800)
-        shot("68-library-open-bin")
+        // One list, no pills: focus goes straight to the titles and moves through them.
         key(KeyEvent.KEYCODE_DPAD_RIGHT, settleMs = 900); key(KeyEvent.KEYCODE_DPAD_DOWN, settleMs = 1200)
-        shot("69-library-bin-scrolled")
-        key(KeyEvent.KEYCODE_BACK, settleMs = 1500)
-        assertFocused(first)
-
-        // (Create bin's dialog is checked on a device: a focused text field's cursor never lets this test idle.)
+        shot("62-library-watch-later-scrolled")
         assertTrue(opened == null)
     }
 
@@ -455,6 +409,10 @@ class NewLookPreviewTest {
             edit { r.addEntry(it, binId, with(com.nuvio.tv.core.bins.BinEntry(item.itemId, item.itemType, item.title)) { this }, System.currentTimeMillis()) }
         override suspend fun remove(binId: String, itemId: String, itemType: String) =
             edit { r.removeEntry(it, binId, com.nuvio.tv.core.bins.binKey(itemId, itemType)) }
+        override suspend fun addToWatchLater(item: com.nuvio.tv.domain.model.LibraryEntryInput) =
+            edit { r.addToDefault(it, com.nuvio.tv.core.bins.BinEntry(item.itemId, item.itemType, item.title), System.currentTimeMillis(), { "watch-later" }, "Watch later") }
+        override suspend fun removeFromWatchLater(itemId: String, itemType: String) =
+            edit { r.removeEverywhere(it, com.nuvio.tv.core.bins.binKey(itemId, itemType)) }
     }
 
     private fun detailsOf(item: MetaPreview, complete: Boolean) = com.nuvio.tv.core.browse.BrowseItemDetails(

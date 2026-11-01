@@ -129,4 +129,28 @@ class BinsReducerTest {
         assertEquals("Horror Binge", cleanBinName("  Horror   Binge "))
         assertEquals(MAX_BIN_NAME_LENGTH, cleanBinName("x".repeat(80)).length)
     }
+
+    @Test
+    fun `watch later saves into the starred bin, or makes one when there are none`() {
+        var s = threeBins()
+        s = BinsReducer.toggleStar(s, "b")
+        s = BinsReducer.addToDefault(s, entry("1"), now = 10, newBinId = { "new" }, defaultName = "Saved")
+        assertEquals(listOf("1"), s.bins.first { it.id == "b" }.entries.map { it.id })
+
+        val empty = BinsReducer.addToDefault(BinsState(migrated = true), entry("2"), now = 10, newBinId = { "new" }, defaultName = "Saved")
+        assertEquals(listOf("new"), empty.bins.map { it.id })
+        assertEquals("Saved", empty.bins.single().name)
+        assertEquals(listOf("2"), empty.bins.single().entries.map { it.id })
+    }
+
+    @Test
+    fun `watch later takes a title out of every bin that holds it`() {
+        var s = threeBins()
+        s = BinsReducer.addEntry(s, "a", entry("1"), now = 10)
+        s = BinsReducer.addEntry(s, "c", entry("1"), now = 11)
+        s = BinsReducer.addEntry(s, "c", entry("2"), now = 12)
+        s = BinsReducer.removeEverywhere(s, binKey("1", "movie"))
+        assertTrue(s.bins.none { it.contains(binKey("1", "movie")) })
+        assertEquals(listOf("2"), s.bins.first { it.id == "c" }.entries.map { it.id })
+    }
 }

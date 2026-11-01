@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_later_title">Ver más tarde</string>
+    <string name="watch_later_add">Agregar a Ver más tarde</string>
+    <string name="watch_later_in">En Ver más tarde</string>
+    <string name="watch_later_remove">Quitar de Ver más tarde</string>
+    <string name="watch_later_added">Agregado a Ver más tarde</string>
+    <string name="watch_later_removed">Quitado de Ver más tarde</string>
+    <string name="watch_later_empty_title">Aún no hay nada guardado</string>
+    <string name="watch_later_empty_subtitle">Abre cualquier título y usa su botón de Ver más tarde para guardarlo aquí.</string>
+</resources>

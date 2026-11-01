@@ -35,37 +35,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** A title in an open bin, ready to draw. */
+/** A saved title, ready to draw. */
 @Immutable
 data class BinTitle(val entry: BinEntry, val preview: MetaPreview)
 
 @Immutable
 data class BinsUiState(
     val loaded: Boolean = false,
-    /** Every bin, in the chosen sort. */
-    val bins: List<Bin> = emptyList(),
-    val sort: BinSort = BinSort.RECENTLY_VIEWED,
-    /** The bin being looked inside, if any. */
-    val openBin: Bin? = null,
-    val openTitles: List<BinTitle> = emptyList(),
-    /** Custom order mode: pick one, then pick another to swap them. */
-    val reordering: Boolean = false,
-    /** The bin id or title key picked to move. */
-    val picked: String? = null,
+    /** Watch later: every saved title, the most recently added first. */
+    val titles: List<BinTitle> = emptyList(),
     val posterWidthDp: Int = 126,
-    /** Layout's custom poster URL for the Library (blank when off), for the bins' own covers. */
+    /** Layout's custom poster URL for the Library (blank when off). */
     val posterPattern: String = "",
     val posterCornerDp: Int = 12,
     val watchedMovieIds: Set<String> = emptySet(),
     val watchedSeriesIds: Set<String> = emptySet()
 )
 
-private data class Local(
-    val openBinId: String? = null,
-    val reordering: Boolean = false,
-    val picked: String? = null
-)
-
+/** The Library's one list, Watch later: the titles of every bin together, newest saved first. */
 @HiltViewModel
 class BinsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -76,7 +63,6 @@ class BinsViewModel @Inject constructor(
     private val metaRepository: MetaRepository
 ) : ViewModel() {
 
-    private val local = MutableStateFlow(Local())
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
     private var messageJob: Job? = null
@@ -95,23 +81,13 @@ class BinsViewModel @Inject constructor(
         watchedSeriesStateHolder.fullyWatchedSeriesIds
     ) { movies, series -> movies to series }
 
-    val uiState: StateFlow<BinsUiState> = combine(repository.state, local, posterLayout, watched) { state, local, layout, watched ->
+    val uiState: StateFlow<BinsUiState> = combine(repository.state, posterLayout, watched) { state, layout, watched ->
         val (width, corner, pattern) = layout
-        val bins = BinsReducer.sortedBins(state.bins, state.sort)
-        val open = local.openBinId?.let { id -> state.bins.firstOrNull { it.id == id } }
-        val titles = open?.let { bin ->
-            val sorted = BinsReducer.sortedEntries(bin.entries, state.sort)
-            val previews = sorted.map { it.toPreview() }.withCustomPosterUrls(pattern)
-            sorted.zip(previews) { entry, preview -> BinTitle(entry, preview) }
-        }.orEmpty()
+        val entries = state.bins.flatMap { it.entries }.distinctBy { it.key }.sortedByDescending { it.addedAt }
+        val previews = entries.map { it.toPreview() }.withCustomPosterUrls(pattern)
         BinsUiState(
             loaded = true,
-            bins = bins,
-            sort = state.sort,
-            openBin = open,
-            openTitles = titles,
-            reordering = local.reordering,
-            picked = local.picked,
+            titles = entries.zip(previews) { entry, preview -> BinTitle(entry, preview) },
             posterWidthDp = width,
             posterCornerDp = corner,
             posterPattern = pattern,
@@ -120,103 +96,12 @@ class BinsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), BinsUiState())
 
-    fun openBin(bin: Bin) {
-        local.update { Local(openBinId = bin.id) }
-        viewModelScope.launch { repository.markBinViewed(bin.id) }
+    fun removeTitle(title: BinTitle) {
+        viewModelScope.launch { repository.removeFromWatchLater(title.entry.id, title.entry.type) }
+        showMessage(context.getString(R.string.watch_later_removed))
     }
 
-    fun closeBin() {
-        local.update { Local() }
-    }
-
-    fun selectSort(sort: BinSort) {
-        local.update { it.copy(reordering = false, picked = null) }
-        viewModelScope.launch { repository.setSort(sort) }
-    }
-
-    /** Custom order on (starting from what's shown) or off. */
-    fun toggleReorder() {
-        val state = uiState.value
-        if (state.reordering) {
-            local.update { it.copy(reordering = false, picked = null) }
-            showMessage(context.getString(R.string.bins_custom_order_saved))
-            return
-        }
-        local.update { it.copy(reordering = true, picked = null) }
-        viewModelScope.launch {
-            val open = state.openBin
-            if (open != null) {
-                repository.useDisplayedEntryOrder(open.id, state.openTitles.map { it.entry.key })
-            } else {
-                repository.useDisplayedBinOrder(state.bins.map { it.id })
-            }
-        }
-        showMessage(context.getString(if (state.openBin != null) R.string.bins_reorder_hint_titles else R.string.bins_reorder_hint_bins))
-    }
-
-    /** In custom order: the first pick is held; picking another swaps the two; picking it again lets go. */
-    fun pick(target: String) {
-        val current = local.value
-        if (!current.reordering) return
-        val held = current.picked
-        when {
-            held == null -> local.update { it.copy(picked = target) }
-            held == target -> local.update { it.copy(picked = null) }
-            else -> {
-                local.update { it.copy(picked = null) }
-                val openId = current.openBinId
-                viewModelScope.launch {
-                    if (openId != null) repository.swapEntries(openId, held, target) else repository.swapBins(held, target)
-                }
-            }
-        }
-    }
-
-    /** Back while custom order is on: first drop the held pick, then leave custom order. Returns whether it was used. */
-    fun backInReorder(): Boolean {
-        val current = local.value
-        if (!current.reordering) return false
-        if (current.picked != null) local.update { it.copy(picked = null) } else toggleReorder()
-        return true
-    }
-
-    fun toggleStar(bin: Bin) {
-        viewModelScope.launch { repository.toggleStar(bin.id) }
-        showMessage(
-            if (bin.starred) context.getString(R.string.bins_unstarred)
-            else context.getString(R.string.bins_starred, bin.name)
-        )
-    }
-
-    /** Null once the bin exists; otherwise why not, for the dialog to show. */
-    suspend fun createBin(name: String): String? = when (val result = repository.createBin(name)) {
-        is BinNameResult.Ok -> {
-            showMessage(context.getString(R.string.bins_created, com.nuvio.tv.core.bins.cleanBinName(name)))
-            null
-        }
-        BinNameResult.Blank -> context.getString(R.string.bins_name_blank)
-        BinNameResult.Duplicate -> context.getString(R.string.bins_name_taken, com.nuvio.tv.core.bins.cleanBinName(name))
-    }
-
-    suspend fun renameBin(bin: Bin, name: String): String? = when (repository.renameBin(bin.id, name)) {
-        is BinNameResult.Ok -> null
-        BinNameResult.Blank -> context.getString(R.string.bins_name_blank)
-        BinNameResult.Duplicate -> context.getString(R.string.bins_name_taken, com.nuvio.tv.core.bins.cleanBinName(name))
-    }
-
-    fun deleteBin(bin: Bin) {
-        if (local.value.openBinId == bin.id) closeBin()
-        viewModelScope.launch { repository.deleteBin(bin.id) }
-        showMessage(context.getString(R.string.bins_deleted, bin.name))
-    }
-
-    fun removeTitle(bin: Bin, title: BinTitle) {
-        viewModelScope.launch { repository.remove(bin.id, title.entry.id, title.entry.type) }
-        showMessage(context.getString(R.string.bins_removed_from, bin.name))
-    }
-
-    fun onTitleOpened(bin: Bin, title: BinTitle) {
-        viewModelScope.launch { repository.markEntryViewed(bin.id, title.entry.key) }
+    fun onTitleOpened(title: BinTitle) {
         prefetch(title.entry)
     }
 

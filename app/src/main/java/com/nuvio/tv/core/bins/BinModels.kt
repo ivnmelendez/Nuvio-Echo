@@ -175,6 +175,20 @@ object BinsReducer {
     fun removeEntry(state: BinsState, binId: String, key: String): BinsState =
         state.updateBin(binId) { bin -> bin.copy(entries = normalizedEntryOrder(bin.entries.filterNot { it.key == key })) }
 
+    /** Watch later: [entry] goes into the starred bin (or the first one, or a new [defaultName] one when there are none). */
+    fun addToDefault(state: BinsState, entry: BinEntry, now: Long, newBinId: () -> String, defaultName: String): BinsState {
+        var next = state
+        val target = state.starred ?: state.bins.sortedWith(customBinComparator).firstOrNull()
+        val targetId = target?.id ?: newBinId().also { id -> next = create(next, id, defaultName, now) }
+        return addEntry(next, targetId, entry, now)
+    }
+
+    /** Watch later: the title leaves every bin that holds it. */
+    fun removeEverywhere(state: BinsState, key: String): BinsState =
+        state.copy(bins = state.bins.map { bin ->
+            if (bin.contains(key)) bin.copy(entries = normalizedEntryOrder(bin.entries.filterNot { it.key == key })) else bin
+        })
+
     fun markBinViewed(state: BinsState, binId: String, now: Long): BinsState =
         state.updateBin(binId) { it.copy(viewedAt = now) }
 

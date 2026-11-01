@@ -491,8 +491,8 @@ fun HomeScreen(
 }
 
 /**
- * Holding a title on Home: the new look's glass menu. Its bin works as the details page's Bin button does: into the
- * starred bin, or out of the one bin holding it; "Bins…" lists every bin, with a new one at the end.
+ * Holding a title on Home: the new look's glass menu. Watch later saves the title or takes it out, as the details
+ * page's button does.
  */
 @Composable
 private fun HomePosterOptionsDialog(
@@ -510,48 +510,13 @@ private fun HomePosterOptionsDialog(
     binsViewModel: HomePosterBinsViewModel = hiltViewModel()
 ) {
     val binsState by binsViewModel.state.collectAsStateWithLifecycle()
-    val bins = binsViewModel.bins(binsState)
-    val holding = binsViewModel.holding(binsState, item)
-    var listingBins by remember { mutableStateOf(false) }
-    var naming by remember { mutableStateOf(false) }
-    if (naming) {
-        val blank = stringResource(R.string.bins_name_blank)
-        val taken = stringResource(R.string.bins_name_taken)
-        com.nuvio.tv.ui.screens.library.BinNameDialog(
-            title = stringResource(R.string.bins_name_title),
-            initial = "",
-            confirmLabel = stringResource(R.string.bins_create_button),
-            onConfirm = { name -> binsViewModel.createAndAdd(name, item, addonBaseUrl, blank) { taken.format(it) } },
-            onDismiss = { naming = false; onDismiss() }
-        )
-        return
-    }
-    fun setInBin(binId: String, add: Boolean) {
-        binsViewModel.setInBin(binId, item, addonBaseUrl, add)
-        onDismiss()
-    }
-    val starred = bins.firstOrNull { it.starred }
-    val binOption = when {
-        holding.size == 1 -> NewLookOption(stringResource(R.string.home_poster_remove_from_bin, holding.single().name)) {
-            setInBin(holding.single().id, add = false)
-        }
-        holding.isEmpty() && starred != null -> NewLookOption(stringResource(R.string.home_poster_add_to_bin, starred.name)) {
-            setInBin(starred.id, add = true)
-        }
-        else -> null
-    }
-    val binList = bins.map { bin ->
-        NewLookOption(if (bin.starred) "★  ${bin.name}" else bin.name, checked = bin in holding) {
-            setInBin(bin.id, add = bin !in holding)
-        }
-    } + NewLookOption("+  " + stringResource(R.string.nd_bin_new)) { naming = true }
+    val saved = binsViewModel.isSaved(binsState, item)
     val mainOptions = listOfNotNull(
         NewLookOption(stringResource(R.string.cw_action_go_to_details), onClick = onDetails),
-        binOption,
-        NewLookOption(
-            if (holding.size > 1) stringResource(R.string.home_poster_in_bins, holding.size)
-            else stringResource(R.string.home_poster_choose_bin)
-        ) { listingBins = true },
+        NewLookOption(stringResource(if (saved) R.string.watch_later_remove else R.string.watch_later_add)) {
+            binsViewModel.toggle(item, addonBaseUrl, saved)
+            onDismiss()
+        },
         if (isMovie || isSeries) {
             NewLookOption(
                 stringResource(if (isWatched) R.string.hero_mark_unwatched else R.string.hero_mark_watched),
@@ -563,16 +528,14 @@ private fun HomePosterOptionsDialog(
         },
         if (showManageLists) NewLookOption(stringResource(R.string.library_manage_lists), onClick = onManageLists) else null
     )
-    // One menu, its options swapped for the list of bins, so it doesn't close and reopen in between.
     NewLookOptionsMenu(
-        title = if (listingBins) stringResource(R.string.nd_bin_picker_title) else item.name,
-        subtitle = if (listingBins) item.name else stringResource(R.string.home_poster_dialog_subtitle),
-        image = if (listingBins) null else item.background ?: item.poster,
-        options = if (listingBins) binList else mainOptions,
-        // Back from the list of bins goes back to the menu.
-        onDismiss = { if (listingBins) listingBins = false else onDismiss() },
-        initialIndex = if (listingBins) bins.indexOfFirst { it.starred }.coerceAtLeast(0) else 0,
-        contentKey = listingBins
+        title = item.name,
+        subtitle = stringResource(R.string.home_poster_dialog_subtitle),
+        image = item.background ?: item.poster,
+        options = mainOptions,
+        onDismiss = onDismiss,
+        initialIndex = 0,
+        contentKey = false
     )
 }
 

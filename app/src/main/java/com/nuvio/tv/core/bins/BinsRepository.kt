@@ -60,6 +60,12 @@ interface BinsRepository {
 
     suspend fun add(binId: String, item: LibraryEntryInput)
     suspend fun remove(binId: String, itemId: String, itemType: String)
+
+    /** Watch later, the one list the app shows: saves [item] into the default bin. */
+    suspend fun addToWatchLater(item: LibraryEntryInput)
+
+    /** Watch later: takes the title out of every bin and out of the saved library. */
+    suspend fun removeFromWatchLater(itemId: String, itemType: String)
 }
 
 /**
@@ -172,6 +178,31 @@ class BinsRepositoryImpl @Inject constructor(
             ?: return@withLock
         val after = write(profileId) { BinsReducer.removeEntry(it, binId, key) }
         if (after.bins.none { it.contains(key) }) setInLibrary(entry.toInput(), false)
+    }
+
+    override suspend fun addToWatchLater(item: LibraryEntryInput) = lock.withLock {
+        val profileId = profileManager.activeProfileId.value
+        // Library first: if it fails, the bins are left as they were.
+        setInLibrary(item, true)
+        write(profileId) {
+            BinsReducer.addToDefault(
+                state = it,
+                entry = item.toEntry(),
+                now = now(),
+                newBinId = { UUID.randomUUID().toString() },
+                defaultName = context.getString(R.string.bins_default_name)
+            )
+        }
+        Unit
+    }
+
+    override suspend fun removeFromWatchLater(itemId: String, itemType: String) = lock.withLock {
+        val profileId = profileManager.activeProfileId.value
+        val key = binKey(itemId, itemType)
+        val entry = read(profileId).bins.firstNotNullOfOrNull { bin -> bin.entries.firstOrNull { it.key == key } }
+        write(profileId) { BinsReducer.removeEverywhere(it, key) }
+        entry?.let { setInLibrary(it.toInput(), false) }
+        Unit
     }
 
     private suspend fun reconcile(profileId: Int) = lock.withLock {
