@@ -394,7 +394,7 @@ internal fun PosterCard(
                 Box(modifier = Modifier.fillMaxSize().background(
                     Brush.verticalGradient(0f to Color.Transparent, 0.5f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.6f))
                 ))
-                CardLogo(logo, title, 0.55f, 0.4f, dims.posterOpenWidth, dims.posterHeight, 14.dp, 20f)
+                CardLogo(logo, title, 0.4f, 0.28f, dims.posterOpenWidth, dims.posterHeight, 14.dp, 20f)
             }
         }
         if (watched) WatchedMark(Modifier.align(Alignment.TopEnd).padding(8.dp))
@@ -456,7 +456,7 @@ internal fun HighlightCard(
         Box(modifier = Modifier.fillMaxSize().background(
             Brush.verticalGradient(0f to Color.Transparent, 0.45f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.62f))
         ))
-        CardLogo(logo, title, 0.5f, 0.34f, dims.highlightWidth, dims.highlightHeight, 16.dp, 22f)
+        CardLogo(logo, title, 0.38f, 0.26f, dims.highlightWidth, dims.highlightHeight, 16.dp, 22f)
         if (chipLabel != null) {
             SoundChip(
                 text = chipLabel,
