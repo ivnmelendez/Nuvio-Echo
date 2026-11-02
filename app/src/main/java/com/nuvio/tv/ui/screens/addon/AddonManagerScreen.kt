@@ -148,7 +148,8 @@ fun AddonManagerScreen(
         }
         return
     }
-    val isEssential = experienceMode == ExperienceMode.ESSENTIAL
+    // The Play build has no experience levels to pick from, so the catalog order, collections and addon order always show.
+    val isEssential = experienceMode == ExperienceMode.ESSENTIAL && !com.nuvio.tv.core.build.AppFeaturePolicy.essentialSettingsOnly
     val webConfigMode = viewModel.webConfigMode(experienceMode ?: ExperienceMode.ADVANCED)
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
