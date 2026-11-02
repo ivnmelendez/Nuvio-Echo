@@ -11,6 +11,8 @@ object AppFeaturePolicy {
     val carouselRowsEnabled: Boolean = false
     /** The collections screen in addon settings (folders of catalogs on Home). */
     val collectionsEnabled: Boolean = false
+    /** Trakt and Simkl in Tracking; off leaves MDBList as the only service. */
+    val traktAndSimklEnabled: Boolean = false
     val essentialSettingsOnly: Boolean = true
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = ""

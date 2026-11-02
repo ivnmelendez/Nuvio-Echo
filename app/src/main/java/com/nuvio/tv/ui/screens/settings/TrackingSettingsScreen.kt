@@ -92,7 +92,8 @@ fun TrackingSettingsScreen(
     LaunchedEffect(Unit) {
         if (inline) return@LaunchedEffect
         delay(160L)
-        runCatching { traktFocusRequester.requestFocus() }
+        val first = if (com.nuvio.tv.core.build.AppFeaturePolicy.traktAndSimklEnabled) traktFocusRequester else mdbListFocusRequester
+        runCatching { first.requestFocus() }
     }
 
     LaunchedEffect(
@@ -516,30 +517,32 @@ internal fun TrackingSettingsOverview(
                             title = stringResource(R.string.tracking_accounts_title),
                             subtitle = stringResource(R.string.tracking_accounts_subtitle)
                         ) {
-                            SettingsActionRow(
-                                title = stringResource(R.string.trakt_name),
-                                subtitle = traktPresentation.subtitle,
-                                value = traktPresentation.value,
-                                valueColor = traktPresentation.color,
-                                leadingRawIconRes = R.raw.trakt_tv_favicon,
-                                leadingArtworkSize = 40.dp,
-                                onClick = onTraktClick,
-                                modifier = Modifier
-                                    .focusRequester(traktFocusRequester)
-                                    .testTag(TrackingSettingsTestTags.TRAKT_PROVIDER)
-                            )
-                            SettingsActionRow(
-                                title = stringResource(R.string.simkl_name),
-                                subtitle = simklPresentation.subtitle,
-                                value = simklPresentation.value,
-                                valueColor = simklPresentation.color,
-                                leadingRawIconRes = R.raw.simkl_tv_glyph,
-                                leadingArtworkSize = 40.dp,
-                                onClick = onSimklClick,
-                                modifier = Modifier
-                                    .focusRequester(simklFocusRequester)
-                                    .testTag(TrackingSettingsTestTags.SIMKL_PROVIDER)
-                            )
+                            if (com.nuvio.tv.core.build.AppFeaturePolicy.traktAndSimklEnabled) {
+                                SettingsActionRow(
+                                    title = stringResource(R.string.trakt_name),
+                                    subtitle = traktPresentation.subtitle,
+                                    value = traktPresentation.value,
+                                    valueColor = traktPresentation.color,
+                                    leadingRawIconRes = R.raw.trakt_tv_favicon,
+                                    leadingArtworkSize = 40.dp,
+                                    onClick = onTraktClick,
+                                    modifier = Modifier
+                                        .focusRequester(traktFocusRequester)
+                                        .testTag(TrackingSettingsTestTags.TRAKT_PROVIDER)
+                                )
+                                SettingsActionRow(
+                                    title = stringResource(R.string.simkl_name),
+                                    subtitle = simklPresentation.subtitle,
+                                    value = simklPresentation.value,
+                                    valueColor = simklPresentation.color,
+                                    leadingRawIconRes = R.raw.simkl_tv_glyph,
+                                    leadingArtworkSize = 40.dp,
+                                    onClick = onSimklClick,
+                                    modifier = Modifier
+                                        .focusRequester(simklFocusRequester)
+                                        .testTag(TrackingSettingsTestTags.SIMKL_PROVIDER)
+                                )
+                            }
                             SettingsActionRow(
                                 title = stringResource(R.string.mdblist_name),
                                 subtitle = mdbListPresentation.subtitle,
