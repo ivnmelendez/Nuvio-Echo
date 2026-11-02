@@ -20,8 +20,12 @@ data class RemoteRowItems(val row: RemoteRow, val items: List<MetaPreview>)
 @Singleton
 class RemoteTabRowsRepository @Inject constructor(
     private val config: RemoteHomeConfigRepository,
-    private val lists: MdbListListRepository
+    private val lists: MdbListListRepository,
+    private val urlProvider: HomeConfigUrlProvider
 ) {
+    /** The address the rows come from; it changes when an addon that names one is added, removed or turned off. */
+    fun configUrl(): kotlinx.coroutines.flow.Flow<String> = urlProvider.urlFlow()
+
     suspend fun cached(tab: String): List<RemoteRowItems> {
         val rows = config.cached()?.rowsFor(tab).orEmpty().filter { it.source != RemoteRow.SOURCE_ADDON }
         return rows.map { RemoteRowItems(it, lists.cachedItems(it)) }.filter { it.items.isNotEmpty() }

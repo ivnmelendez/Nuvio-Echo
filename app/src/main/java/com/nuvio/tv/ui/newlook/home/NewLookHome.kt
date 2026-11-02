@@ -162,6 +162,8 @@ class NewLookHomeMemory {
     internal var slide = 0
     /** Home's rows have held still once already: coming back from a details page it needn't wait for that again. */
     internal var settled = false
+    /** The address [remoteRows] were read from; other rows are not these. */
+    internal var remoteUrl: String? = null
     /** The rows published for each tab, as last read: back from a details page Home has them on its first frame. */
     internal val remoteRows = HashMap<String, List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>>()
     /** The featured titles, picked when Home first opens and again after a long time away (see [RESHUFFLE_AFTER_MS]). */
@@ -247,6 +249,8 @@ internal interface NewLookHomeSource {
     suspend fun cachedRemoteRows(tab: String): List<com.nuvio.tv.data.remoteconfig.RemoteRowItems> = emptyList()
     /** The same, refreshed from the network. */
     suspend fun loadRemoteRows(tab: String): List<com.nuvio.tv.data.remoteconfig.RemoteRowItems> = emptyList()
+    /** Where the remote rows come from now; a different value than before means those rows are not this Home's any more. */
+    fun remoteConfigUrl(): kotlinx.coroutines.flow.Flow<String> = kotlinx.coroutines.flow.flowOf("")
 }
 
 private fun viewModelSource(
@@ -263,6 +267,7 @@ private fun viewModelSource(
     override val memory get() = viewModel.newLookMemoryFor(remoteTab)
     override suspend fun cachedRemoteRows(tab: String) = remote.cached(tab)
     override suspend fun loadRemoteRows(tab: String) = remote.load(tab)
+    override fun remoteConfigUrl() = remote.configUrl()
     override val scrollToTop get() = viewModel.scrollToTopTrigger
     override val trailerUrls get() = viewModel.trailerPreviewUrls
     override val trailerAudioUrls get() = viewModel.trailerPreviewAudioUrls
@@ -418,13 +423,27 @@ internal fun NewLookHomeContent(
     var remote by remember(source, remoteTab) { mutableStateOf<List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>?>(remembered) }
     var remoteResolved by remember(source, remoteTab) { mutableStateOf(remoteTab == null || remembered != null) }
     var remoteLoadedAt by remember(source, remoteTab) { mutableLongStateOf(0L) }
+    // Where the rows come from changes with the addons (one that names its own rows file, added or turned off).
+    val configUrl by remember(source) { source.remoteConfigUrl() }.collectAsState(initial = null)
     suspend fun refreshRemote(tab: String) {
         val fresh = runCatching { source.loadRemoteRows(tab) }.getOrDefault(emptyList())
-        if (fresh.isNotEmpty() && fresh != remote) { remote = fresh; memory.remoteRows[tab] = fresh }
+        if (fresh.isNotEmpty()) {
+            if (fresh != remote) { remote = fresh; memory.remoteRows[tab] = fresh }
+        } else if (memory.remoteUrl != configUrl) {
+            // Another address and nothing published there: the old rows are not this Home's, Home falls back to catalogs.
+            remote = null
+            memory.remoteRows.remove(tab)
+        }
         remoteLoadedAt = android.os.SystemClock.elapsedRealtime()
     }
-    LaunchedEffect(source, remoteTab) {
+    LaunchedEffect(source, remoteTab, configUrl) {
         val tab = remoteTab ?: return@LaunchedEffect
+        val url = configUrl ?: return@LaunchedEffect
+        if (memory.remoteUrl != null && memory.remoteUrl != url) {
+            remote = null
+            memory.remoteRows.remove(tab)
+            remoteResolved = false
+        }
         val saved = runCatching { source.cachedRemoteRows(tab) }.getOrDefault(emptyList())
         if (saved.isNotEmpty()) {
             if (remote == null) remote = saved
@@ -432,6 +451,7 @@ internal fun NewLookHomeContent(
             remoteResolved = true
         }
         refreshRemote(tab)
+        memory.remoteUrl = url
         remoteResolved = true
     }
 
