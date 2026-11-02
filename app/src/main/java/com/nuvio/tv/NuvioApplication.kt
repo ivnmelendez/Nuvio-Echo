@@ -29,6 +29,7 @@ import com.nuvio.tv.data.local.ImagePerformancePreferences
 import com.nuvio.tv.data.local.SentrySettingsDataStore
 import com.nuvio.tv.data.simkl.SimklAnimeIdPreferenceHolder
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -47,6 +48,7 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
     @Inject lateinit var imagePerformancePreferences: ImagePerformancePreferences
     @Inject lateinit var simklAnimeIdPreferenceHolder: SimklAnimeIdPreferenceHolder
     @Inject lateinit var streamPrefetcher: dagger.Lazy<com.nuvio.tv.core.streams.StreamPrefetcher>
+    @Inject lateinit var addonRepository: dagger.Lazy<com.nuvio.tv.domain.repository.AddonRepository>
     private val startupScope = kotlinx.coroutines.CoroutineScope(
         kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Default
     )
@@ -94,12 +96,33 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
             kotlinx.coroutines.delay(3_000)
             streamPrefetcher.get().warmUpAddonHosts()
         }
+        installDefaultAddonsOnce()
         // Load locale synchronously so it's available before Activity.attachBaseContext.
         // SharedPreferences reads are fast (cached in memory after first access).
         val tag = getSharedPreferences("app_locale", Context.MODE_PRIVATE)
             .getString("locale_tag", null)
         // Spanish (Latin America) until someone picks another language (or System) in Settings, which stores a value.
         LocaleCache.localeTag = tag ?: DEFAULT_APP_LOCALE_TAG
+    }
+
+    /** First launch only: puts the build's default addons in. Removing one later sticks, because the flag stays set. */
+    private fun installDefaultAddonsOnce() {
+        val urls = com.nuvio.tv.core.build.AppFeaturePolicy.defaultAddonUrls
+        if (urls.isEmpty()) return
+        val prefs = getSharedPreferences("default_addons", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("seeded", false)) return
+        startupScope.launch {
+            val repository = addonRepository.get()
+            if (repository.getInstalledAddons().first().isNotEmpty()) {
+                prefs.edit().putBoolean("seeded", true).apply()
+                return@launch
+            }
+            urls.forEach { runCatching { repository.addAddon(it) } }
+            // Stay unset when the manifest could not be fetched (offline), so the next launch tries again.
+            if (repository.getInstalledAddons().first().isNotEmpty()) {
+                prefs.edit().putBoolean("seeded", true).apply()
+            }
+        }
     }
 
     override fun newImageLoader(context: android.content.Context): ImageLoader {
@@ -186,4 +209,4 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
 }
 
 /** The app language on a device where none has been chosen yet. */
-internal const val DEFAULT_APP_LOCALE_TAG = "es-419"
+internal val DEFAULT_APP_LOCALE_TAG: String get() = com.nuvio.tv.core.build.AppFeaturePolicy.defaultAppLocaleTag

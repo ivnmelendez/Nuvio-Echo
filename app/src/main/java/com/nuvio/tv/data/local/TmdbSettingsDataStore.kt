@@ -53,7 +53,7 @@ class TmdbSettingsDataStore @Inject constructor(
                 enabled = prefs[enabledKey] ?: true,
                 modernHomeEnabled = prefs[modernHomeEnabledKey] ?: true,
                 enrichContinueWatching = prefs[enrichContinueWatchingKey] ?: true,
-                language = prefs[languageKey] ?: "es-419",
+                language = tmdbLanguageForApp(),
                 useArtwork = prefs[useArtworkKey] ?: true,
                 useBasicInfo = prefs[useBasicInfoKey] ?: true,
                 useDetails = prefs[useDetailsKey] ?: true,
@@ -122,5 +122,32 @@ class TmdbSettingsDataStore @Inject constructor(
 
     suspend fun setUseCollections(enabled: Boolean) {
         store().edit { it[useCollectionsKey] = enabled }
+    }
+}
+
+/**
+ * The language TMDB answers in follows the app's own language: no separate choice. Latin American Spanish has no
+ * TMDB code of its own, so it asks for the Mexican one.
+ */
+internal fun tmdbLanguageForApp(): String {
+    val tag = com.nuvio.tv.LocaleCache.localeTag
+        .takeIf { it != com.nuvio.tv.LocaleCache.UNSET && it.isNotEmpty() }
+    return tmdbLanguageFor(if (tag != null) java.util.Locale.forLanguageTag(tag) else java.util.Locale.getDefault())
+}
+
+internal fun tmdbLanguageFor(locale: java.util.Locale): String {
+    val language = when (locale.language) {
+        "in" -> "id"
+        "iw" -> "he"
+        "" -> return "en-US"
+        else -> locale.language
+    }
+    return when (language) {
+        "en" -> "en-US"
+        "es" -> if (locale.country.isEmpty() || locale.country == "ES") "es-ES" else "es-MX"
+        "pt" -> if (locale.country == "PT") "pt-PT" else "pt-BR"
+        "zh" -> if (locale.country == "TW") "zh-TW" else "zh-CN"
+        "sr" -> "sr"
+        else -> language
     }
 }

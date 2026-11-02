@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.nuvio.tv.R
 import com.nuvio.tv.core.build.AppFeaturePolicy
-import com.nuvio.tv.data.local.AVAILABLE_TMDB_LANGUAGES
 import com.nuvio.tv.data.local.displayName
 
 @Composable
@@ -53,7 +52,6 @@ fun TmdbSettingsContent(
     initialFocusRequester: FocusRequester? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var showLanguageDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -119,20 +117,6 @@ fun TmdbSettingsContent(
                                 TmdbSettingsEvent.ToggleEnrichContinueWatching(!uiState.enrichContinueWatching)
                             )
                         }
-                    )
-                }
-
-                item(key = "tmdb_language") {
-                    val languageName = AVAILABLE_TMDB_LANGUAGES
-                        .find { it.code == uiState.language }
-                        ?.displayName
-                        ?: uiState.language.uppercase()
-                    SettingsActionRow(
-                        title = stringResource(R.string.tmdb_language_title),
-                        subtitle = stringResource(R.string.tmdb_language_subtitle),
-                        value = languageName,
-                        enabled = uiState.enabled,
-                        onClick = { showLanguageDialog = true }
                     )
                 }
 
@@ -254,18 +238,5 @@ fun TmdbSettingsContent(
             SettingsVerticalScrollIndicators(state = tmdbListState)
             }
         }
-    }
-
-    if (showLanguageDialog) {
-        LanguageSelectionDialog(
-            title = stringResource(R.string.tmdb_language_dialog_title),
-            selectedLanguage = uiState.language,
-            showNoneOption = false,
-            onLanguageSelected = { language ->
-                viewModel.onEvent(TmdbSettingsEvent.SetLanguage(language ?: "en"))
-                showLanguageDialog = false
-            },
-            onDismiss = { showLanguageDialog = false }
-        )
     }
 }

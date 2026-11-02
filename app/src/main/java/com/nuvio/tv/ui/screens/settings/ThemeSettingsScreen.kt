@@ -124,7 +124,7 @@ fun ThemeSettingsContent(
             context.getSharedPreferences("app_locale", android.content.Context.MODE_PRIVATE)
                 .getString("locale_tag", null)
                 // Nothing stored yet: the app is in its default language (see DEFAULT_APP_LOCALE_TAG).
-                .let { stored -> if (stored == null) com.nuvio.tv.DEFAULT_APP_LOCALE_TAG else stored.takeIf { it.isNotEmpty() } }
+                .let { stored -> (stored ?: com.nuvio.tv.DEFAULT_APP_LOCALE_TAG).takeIf { it.isNotEmpty() } }
         )
     }
     val currentLocaleName = supportedLocales.firstOrNull { it.first == selectedTag }?.second ?: stringResource(R.string.appearance_language_system)

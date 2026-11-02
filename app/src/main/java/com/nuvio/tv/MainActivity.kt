@@ -641,6 +641,7 @@ open class MainActivity : ComponentActivity() {
                     if (!surfaceContentReady) {
                         // Still loading auth state; nothing to show yet.
                     } else if (
+                        com.nuvio.tv.core.build.AppFeaturePolicy.codeActivationEnabled &&
                         hasSeenAuthQrOnFirstLaunch == false &&
                         authState !is AuthState.FullAccount &&
                         !onboardingCompletedThisSession
@@ -709,7 +710,7 @@ open class MainActivity : ComponentActivity() {
                     // instant the addon list still reads empty right after activating.
                     val needsEssentialAddonSetup =
                         effectiveExperienceMode == ExperienceMode.ESSENTIAL &&
-                            installedAddons.orEmpty().isEmpty() &&
+                            installedAddons.orEmpty().lacksStreamSource() &&
                             !mainUiPrefs.addonSetupSkipped &&
                             !com.nuvio.tv.ui.screens.account.ActivationPrefs.isDone(context)
                     val pendingDeepLink by pendingDeepLinkUrl.collectAsState()
@@ -728,7 +729,8 @@ open class MainActivity : ComponentActivity() {
                     }
 
                     // First launch on a device with no addons: the short code a person was given sets theirs up.
-                    val needsCodeActivation = installedAddons.orEmpty().isEmpty() &&
+                    val needsCodeActivation = com.nuvio.tv.core.build.AppFeaturePolicy.codeActivationEnabled &&
+                        installedAddons.orEmpty().isEmpty() &&
                         !com.nuvio.tv.ui.screens.account.ActivationPrefs.isDone(context)
 
                     if (needsCodeActivation) {
@@ -1389,3 +1391,14 @@ object LocaleCache {
     @Volatile
     var localeTag: String = UNSET
 }
+
+/**
+ * No addon at all, or, when the build installs a metadata-only addon by default, none that serves streams: the person
+ * still has nothing to watch, so the addon setup screen is the right first screen.
+ */
+private fun List<com.nuvio.tv.domain.model.Addon>.lacksStreamSource(): Boolean =
+    if (com.nuvio.tv.core.build.AppFeaturePolicy.defaultAddonUrls.isEmpty()) {
+        isEmpty()
+    } else {
+        none { addon -> addon.resources.any { it.name.equals("stream", ignoreCase = true) } }
+    }

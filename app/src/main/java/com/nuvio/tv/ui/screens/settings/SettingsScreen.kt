@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.People
@@ -163,9 +164,11 @@ private fun settingsSectionSpec(category: SettingsCategory): SettingsSectionSpec
     SettingsCategory.LAYOUT -> SettingsSectionSpec(category, stringResource(R.string.settings_layout), Icons.Default.GridView, destination = SettingsSectionDestination.Inline)
     SettingsCategory.CONTENT_DISCOVERY -> SettingsSectionSpec(category, stringResource(R.string.settings_content_discovery), Icons.Default.Explore, destination = SettingsSectionDestination.Inline)
     SettingsCategory.PLAYBACK -> SettingsSectionSpec(category, stringResource(R.string.settings_playback), Icons.Rounded.PlayArrow, destination = SettingsSectionDestination.Inline)
+    SettingsCategory.ADDONS -> SettingsSectionSpec(category, stringResource(R.string.nav_addons), Icons.Default.Extension, destination = SettingsSectionDestination.External)
     SettingsCategory.INTEGRATION -> SettingsSectionSpec(category, stringResource(R.string.settings_integration), Icons.Default.Link, destination = SettingsSectionDestination.Inline)
     SettingsCategory.TRACKING -> SettingsSectionSpec(category, stringResource(R.string.settings_tracking_title), Icons.Default.Sync, destination = SettingsSectionDestination.Inline)
     SettingsCategory.ADVANCED -> SettingsSectionSpec(category, stringResource(R.string.settings_advanced), Icons.Default.Build, destination = SettingsSectionDestination.Inline)
+    SettingsCategory.LANGUAGE -> SettingsSectionSpec(category, stringResource(R.string.appearance_language), Icons.Default.Language, destination = SettingsSectionDestination.Inline)
     SettingsCategory.ABOUT -> SettingsSectionSpec(category, stringResource(R.string.about_title), Icons.Default.Info, destination = SettingsSectionDestination.Inline)
     SettingsCategory.DEBUG -> SettingsSectionSpec(category, stringResource(R.string.settings_debug), Icons.Default.BugReport, destination = SettingsSectionDestination.Inline)
     SettingsCategory.EXPERIENCE -> SettingsSectionSpec(category, stringResource(R.string.settings_experience), Icons.Default.Tune, destination = SettingsSectionDestination.Inline)
@@ -235,7 +238,9 @@ fun SettingsScreen(
             SettingsCategory.ADVANCED to FocusRequester(),
             SettingsCategory.ABOUT to FocusRequester(),
             SettingsCategory.ACCOUNT to FocusRequester(),
-            SettingsCategory.TRACKING to FocusRequester()
+            SettingsCategory.TRACKING to FocusRequester(),
+            SettingsCategory.ADDONS to FocusRequester(),
+            SettingsCategory.LANGUAGE to FocusRequester()
         )
     }
     val railContainerFocusRequester = remember { FocusRequester() }
@@ -436,6 +441,7 @@ fun SettingsScreen(
                         when (section.category) {
                             SettingsCategory.ACCOUNT -> onNavigateToAuthQrSignIn()
                             SettingsCategory.TRACKING -> onNavigateToTracking()
+                            SettingsCategory.ADDONS -> onNavigateToAddons()
                             else -> Unit
                         }
                     } else {
@@ -845,7 +851,7 @@ private fun SettingsDetailPane(
             },
             essentialMode = isEssentialMode
         )
-        SettingsCategory.PLAYBACK -> if (isEssentialMode) {
+        SettingsCategory.PLAYBACK -> if (isEssentialMode || com.nuvio.tv.core.build.AppFeaturePolicy.essentialSettingsOnly) {
             EssentialPlaybackSettingsContent(
                 initialFocusRequester = if (allowDetailAutofocus) {
                     contentFocusRequesters[SettingsCategory.PLAYBACK]
@@ -894,6 +900,14 @@ private fun SettingsDetailPane(
             mdbListFocusRequester = integrationMdbListFocusRequester,
             animeSkipFocusRequester = integrationAnimeSkipFocusRequester,
             autoFocusEnabled = allowDetailAutofocus
+        )
+        SettingsCategory.ADDONS -> Unit
+        SettingsCategory.LANGUAGE -> AppLanguageSettingsContent(
+            initialFocusRequester = if (allowDetailAutofocus) {
+                contentFocusRequesters[SettingsCategory.LANGUAGE]
+            } else {
+                null
+            }
         )
         SettingsCategory.ABOUT -> AboutSettingsContent(
             onNavigateToSupportersContributors = onNavigateToSupportersContributors,

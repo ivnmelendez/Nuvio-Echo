@@ -15,9 +15,11 @@ internal enum class SettingsCategory(val group: SettingsRailGroup) {
     LAYOUT(SettingsRailGroup.LOOK),
     CONTENT_DISCOVERY(SettingsRailGroup.WATCH),
     PLAYBACK(SettingsRailGroup.WATCH),
+    ADDONS(SettingsRailGroup.WATCH),
     INTEGRATION(SettingsRailGroup.SERVICES),
     TRACKING(SettingsRailGroup.SERVICES),
     ADVANCED(SettingsRailGroup.SYSTEM),
+    LANGUAGE(SettingsRailGroup.SYSTEM),
     ABOUT(SettingsRailGroup.SYSTEM),
     DEBUG(SettingsRailGroup.SYSTEM),
     EXPERIENCE(SettingsRailGroup.SYSTEM)
@@ -28,8 +30,11 @@ internal fun visibleSettingsCategories(
     isEssentialMode: Boolean,
     isDebugBuild: Boolean
 ): List<SettingsCategory> = SettingsCategory.entries.filter { category ->
-    // Settings only shows About for now; the rest stays in the code, hidden.
-    category == SettingsCategory.ABOUT
+    // Settings only shows these for now; the rest stays in the code, hidden.
+    category == SettingsCategory.PLAYBACK ||
+        category == SettingsCategory.ADDONS ||
+        category == SettingsCategory.LANGUAGE ||
+        category == SettingsCategory.ABOUT
 }
 
 internal fun List<SettingsCategory>.startsNewGroup(index: Int): Boolean =
