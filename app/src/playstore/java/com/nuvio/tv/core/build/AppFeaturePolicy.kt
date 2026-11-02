@@ -17,6 +17,8 @@ object AppFeaturePolicy {
     val firstLaunchNoticeEnabled: Boolean = true
     /** The parental guide overlay needs a third-party server; the Play build never asks it. */
     val parentalGuideAvailable: Boolean = false
+    /** Home shows only the published rows (the addon's own, else the default file), never the addons' catalogs. */
+    val homeFromPublishedRowsOnly: Boolean = true
     val essentialSettingsOnly: Boolean = true
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = ""

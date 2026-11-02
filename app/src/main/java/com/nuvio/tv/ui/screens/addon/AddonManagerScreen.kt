@@ -417,7 +417,9 @@ fun AddonManagerScreen(
                 )
             }
 
-            if (!viewModel.isReadOnly && !isEssential && hasHomeVisibleCatalogs) {
+            if (!viewModel.isReadOnly && !isEssential && hasHomeVisibleCatalogs &&
+                !com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly
+            ) {
                 item {
                     CatalogOrderEntryCard(onClick = onNavigateToCatalogOrder)
                 }

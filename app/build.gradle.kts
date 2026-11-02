@@ -181,8 +181,8 @@ android {
         create("playstore") {
             dimension = "distribution"
             applicationId = "com.tivistream.tv"
-            // No rows of the owner's own: Home shows the installed addons' catalogs, unless an addon names a rows file.
-            buildConfigField("String", "REMOTE_CONFIG_URL", "\"\"")
+            // Home's rows when no installed addon names its own rows file (behaviorHints.homeConfigUrl).
+            buildConfigField("String", "REMOTE_CONFIG_URL", "\"https://raw.githubusercontent.com/ivnmelendez/nuvio-config/main/default-config.json\"")
             // No crash reporting service in the Play build: Play Console already has crash and ANR reports.
             buildConfigField("String", "SENTRY_DSN", "\"\"")
             buildConfigField("boolean", "FEATURE_PLUGINS_ENABLED", "false")
