@@ -10,12 +10,11 @@ class SettingsCatalogTest {
         visibleSettingsCategories(isPrimaryProfile = true, isEssentialMode = essential, isDebugBuild = debug)
 
     @Test
-    fun `settings shows playback, addons, integrations, tracking, language and about in that order`() {
+    fun `settings shows playback, addons, tracking, language and about in that order`() {
         assertEquals(
             listOf(
                 SettingsCategory.PLAYBACK,
                 SettingsCategory.ADDONS,
-                SettingsCategory.INTEGRATION,
                 SettingsCategory.TRACKING,
                 SettingsCategory.LANGUAGE,
                 SettingsCategory.ABOUT
@@ -49,7 +48,7 @@ class SettingsCatalogTest {
         val categories = visible()
         val dividerBefore = categories.indices.filter { categories.startsNewGroup(it) }.map { categories[it] }
         assertEquals(
-            listOf(SettingsCategory.INTEGRATION, SettingsCategory.LANGUAGE),
+            listOf(SettingsCategory.TRACKING, SettingsCategory.LANGUAGE),
             dividerBefore
         )
     }
