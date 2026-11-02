@@ -346,6 +346,10 @@ class NewLookPreviewTest {
         val viewModel = com.nuvio.tv.ui.screens.library.BinsViewModel(
             context = rule.activity.applicationContext,
             repository = bins,
+            libraryRepository = io.mockk.mockk<com.nuvio.tv.domain.repository.LibraryRepository>().also {
+                io.mockk.every { it.sourceMode } returns MutableStateFlow(com.nuvio.tv.domain.model.LibrarySourceMode.LOCAL)
+                io.mockk.every { it.libraryItems } returns MutableStateFlow(emptyList())
+            },
             layoutPreferences = layout,
             watchProgressRepository = progress,
             watchedSeriesStateHolder = seriesWatched,
