@@ -14,8 +14,6 @@
     <string name="beta_source_fallback_title">Fall back to the next source</string>
     <string name="beta_source_fallback_subtitle">Plays the next source if one fails.</string>
 
-    <string name="beta_playback_intro_title">Playback intro</string>
-    <string name="beta_playback_intro_subtitle">Plays intro, while media loads in background.</string>
     <string name="beta_auto_quality_title">Auto quality</string>
     <string name="beta_auto_quality_subtitle">Adds Auto to the quality menu. Raises and lowers quality based on your connection.</string>
     <string name="beta_auto_quality_confirm_title">Auto quality countdown</string>
@@ -28,7 +26,6 @@
     <string name="beta_source_switch_timeout_title">Quality and audio switch timeout</string>
     <string name="beta_source_switch_timeout_subtitle">How long a quality or audio picked in the player has to start.</string>
     <string name="beta_playback_intro_length_value">%1$d s</string>
-    <string name="beta_playback_intro_preview">Preview intro</string>
     <string name="beta_seek_thumbnails_title">Seek thumbnails</string>
     <string name="beta_minimal_player_title">Show playing quality</string>
     <string name="beta_minimal_player_subtitle">The quality that\'s playing, just above the time.</string>

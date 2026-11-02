@@ -14,7 +14,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import com.nuvio.tv.ui.screens.player.PlaybackIntroHost
 import com.nuvio.tv.core.intro.PlaybackIntroState
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.Modifier
@@ -82,7 +81,6 @@ fun NuvioNavHost(
                     }
             ) {
                 PlaybackNavHost(navController, startDestination)
-                PlaybackIntroHost()
                 com.nuvio.tv.ui.screens.search.VoiceListeningGlowHost()
                 com.nuvio.tv.ui.screens.calendar.CalendarReminderHost(navController)
                 com.nuvio.tv.ui.screens.detail.ReleaseReminderHost(navController)

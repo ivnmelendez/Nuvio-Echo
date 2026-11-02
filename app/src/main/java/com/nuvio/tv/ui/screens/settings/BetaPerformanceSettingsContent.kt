@@ -29,7 +29,6 @@ import com.nuvio.tv.core.home.BuiltInRow
 import com.nuvio.tv.core.streams.AudioLanguage
 import com.nuvio.tv.ui.screens.player.audioLanguageDisplayName
 import com.nuvio.tv.ui.navigation.LocalOpenSpeedTest
-import com.nuvio.tv.core.intro.PlaybackIntroState
 import com.nuvio.tv.data.repository.ParentalGuideRepository
 import com.nuvio.tv.ui.theme.NuvioTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -590,27 +589,6 @@ internal fun PlayerExtrasRows(viewModel: BetaPerformanceSettingsViewModel = hilt
         checked = settings.minimalPlayer,
         onToggle = { viewModel.setMinimalPlayer(!settings.minimalPlayer) }
     )
-    SettingsToggleRow(
-        title = stringResource(R.string.beta_playback_intro_title),
-        subtitle = stringResource(R.string.beta_playback_intro_subtitle),
-        checked = settings.playbackIntro,
-        onToggle = { viewModel.setPlaybackIntro(!settings.playbackIntro) }
-    )
-    // The intro's length, as pills, and its preview: shown only while it's on.
-    if (settings.playbackIntro) {
-        SettingsChipRow(
-            items = BetaPerformanceSettings.INTRO_LENGTHS.map { seconds ->
-                seconds.toString() to stringResource(R.string.beta_playback_intro_length_value, seconds)
-            },
-            selected = setOf(settings.introLengthSeconds.toString()),
-            onToggle = { key -> viewModel.setIntroLength(key.toInt()) }
-        )
-        SettingsActionRow(
-            title = stringResource(R.string.beta_playback_intro_preview),
-            subtitle = null,
-            onClick = { PlaybackIntroState.start() }
-        )
-    }
     SettingsToggleRow(
         title = stringResource(R.string.beta_seek_thumbnails_title),
         subtitle = null,

@@ -311,7 +311,8 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
             trailerQuality = prefs[trailerQualityKey]?.takeIf { it in BetaPerformanceSettings.TRAILER_QUALITIES }
                 ?: defaults.trailerQuality,
             minimalPlayer = prefs[minimalPlayerKey] ?: defaults.minimalPlayer,
-            playbackIntro = prefs[playbackIntroKey] ?: defaults.playbackIntro,
+            // The branded playback intro is gone from this app: it never plays.
+            playbackIntro = false,
             introLengthSeconds = prefs[introLengthKey]
                 ?.takeIf { it in BetaPerformanceSettings.INTRO_LENGTHS } ?: defaults.introLengthSeconds,
             seekThumbnails = prefs[seekThumbnailsKey] ?: defaults.seekThumbnails,
