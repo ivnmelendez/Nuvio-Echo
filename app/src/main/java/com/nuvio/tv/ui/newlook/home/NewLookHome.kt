@@ -273,6 +273,8 @@ private fun viewModelSource(
     override val trailerAudioUrls get() = viewModel.trailerPreviewAudioUrls
     override val builtInRows get() = builtIns.rows
     override suspend fun refreshBuiltIns() {
+        // Never shown in the Play build, so TMDB isn't asked for them.
+        if (com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly) return
         builtIns.refresh()
     }
     override fun cachedDetails(id: String) = enricher.cached(id)
@@ -297,10 +299,12 @@ private fun viewModelSource(
     }
     override val smartHighlights get() = smart.rows
     override suspend fun refreshSmartHighlights() {
+        if (com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly) return
         smart.refresh()
     }
     override suspend fun awaitStartupSources() {
         betaStore.awaitLoaded()
+        if (com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly) return
         builtIns.firstLoadDone.first { it }
         smart.firstLoadDone.first { it }
     }
