@@ -98,14 +98,20 @@ class MdbListListRepository @Inject constructor(
                         id = imdb,
                         type = type,
                         name = o.optString("title").ifBlank { imdb },
-                        poster = "https://images.metahub.space/poster/medium/$imdb/img",
+                        // The file carries the card's pictures and text when the importer wrote them (TMDB's CDN, no
+                        // per-title request); older files only have the id, so metahub's pictures stay as the fallback.
+                        poster = o.optString("poster").ifBlank { null }
+                            ?: "https://images.metahub.space/poster/medium/$imdb/img",
                         posterShape = PosterShape.POSTER,
-                        background = "https://images.metahub.space/background/medium/$imdb/img",
-                        logo = null,
-                        description = null,
+                        background = o.optString("background").ifBlank { null }
+                            ?: "https://images.metahub.space/background/medium/$imdb/img",
+                        logo = o.optString("logo").ifBlank { null },
+                        description = o.optString("description").ifBlank { null },
                         releaseInfo = o.optInt("year", 0).takeIf { it > 0 }?.toString(),
-                        imdbRating = null,
-                        genres = emptyList(),
+                        imdbRating = o.optDouble("rating", Double.NaN).takeIf { !it.isNaN() && it > 0 }?.toFloat(),
+                        genres = o.optJSONArray("genres")?.let { g -> List(g.length()) { g.optString(it) }.filter { it.isNotBlank() } }
+                            .orEmpty(),
+                        runtime = o.optString("runtime").ifBlank { null },
                         imdbId = imdb
                     )
                 )
