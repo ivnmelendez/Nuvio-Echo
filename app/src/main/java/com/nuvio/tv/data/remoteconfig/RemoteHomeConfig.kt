@@ -73,36 +73,55 @@ data class RemoteHomeConfig(
 @Singleton
 class RemoteHomeConfigRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val okHttpClient: OkHttpClient
+    private val okHttpClient: OkHttpClient,
+    private val urlProvider: HomeConfigUrlProvider
 ) {
     private val cacheFile get() = File(context.filesDir, "remote_home_config.json")
+    private val cacheUrlFile get() = File(context.filesDir, "remote_home_config.url")
 
     @Volatile
     private var memory: RemoteHomeConfig? = null
 
     /** Last known config without touching the network (memory, then disk); null on first run. */
-    suspend fun cached(): RemoteHomeConfig? = memory ?: withContext(Dispatchers.IO) {
-        runCatching { cacheFile.takeIf { it.exists() }?.readText() }.getOrNull()?.let(::parse)
-            ?.also { memory = it }
+    suspend fun cached(): RemoteHomeConfig? {
+        val url = urlProvider.current()
+        return withContext(Dispatchers.IO) {
+            // The copy on the device belongs to the address it came from; another address means another set of rows.
+            if (readCachedUrl() != url) {
+                memory = null
+                return@withContext null
+            }
+            memory ?: runCatching { cacheFile.takeIf { it.exists() }?.readText() }.getOrNull()?.let(::parse)
+                ?.also { memory = it }
+        }
     }
 
-    suspend fun load(): RemoteHomeConfig = withContext(Dispatchers.IO) {
-        val remote = runCatching { fetchRemote() }
+    suspend fun load(): RemoteHomeConfig {
+        val url = urlProvider.current()
+        return withContext(Dispatchers.IO) { loadFrom(url) }
+    }
+
+    private fun readCachedUrl(): String? =
+        runCatching { cacheUrlFile.takeIf { it.exists() }?.readText()?.trim() }.getOrNull()
+
+    private fun loadFrom(url: String): RemoteHomeConfig {
+        if (readCachedUrl() != url) memory = null
+        val remote = runCatching { fetchRemote(url) }
             .onFailure { Log.w(TAG, "Remote config fetch failed: ${it.message}") }
             .getOrNull()
         if (remote != null) {
-            runCatching { cacheFile.writeText(remote) }
-            parse(remote)?.let { memory = it; return@withContext it }
+            runCatching { cacheFile.writeText(remote); cacheUrlFile.writeText(url) }
+            parse(remote)?.let { memory = it; return it }
         }
-        runCatching { cacheFile.takeIf { it.exists() }?.readText() }.getOrNull()
+        if (readCachedUrl() != url) return RemoteHomeConfig()
+        return runCatching { cacheFile.takeIf { it.exists() }?.readText() }.getOrNull()
             ?.let(::parse) ?: RemoteHomeConfig()
     }
 
     private fun cacheBusted(url: String): String =
         url + (if ('?' in url) "&" else "?") + "t=" + (System.currentTimeMillis() / 60_000L)
 
-    private fun fetchRemote(): String? {
-        val url = BuildConfig.REMOTE_CONFIG_URL
+    private fun fetchRemote(url: String): String? {
         if (url.isBlank()) return null
         // raw.githubusercontent.com caches ~5 min per URL; a per-minute query value skips stale copies.
         val request = Request.Builder().url(cacheBusted(url)).build()

@@ -193,6 +193,8 @@ android {
         create("playstore") {
             dimension = "distribution"
             applicationId = "com.nuvio.app"
+            // No rows of the owner's own: Home shows the installed addons' catalogs, unless an addon names a rows file.
+            buildConfigField("String", "REMOTE_CONFIG_URL", "\"\"")
             buildConfigField("boolean", "FEATURE_PLUGINS_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_UPDATES_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_TRAILERS_ENABLED", "false")

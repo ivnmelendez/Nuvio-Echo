@@ -38,7 +38,8 @@ data class CatalogDescriptorDto(
 data class AddonBehaviorHintsDto(
     @Json(name = "configurable") val configurable: Boolean? = null,
     @Json(name = "configurationRequired") val configurationRequired: Boolean? = null,
-    @Json(name = "newEpisodeNotifications") val newEpisodeNotifications: Boolean? = null
+    @Json(name = "newEpisodeNotifications") val newEpisodeNotifications: Boolean? = null,
+    @Json(name = "homeConfigUrl") val homeConfigUrl: String? = null
 )
 
 @JsonClass(generateAdapter = true)

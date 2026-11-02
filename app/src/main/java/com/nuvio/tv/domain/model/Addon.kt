@@ -68,7 +68,8 @@ data class AddonResource(
 data class AddonBehaviorHints(
     val configurable: Boolean? = null,
     val configurationRequired: Boolean? = null,
-    val newEpisodeNotifications: Boolean? = null
+    val newEpisodeNotifications: Boolean? = null,
+    val homeConfigUrl: String? = null
 )
 
 @Immutable

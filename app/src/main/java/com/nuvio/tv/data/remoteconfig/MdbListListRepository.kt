@@ -24,13 +24,14 @@ import javax.inject.Singleton
 @Singleton
 class MdbListListRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val okHttpClient: OkHttpClient
+    private val okHttpClient: OkHttpClient,
+    private val urlProvider: HomeConfigUrlProvider
 ) {
     private data class Entry(val items: List<MetaPreview>, val expiresAtMs: Long)
 
     private val cache = ConcurrentHashMap<String, Entry>()
     private val sessionSeed = kotlin.random.Random.nextLong()
-    private val baseUrl: String get() = BuildConfig.REMOTE_CONFIG_URL.substringBeforeLast('/') + "/"
+    private suspend fun baseUrl(): String = urlProvider.current().substringBeforeLast('/') + "/"
 
     suspend fun items(row: RemoteRow): List<MetaPreview> = withContext(Dispatchers.IO) {
         val file = row.file ?: return@withContext emptyList()
@@ -38,7 +39,7 @@ class MdbListListRepository @Inject constructor(
             ?.let { return@withContext order(it.items, row) }
 
         val diskFile = File(context.filesDir, "remote_rows/" + file.replace('/', '_'))
-        val body = runCatching { fetch(baseUrl + file) }
+        val body = runCatching { fetch(baseUrl() + file) }
             .onFailure { Log.w(TAG, "Row $file fetch failed: ${it.message}") }
             .getOrNull()
             ?.also { runCatching { diskFile.parentFile?.mkdirs(); diskFile.writeText(it) } }

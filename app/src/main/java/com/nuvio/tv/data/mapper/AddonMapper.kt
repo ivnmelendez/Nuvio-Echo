@@ -128,7 +128,8 @@ private fun AddonBehaviorHintsDto.toDomain(): AddonBehaviorHints {
     return AddonBehaviorHints(
         configurable = configurable,
         configurationRequired = configurationRequired,
-        newEpisodeNotifications = newEpisodeNotifications
+        newEpisodeNotifications = newEpisodeNotifications,
+        homeConfigUrl = homeConfigUrl
     )
 }
 

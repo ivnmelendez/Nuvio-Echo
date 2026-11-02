@@ -402,7 +402,7 @@ private fun com.nuvio.tv.data.remoteconfig.RemoteRow.bannerUrl(): String? {
     val wide = android.content.res.Resources.getSystem().displayMetrics.widthPixels >= 2560
     val path = (if (wide) banner4k else null) ?: banner ?: return null
     if (path.startsWith("http")) return path
-    return com.nuvio.tv.BuildConfig.REMOTE_CONFIG_URL.substringBeforeLast('/') + "/" + path.trimStart('/')
+    return com.nuvio.tv.data.remoteconfig.HomeConfigUrlProvider.lastKnown.substringBeforeLast('/') + "/" + path.trimStart('/')
 }
 
 private const val TOP_TEN = 10
