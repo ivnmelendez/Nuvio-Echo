@@ -518,7 +518,8 @@ internal fun NewLookHomeContent(
             // The tab's rows aren't known yet: nothing but black, never another tab's cards.
             emptyList()
         } else if (remoteTab != null &&
-            (!published.isNullOrEmpty() || com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly)
+            (!published.isNullOrEmpty() || com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly ||
+                remoteTab == com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_WATCHLIST)
         ) {
             // Only the published rows; Continue Watching stays on Home.
             buildRemoteNewLookRows(

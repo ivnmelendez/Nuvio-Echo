@@ -35,7 +35,6 @@ import com.nuvio.tv.ui.screens.detail.MetaDetailsScreen
 import com.nuvio.tv.ui.screens.home.HomeScreen
 import com.nuvio.tv.ui.screens.addon.AddonManagerScreen
 import com.nuvio.tv.ui.screens.addon.CatalogOrderScreen
-import com.nuvio.tv.ui.screens.library.LibraryScreen
 import com.nuvio.tv.ui.screens.player.PlayerExitReason
 import com.nuvio.tv.ui.screens.player.PlayerScreen
 import com.nuvio.tv.ui.screens.player.PostPlayRecommendation
@@ -285,7 +284,8 @@ private fun PlaybackNavHost(
         // requests), showing the remote config's rows for that tab.
         for ((route, tab) in listOf(
             Screen.Movies.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_MOVIES,
-            Screen.SeriesTab.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_SERIES
+            Screen.SeriesTab.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_SERIES,
+            Screen.Library.route to com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_WATCHLIST
         )) {
             composable(route) {
                 // Home stays on the back stack under the other root screens; if it somehow isn't there, this screen
@@ -1245,14 +1245,6 @@ private fun PlaybackNavHost(
                             heroBackdropUrl = heroBackdrop
                         )
                     )
-                }
-            )
-        }
-
-        composable(Screen.Library.route) {
-            LibraryScreen(
-                onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
-                    navController.navigate(Screen.Detail.createRoute(itemId, itemType, addonBaseUrl))
                 }
             )
         }

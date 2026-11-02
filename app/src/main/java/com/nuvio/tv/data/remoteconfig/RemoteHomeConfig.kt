@@ -63,6 +63,8 @@ data class RemoteHomeConfig(
         const val TAB_HOME = "home"
         const val TAB_MOVIES = "movies"
         const val TAB_SERIES = "series"
+        /** Not from the config: Watch later, one row with every saved title, drawn like the other tabs. */
+        const val TAB_WATCHLIST = "watchlist"
     }
 }
 
