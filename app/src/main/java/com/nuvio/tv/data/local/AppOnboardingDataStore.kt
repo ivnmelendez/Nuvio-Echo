@@ -25,6 +25,7 @@ class AppOnboardingDataStore @Inject constructor(
 ) {
     private val dataStore = context.appOnboardingDataStore
     private val hasSeenAuthQrOnFirstLaunchKey = booleanPreferencesKey("has_seen_auth_qr_on_first_launch")
+    private val hasAcceptedNoticeKey = booleanPreferencesKey("has_accepted_first_launch_notice")
 
     val hasSeenAuthQrOnFirstLaunch: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[hasSeenAuthQrOnFirstLaunchKey] ?: false
@@ -33,6 +34,17 @@ class AppOnboardingDataStore @Inject constructor(
     suspend fun setHasSeenAuthQrOnFirstLaunch(value: Boolean) {
         dataStore.edit { prefs ->
             prefs[hasSeenAuthQrOnFirstLaunchKey] = value
+        }
+    }
+
+    /** The first-launch notice (no content included, addons are the person's own) was read and accepted. */
+    val hasAcceptedFirstLaunchNotice: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[hasAcceptedNoticeKey] ?: false
+    }
+
+    suspend fun setHasAcceptedFirstLaunchNotice(value: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[hasAcceptedNoticeKey] = value
         }
     }
 }

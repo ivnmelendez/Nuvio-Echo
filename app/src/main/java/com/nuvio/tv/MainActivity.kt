@@ -298,6 +298,10 @@ open class MainActivity : ComponentActivity() {
                 appOnboardingDataStore.hasSeenAuthQrOnFirstLaunch.map<Boolean, Boolean?> { it }
             }
             val hasSeenAuthQrOnFirstLaunch by hasSeenAuthQrFlow.collectAsState(initial = null)
+            val noticeAcceptedFlow = remember(appOnboardingDataStore) {
+                appOnboardingDataStore.hasAcceptedFirstLaunchNotice.map<Boolean, Boolean?> { it }
+            }
+            val firstLaunchNoticeAccepted by noticeAcceptedFlow.collectAsState(initial = null)
             val context = LocalContext.current
 
             val activeProfileId by profileManager.activeProfileId.collectAsState()
@@ -506,10 +510,20 @@ open class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.fillMaxSize()) {
 
                     var startupDestination = StartupDestination.Loading
-                    val surfaceContentReady = hasSeenAuthQrOnFirstLaunch != null
+                    val surfaceContentReady = hasSeenAuthQrOnFirstLaunch != null && firstLaunchNoticeAccepted != null
 
                     if (!surfaceContentReady) {
                         // Still loading the first-launch flag; nothing to show yet.
+                    } else if (
+                        com.nuvio.tv.core.build.AppFeaturePolicy.firstLaunchNoticeEnabled &&
+                        firstLaunchNoticeAccepted == false
+                    ) {
+                        startupDestination = StartupDestination.Setup
+                        com.nuvio.tv.ui.screens.onboarding.FirstLaunchNoticeScreen(
+                            onAccept = {
+                                lifecycleScope.launch { appOnboardingDataStore.setHasAcceptedFirstLaunchNotice(true) }
+                            }
+                        )
                     } else if (
                         com.nuvio.tv.core.build.AppFeaturePolicy.codeActivationEnabled &&
                         hasSeenAuthQrOnFirstLaunch == false &&

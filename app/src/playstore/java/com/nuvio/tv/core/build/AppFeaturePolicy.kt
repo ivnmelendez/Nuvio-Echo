@@ -13,6 +13,8 @@ object AppFeaturePolicy {
     val collectionsEnabled: Boolean = false
     /** Trakt and Simkl in Tracking; off leaves MDBList as the only service. */
     val traktAndSimklEnabled: Boolean = false
+    /** A notice at first launch: no content is included and the addons are the person's own. */
+    val firstLaunchNoticeEnabled: Boolean = true
     val essentialSettingsOnly: Boolean = true
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = ""

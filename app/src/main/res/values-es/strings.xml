@@ -2293,4 +2293,7 @@
     <string name="update_forced_message">La versión %1$s está lista. Actualiza para seguir usando tivilatino.</string>
     <string name="update_forced_button">Actualizar ahora</string>
     <string name="update_forced_retry">Reintentar</string>
+    <string name="first_launch_notice_title">Te damos la bienvenida a Tivistream</string>
+    <string name="first_launch_notice_body">Tivistream es un reproductor y organizador de catálogos. No incluye ni distribuye ningún contenido. Tú agregas tus propios addons y lo que puedes ver depende de ellos. Tivistream no está afiliada a ningún proveedor de contenido, ni a TMDB, MDBList ni a ningún otro servicio que menciona. Eres responsable de usar solo contenido al que tengas derecho.</string>
+    <string name="first_launch_notice_accept">Entendido</string>
 </resources>
