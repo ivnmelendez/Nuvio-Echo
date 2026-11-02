@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import com.nuvio.tv.core.build.AppFeaturePolicy
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -297,8 +298,16 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
             detailsAmbientBackground = prefs[detailsAmbientBackgroundKey] ?: defaults.detailsAmbientBackground,
             heroEdgeToEdge = prefs[heroEdgeToEdgeKey] ?: defaults.heroEdgeToEdge,
             quietFocus = prefs[quietFocusKey] ?: defaults.quietFocus,
-            lightMode = prefs[lightModeKey] ?: defaults.lightMode,
-            homeTrailers = prefs[homeTrailersKey] ?: defaults.homeTrailers,
+            lightMode = if (AppFeaturePolicy.lightModeSwitchAvailable) {
+                prefs[lightModeKey] ?: defaults.lightMode
+            } else {
+                defaults.lightMode
+            },
+            homeTrailers = if (AppFeaturePolicy.homeTrailersSwitchAvailable) {
+                prefs[homeTrailersKey] ?: defaults.homeTrailers
+            } else {
+                false
+            },
             trailerQuality = prefs[trailerQualityKey]?.takeIf { it in BetaPerformanceSettings.TRAILER_QUALITIES }
                 ?: defaults.trailerQuality,
             minimalPlayer = prefs[minimalPlayerKey] ?: defaults.minimalPlayer,

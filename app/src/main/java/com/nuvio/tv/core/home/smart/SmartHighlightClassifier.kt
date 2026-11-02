@@ -114,7 +114,7 @@ class SmartHighlightClassifier @Inject constructor(baseClient: OkHttpClient) {
                 Log.w(TAG, "review skipped: HTTP ${response.code}")
                 return null
             }
-            val text = JSONObject(response.body.string())
+            val text = JSONObject(response.body?.string().orEmpty())
                 .optJSONArray("candidates")?.optJSONObject(0)
                 ?.optJSONObject("content")?.optJSONArray("parts")?.optJSONObject(0)
                 ?.optString("text") ?: return null

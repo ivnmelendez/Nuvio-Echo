@@ -159,18 +159,22 @@ fun AboutSettingsContent(
                             // Light mode lives here because About is the only settings page shown.
                             val betaViewModel: BetaPerformanceSettingsViewModel = androidx.hilt.navigation.compose.hiltViewModel()
                             val betaSettings by betaViewModel.settings.collectAsStateWithLifecycle()
-                            SettingsToggleRow(
-                                title = stringResource(R.string.light_mode_title),
-                                subtitle = stringResource(R.string.light_mode_subtitle),
-                                checked = betaSettings.lightMode,
-                                onToggle = { betaViewModel.setLightMode(!betaSettings.lightMode) }
-                            )
-                            SettingsToggleRow(
-                                title = stringResource(R.string.home_trailers_title),
-                                subtitle = stringResource(R.string.home_trailers_subtitle),
-                                checked = betaSettings.homeTrailers,
-                                onToggle = { betaViewModel.setHomeTrailers(!betaSettings.homeTrailers) }
-                            )
+                            if (AppFeaturePolicy.lightModeSwitchAvailable) {
+                                SettingsToggleRow(
+                                    title = stringResource(R.string.light_mode_title),
+                                    subtitle = stringResource(R.string.light_mode_subtitle),
+                                    checked = betaSettings.lightMode,
+                                    onToggle = { betaViewModel.setLightMode(!betaSettings.lightMode) }
+                                )
+                            }
+                            if (AppFeaturePolicy.homeTrailersSwitchAvailable) {
+                                SettingsToggleRow(
+                                    title = stringResource(R.string.home_trailers_title),
+                                    subtitle = stringResource(R.string.home_trailers_subtitle),
+                                    checked = betaSettings.homeTrailers,
+                                    onToggle = { betaViewModel.setHomeTrailers(!betaSettings.homeTrailers) }
+                                )
+                            }
                         }
                     }
                 }

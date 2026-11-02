@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.R
+import com.nuvio.tv.core.build.AppFeaturePolicy
 import com.nuvio.tv.data.local.BetaPerformanceSettings
 import com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore
 import com.nuvio.tv.data.local.ImagePerformancePreferences
@@ -213,12 +214,14 @@ internal fun LookAndFeelSettingsGroup(viewModel: BetaPerformanceSettingsViewMode
             checked = settings.quietFocus,
             onToggle = { viewModel.setQuietFocus(!settings.quietFocus) }
         )
-        SettingsToggleRow(
-            title = stringResource(R.string.light_mode_title),
-            subtitle = stringResource(R.string.light_mode_subtitle),
-            checked = settings.lightMode,
-            onToggle = { viewModel.setLightMode(!settings.lightMode) }
-        )
+        if (AppFeaturePolicy.lightModeSwitchAvailable) {
+            SettingsToggleRow(
+                title = stringResource(R.string.light_mode_title),
+                subtitle = stringResource(R.string.light_mode_subtitle),
+                checked = settings.lightMode,
+                onToggle = { viewModel.setLightMode(!settings.lightMode) }
+            )
+        }
         SettingsToggleRow(
             title = stringResource(R.string.beta_poster_colour_mesh_title),
             subtitle = stringResource(R.string.beta_poster_colour_mesh_subtitle),
