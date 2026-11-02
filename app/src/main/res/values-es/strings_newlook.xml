@@ -30,8 +30,8 @@
     <string name="catalog_order_highlighted">Destacado</string>
     <string name="catalog_order_grand">Grande</string>
     <string name="catalog_order_grand_on">Fila grande</string>
-    <string name="catalog_order_built_in">Nuvio · fila integrada</string>
-    <string name="catalog_order_built_in_subtitle">Nuevo diseño: las filas propias de Nuvio aparecen junto a tus catálogos. Muévelas, destácalas o desactívalas como cualquier otra fila.</string>
+    <string name="catalog_order_built_in">Tivistream · fila integrada</string>
+    <string name="catalog_order_built_in_subtitle">Nuevo diseño: las filas propias de Tivistream aparecen junto a tus catálogos. Muévelas, destácalas o desactívalas como cualquier otra fila.</string>
 
     <!-- Filas destacadas integradas -->
     <string name="home_row_trending_week">Tendencias de la semana</string>
@@ -76,7 +76,7 @@
     <string name="notif_reminder_title">Ya disponible</string>
     <string name="notif_reminder_text">%1$s · %2$s ya salió. Pediste que te lo recordáramos.</string>
     <string name="notif_update_title">Actualización disponible</string>
-    <string name="notif_update_text">Hay una nueva versión de Nuvio lista para instalar</string>
+    <string name="notif_update_text">Hay una nueva versión de Tivistream lista para instalar</string>
     <string name="notif_quality_up">Subiendo a %1$s</string>
     <string name="notif_quality_down">Bajando a %1$s</string>
     <string name="notif_source_failed_title">La fuente no se pudo reproducir</string>

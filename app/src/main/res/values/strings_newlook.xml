@@ -30,7 +30,7 @@
     <string name="catalog_order_highlighted">Highlighted</string>
     <string name="catalog_order_grand">Grand</string>
     <string name="catalog_order_grand_on">Grand row</string>
-    <string name="catalog_order_built_in">Nuvio · built-in row</string>
+    <string name="catalog_order_built_in">Tivistream · built-in row</string>
     <string name="catalog_order_built_in_subtitle">New look: Nuvio\'s own rows are listed with your catalogs. Move them, highlight them or turn them off like any other row.</string>
 
     <!-- Built-in highlighted rows -->
@@ -76,7 +76,7 @@
     <string name="notif_reminder_title">Now available</string>
     <string name="notif_reminder_text">%1$s · %2$s is out. You asked to be reminded.</string>
     <string name="notif_update_title">Update available</string>
-    <string name="notif_update_text">A new version of Nuvio is ready to install</string>
+    <string name="notif_update_text">A new version of Tivistream is ready to install</string>
     <string name="notif_quality_up">Upgrading to %1$s</string>
     <string name="notif_quality_down">Downgrading to %1$s</string>
     <string name="notif_source_failed_title">Source failed to play</string>
