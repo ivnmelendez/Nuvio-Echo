@@ -139,6 +139,11 @@ internal suspend fun HomeViewModel.loadAllCatalogsPipeline(
     addons: List<Addon>,
     forceReload: Boolean = false
 ) {
+    if (com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly) {
+        // Home shows only the published rows, so the addons' catalogs are never asked for.
+        _uiState.update { it.copy(isLoading = false, error = null, installedAddonsCount = addons.size) }
+        return
+    }
     val signature = buildHomeCatalogLoadSignature(addons)
     val hasActiveLoads = synchronized(activeCatalogLoadJobs) { activeCatalogLoadJobs.any { it.isActive } }
     if (!forceReload &&
