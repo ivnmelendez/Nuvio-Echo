@@ -135,12 +135,13 @@ internal fun buildNewLookRows(
     smartHighlights: List<SmartHighlightRow> = emptyList(),
     epochDay: Long = java.time.LocalDate.now().toEpochDay()
 ): List<NewLookRow> {
+    val carousels = com.nuvio.tv.core.build.AppFeaturePolicy.carouselRowsEnabled
     fun builtIn(row: BuiltInRow, title: String, items: List<MetaPreview>): NewLookRow? {
         if (row.key in settings.hiddenBuiltInRows || items.size < MIN_BUILT_IN_ITEMS) return null
         // Built-in rows are highlighted unless the user made them plain (or grand); plain and grand rank rows drop
         // the numbers.
-        val grand = row.key in settings.grandRows
-        val highlighted = !grand && row.key !in settings.plainBuiltInRows
+        val grand = carousels && row.key in settings.grandRows
+        val highlighted = carousels && !grand && row.key !in settings.plainBuiltInRows
         return NewLookRow(
             key = row.rowKey,
             title = title,
@@ -212,8 +213,8 @@ internal fun buildNewLookRows(
         }
         catalogIndex++
         val folders = row.items.list.isNotEmpty() && row.items.list.all { it.payload is ModernPayload.CollectionFolder }
-        val highlighted = row.key in settings.highlightedRows || row.orderKey in settings.highlightedRows
-        val grand = !folders && (row.key in settings.grandRows || row.orderKey in settings.grandRows)
+        val highlighted = carousels && (row.key in settings.highlightedRows || row.orderKey in settings.highlightedRows)
+        val grand = carousels && !folders && (row.key in settings.grandRows || row.orderKey in settings.grandRows)
         out += if (folders) {
             NewLookRow(
                 key = row.key,
@@ -262,7 +263,7 @@ private fun smartRows(
     titles: BuiltInTitles,
     epochDay: Long
 ): List<NewLookRow> {
-    if (!settings.smartHighlights) return emptyList()
+    if (!settings.smartHighlights || !com.nuvio.tv.core.build.AppFeaturePolicy.carouselRowsEnabled) return emptyList()
     val prefix = BetaPerformanceSettings.SMART_NAME_PREFIX
     val shown = smart.mapNotNull { row ->
         if (row.themeId in settings.blockedHighlights) return@mapNotNull null

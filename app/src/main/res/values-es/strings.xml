@@ -277,6 +277,7 @@
 
     <string name="appearance_language">Idioma de la aplicación</string>
     <string name="appearance_language_subtitle">Reemplazar idioma del sistema</string>
+    <string name="appearance_language_by_addon">Lo define tu addon</string>
     <string name="appearance_language_system">Predeterminado del sistema</string>
     <string name="appearance_language_dialog_title">Elige idioma</string>
     <string name="appearance_language_restart_hint">Reinicia la aplicación para aplicar el cambio de idioma.</string>

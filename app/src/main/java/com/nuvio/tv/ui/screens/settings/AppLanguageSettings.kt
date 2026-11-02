@@ -82,10 +82,16 @@ fun AppLanguageSettingsContent(initialFocusRequester: FocusRequester? = null) {
             subtitle = stringResource(R.string.appearance_language_subtitle)
         )
         SettingsGroupCard(modifier = Modifier.fillMaxWidth()) {
+            val addonLanguage = LocaleCache.addonTag
             SettingsActionRow(
                 title = stringResource(R.string.appearance_language),
-                subtitle = stringResource(R.string.appearance_language_subtitle),
-                value = currentName,
+                subtitle = stringResource(
+                    if (addonLanguage != null) R.string.appearance_language_by_addon else R.string.appearance_language_subtitle
+                ),
+                value = addonLanguage?.let { tag ->
+                    Locale.forLanguageTag(tag).let { it.getDisplayName(it) }.replaceFirstChar { c -> c.uppercase() }
+                } ?: currentName,
+                enabled = addonLanguage == null,
                 onClick = { showDialog = true },
                 modifier = if (initialFocusRequester != null) {
                     Modifier.focusRequester(initialFocusRequester)

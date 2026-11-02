@@ -129,7 +129,9 @@ private fun AddonBehaviorHintsDto.toDomain(): AddonBehaviorHints {
         configurable = configurable,
         configurationRequired = configurationRequired,
         newEpisodeNotifications = newEpisodeNotifications,
-        homeConfigUrl = homeConfigUrl
+        homeConfigUrl = homeConfigUrl,
+        preferredLanguage = preferredLanguage,
+        replacesDefaultAddons = replacesDefaultAddons
     )
 }
 

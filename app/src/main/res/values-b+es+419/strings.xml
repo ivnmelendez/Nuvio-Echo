@@ -275,6 +275,7 @@
 
     <string name="appearance_language">Idioma de la App</string>
     <string name="appearance_language_subtitle">Anular el idioma del sistema</string>
+    <string name="appearance_language_by_addon">Lo define tu addon</string>
     <string name="appearance_language_system">Predeterminado del sistema</string>
     <string name="appearance_language_dialog_title">Elegir Idioma</string>
     <string name="appearance_language_restart_hint">Reinicia la app para aplicar el cambio de idioma.</string>

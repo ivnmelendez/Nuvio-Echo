@@ -28,8 +28,16 @@ data class Addon(
         get() = enabled
 }
 
-fun List<Addon>.enabledAddons(): List<Addon> =
-    filter { it.enabled }
+fun List<Addon>.enabledAddons(): List<Addon> {
+    val on = filter { it.enabled }
+    // Set aside, not removed: it comes back by itself when the addon that replaces it is turned off or deleted.
+    return if (on.any { it.behaviorHints?.replacesDefaultAddons == true }) on.filterNot { it.isBuildDefault() } else on
+}
+
+private fun Addon.isBuildDefault(): Boolean {
+    val own = baseUrl.trim().trimEnd('/')
+    return com.nuvio.tv.core.build.AppFeaturePolicy.defaultAddonUrls.any { own.equals(it.trim().trimEnd('/'), ignoreCase = true) }
+}
 
 @Immutable
 data class CatalogDescriptor(
@@ -69,7 +77,11 @@ data class AddonBehaviorHints(
     val configurable: Boolean? = null,
     val configurationRequired: Boolean? = null,
     val newEpisodeNotifications: Boolean? = null,
-    val homeConfigUrl: String? = null
+    val homeConfigUrl: String? = null,
+    /** A language tag (es-419): the app and its metadata use it while this addon is on. */
+    val preferredLanguage: String? = null,
+    /** The addon brings its own catalogs, so the metadata-only addon the build installs by default is set aside. */
+    val replacesDefaultAddons: Boolean? = null
 )
 
 @Immutable

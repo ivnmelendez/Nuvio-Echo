@@ -7,6 +7,8 @@ object AppFeaturePolicy {
     val externalTrailerPlaybackEnabled: Boolean = true
     val homeTrailersSwitchAvailable: Boolean = true
     val codeActivationEnabled: Boolean = true
+    /** Wide auto-advancing rows (highlights, grand rows, smart highlights); off means plain poster rows only. */
+    val carouselRowsEnabled: Boolean = true
     val essentialSettingsOnly: Boolean = false
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = "es-419"

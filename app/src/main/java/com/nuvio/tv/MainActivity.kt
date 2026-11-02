@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.Density
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import androidx.metrics.performance.PerformanceMetricsState
 import androidx.navigation.NavHostController
@@ -200,6 +201,9 @@ open class MainActivity : ComponentActivity() {
     lateinit var trailerPlayerPool: com.nuvio.tv.core.player.TrailerPlayerPool
 
     @Inject
+    lateinit var addonProfile: com.nuvio.tv.core.addons.AddonProfile
+
+    @Inject
     lateinit var externalPlaybackTracker: com.nuvio.tv.core.player.ExternalPlaybackTracker
 
     @Inject
@@ -245,6 +249,13 @@ open class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         isFirstResumeAfterCreate = true
         window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+        // An addon that asks for another language: the screen is rebuilt in it, as when the language is picked.
+        lifecycleScope.launch {
+            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                addonProfile.changes.collect { recreate() }
+            }
+        }
 
         // Wire the Activity-level launcher to the tracker
         externalPlaybackTracker.activityLauncher = externalPlayerLauncher
@@ -1203,7 +1214,28 @@ object LocaleCache {
     const val UNSET = "__UNSET__"
 
     @Volatile
-    var localeTag: String = UNSET
+    private var userTag: String = UNSET
+
+    /** The language an addon asks for while it is on; it wins over the person's own choice. */
+    @Volatile
+    var addonTag: String? = null
+        set(value) {
+            field = value
+            _version.value += 1
+        }
+
+    /** The language in use: the addon's when it names one, else what the person chose (empty: the device's). */
+    var localeTag: String
+        get() = addonTag ?: userTag
+        set(value) {
+            userTag = value
+            _version.value += 1
+        }
+
+    private val _version = kotlinx.coroutines.flow.MutableStateFlow(0)
+
+    /** Changes each time the language in use may have changed. */
+    val version: kotlinx.coroutines.flow.StateFlow<Int> get() = _version
 }
 
 /**

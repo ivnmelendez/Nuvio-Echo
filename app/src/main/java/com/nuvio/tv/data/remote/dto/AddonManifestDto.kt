@@ -39,7 +39,9 @@ data class AddonBehaviorHintsDto(
     @Json(name = "configurable") val configurable: Boolean? = null,
     @Json(name = "configurationRequired") val configurationRequired: Boolean? = null,
     @Json(name = "newEpisodeNotifications") val newEpisodeNotifications: Boolean? = null,
-    @Json(name = "homeConfigUrl") val homeConfigUrl: String? = null
+    @Json(name = "homeConfigUrl") val homeConfigUrl: String? = null,
+    @Json(name = "preferredLanguage") val preferredLanguage: String? = null,
+    @Json(name = "replacesDefaultAddons") val replacesDefaultAddons: Boolean? = null
 )
 
 @JsonClass(generateAdapter = true)

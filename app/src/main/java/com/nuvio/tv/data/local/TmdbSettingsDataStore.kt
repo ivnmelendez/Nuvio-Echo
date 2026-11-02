@@ -48,7 +48,8 @@ class TmdbSettingsDataStore @Inject constructor(
     private val useCollectionsKey = booleanPreferencesKey("tmdb_use_collections")
 
     val settings: StateFlow<TmdbSettings> = profileManager.activeProfileId.flatMapLatest { pid ->
-        factory.get(pid, FEATURE).data.map { prefs ->
+        // The language follows the app's, so it is read again whenever that changes.
+        kotlinx.coroutines.flow.combine(factory.get(pid, FEATURE).data, com.nuvio.tv.LocaleCache.version) { prefs, _ ->
             TmdbSettings(
                 enabled = prefs[enabledKey] ?: true,
                 modernHomeEnabled = prefs[modernHomeEnabledKey] ?: true,
