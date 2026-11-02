@@ -913,7 +913,8 @@ class PlayerSettingsDataStore @Inject constructor(
                     ?.let(::normalizeSecondaryAudioLanguageCode),
                 loadingOverlayEnabled = prefs[loadingOverlayEnabledKey] ?: false,
                 showPlayerLoadingStatus = prefs[showPlayerLoadingStatusKey] ?: false,
-                playbackIssueReportsEnabled = prefs[playbackIssueReportsEnabledKey] ?: false,
+                // There is no report upload in this app, so the switch can never be on.
+                playbackIssueReportsEnabled = false,
                 pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: false,
                 osdClockEnabled = prefs[osdClockEnabledKey] ?: true,
                 skipIntroEnabled = prefs[skipIntroEnabledKey] ?: true,

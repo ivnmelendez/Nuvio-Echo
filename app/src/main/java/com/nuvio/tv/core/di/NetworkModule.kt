@@ -7,22 +7,16 @@ import com.nuvio.tv.BuildConfig
 import com.nuvio.tv.data.remote.api.AddonApi
 import com.nuvio.tv.data.remote.api.AniSkipApi
 import com.nuvio.tv.data.remote.api.AnimeSkipApi
-import com.nuvio.tv.data.remote.api.AuthDiagnosticReportApi
 import com.nuvio.tv.data.remote.api.GitHubReleaseApi
-import com.nuvio.tv.data.remote.api.SupportersApi
 import com.nuvio.tv.data.remote.api.TraktApi
 import com.nuvio.tv.data.remote.api.TrailerApi
 import com.nuvio.tv.data.remote.api.IntroDbApi
 import com.nuvio.tv.data.remote.api.TheIntroDbApi
-import com.nuvio.tv.data.remote.api.ImdbTapframeApi
 import com.nuvio.tv.data.remote.api.MDBListApi
 import com.nuvio.tv.data.remote.api.ParentalGuideApi
 import com.nuvio.tv.data.remote.api.AniListApi
 import com.nuvio.tv.data.remote.api.OmdbApi
-import com.nuvio.tv.data.remote.api.PlaybackIssueReportApi
-import com.nuvio.tv.data.remote.api.SeriesGraphApi
 import com.nuvio.tv.data.remote.api.TmdbApi
-import com.nuvio.tv.data.remote.api.UniqueContributionsApi
 import com.nuvio.tv.data.simkl.OkHttpSimklEngine
 import com.nuvio.tv.data.simkl.SimklApiClient
 import com.nuvio.tv.data.simkl.SimklApiConfiguration
@@ -524,62 +518,6 @@ object NetworkModule {
     fun provideGitHubReleaseApi(@Named("github") retrofit: Retrofit): GitHubReleaseApi =
         retrofit.create(GitHubReleaseApi::class.java)
 
-    @Provides
-    @Singleton
-    @Named("uniqueContributionsBaseUrl")
-    fun provideUniqueContributionsBaseUrl(): String =
-        BuildConfig.UNIQUE_CONTRIBUTIONS_BASE_URL
-
-    @Provides
-    @Singleton
-    @Named("uniqueContributions")
-    fun provideUniqueContributionsRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(normalizedBaseUrl(BuildConfig.UNIQUE_CONTRIBUTIONS_BASE_URL, "https://localhost/"))
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-    @Provides
-    @Singleton
-    fun provideUniqueContributionsApi(@Named("uniqueContributions") retrofit: Retrofit): UniqueContributionsApi =
-        retrofit.create(UniqueContributionsApi::class.java)
-
-    @Provides
-    @Singleton
-    @Named("supporters")
-    fun provideSupportersRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(normalizedBaseUrl(BuildConfig.SUPPORTERS_API_BASE_URL, "https://nuvio.tv/"))
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-    @Provides
-    @Singleton
-    fun provideSupportersApi(@Named("supporters") retrofit: Retrofit): SupportersApi =
-        retrofit.create(SupportersApi::class.java)
-
-    @Provides
-    @Singleton
-    @Named("playbackReports")
-    fun providePlaybackReportsRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(normalizedBaseUrl(BuildConfig.PLAYBACK_REPORTS_BASE_URL, "https://localhost/"))
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-    @Provides
-    @Singleton
-    fun providePlaybackIssueReportApi(@Named("playbackReports") retrofit: Retrofit): PlaybackIssueReportApi =
-        retrofit.create(PlaybackIssueReportApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideAuthDiagnosticReportApi(@Named("playbackReports") retrofit: Retrofit): AuthDiagnosticReportApi =
-        retrofit.create(AuthDiagnosticReportApi::class.java)
-
     // --- Trailer API ---
 
     @Provides
@@ -613,50 +551,4 @@ object NetworkModule {
     @Singleton
     fun provideMDBListApi(@Named("mdblist") retrofit: Retrofit): MDBListApi =
         retrofit.create(MDBListApi::class.java)
-
-    // --- SeriesGraph API ---
-
-    @Provides
-    @Singleton
-    @Named("seriesGraph")
-    fun provideSeriesGraphRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        val rawBaseUrl = BuildConfig.IMDB_RATINGS_API_BASE_URL
-        val normalizedBaseUrl = if (rawBaseUrl.isNotBlank()) {
-            if (rawBaseUrl.endsWith('/')) rawBaseUrl else "$rawBaseUrl/"
-        } else {
-            "http://localhost/"
-        }
-        return Retrofit.Builder()
-            .baseUrl(normalizedBaseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideSeriesGraphApi(@Named("seriesGraph") retrofit: Retrofit): SeriesGraphApi =
-        retrofit.create(SeriesGraphApi::class.java)
-
-    @Provides
-    @Singleton
-    @Named("imdbTapframe")
-    fun provideImdbTapframeRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
-        val rawBaseUrl = BuildConfig.IMDB_TAPFRAME_API_BASE_URL
-        val normalizedBaseUrl = if (rawBaseUrl.isNotBlank()) {
-            if (rawBaseUrl.endsWith('/')) rawBaseUrl else "$rawBaseUrl/"
-        } else {
-            "http://localhost/"
-        }
-        return Retrofit.Builder()
-            .baseUrl(normalizedBaseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideImdbTapframeApi(@Named("imdbTapframe") retrofit: Retrofit): ImdbTapframeApi =
-        retrofit.create(ImdbTapframeApi::class.java)
 }

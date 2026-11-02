@@ -79,7 +79,6 @@ class PlayerViewModel @Inject constructor(
     private val simklAuthRepository: com.nuvio.tv.data.simkl.SimklAuthRepository,
     private val youTubeStreamResolver: com.nuvio.tv.core.streams.YouTubeStreamResolver,
     private val streamBadgePresentation: com.nuvio.tv.core.streams.StreamBadgePresentation,
-    private val playbackIssueReportRepository: com.nuvio.tv.data.repository.PlaybackIssueReportRepository,
     private val externalPlaybackTracker: com.nuvio.tv.core.player.ExternalPlaybackTracker,
     private val subtitleFileCache: com.nuvio.tv.core.player.SubtitleFileCache,
     private val tvRecommendationManager: com.nuvio.tv.core.recommendations.TvRecommendationManager,
@@ -120,7 +119,6 @@ class PlayerViewModel @Inject constructor(
         tmdbSettingsDataStore = tmdbSettingsDataStore,
         youTubeStreamResolver = youTubeStreamResolver,
         streamBadgePresentation = streamBadgePresentation,
-        playbackIssueReportRepository = playbackIssueReportRepository,
         tvRecommendationManager = tvRecommendationManager,
         profileId = savedStateHandle.get<String>("profileId")?.toIntOrNull()
             ?: profileManager.activeProfileId.value,
