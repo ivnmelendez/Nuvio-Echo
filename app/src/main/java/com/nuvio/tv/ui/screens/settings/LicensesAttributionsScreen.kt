@@ -61,16 +61,11 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.nuvio.tv.R
-import com.nuvio.tv.core.cloud.PremiumizeCloudLibraryPosterUrl
-import com.nuvio.tv.core.cloud.TorboxCloudLibraryPosterUrl
-import com.nuvio.tv.core.cloud.cloudLibraryDisplayArtworkUrl
 
 private const val NuvioRepositoryUrl = "https://github.com/NuvioMedia/NuvioTV"
 private const val TmdbUrl = "https://www.themoviedb.org"
 private const val TraktUrl = "https://trakt.tv"
 private const val SimklUrl = "https://simkl.com"
-private const val PremiumizeUrl = "https://www.premiumize.me"
-private const val TorboxUrl = "https://torbox.app"
 private const val MdbListUrl = "https://mdblist.com"
 private const val IntroDbUrl = "https://introdb.app/"
 private const val ImdbDatasetsUrl = "https://developer.imdb.com/non-commercial-datasets/"
@@ -389,18 +384,6 @@ private fun dataAttributionItems() = listOf(
         body = stringResource(R.string.licenses_attributions_simkl_body),
         url = SimklUrl,
         logo = LicenseLogo.Raw(R.raw.simkl_tv_glyph)
-    ),
-    LicenseAttributionItem(
-        title = stringResource(R.string.licenses_attributions_premiumize_title),
-        body = stringResource(R.string.licenses_attributions_premiumize_body),
-        url = PremiumizeUrl,
-        logo = LicenseLogo.Url(PremiumizeCloudLibraryPosterUrl)
-    ),
-    LicenseAttributionItem(
-        title = stringResource(R.string.licenses_attributions_torbox_title),
-        body = stringResource(R.string.licenses_attributions_torbox_body),
-        url = TorboxUrl,
-        logo = cloudLibraryDisplayArtworkUrl(TorboxCloudLibraryPosterUrl)?.let(LicenseLogo::Url)
     ),
     LicenseAttributionItem(
         title = stringResource(R.string.licenses_attributions_mdblist_title),

@@ -45,13 +45,6 @@ class StreamYouTubeTest {
     }
 
     @Test
-    fun `a cached debrid stream takes precedence over the ytId`() {
-        val stream = stream(ytId = "dQw4w9WgXcQ", clientResolve = cachedTorboxResolve())
-
-        assertNull(stream.youTubeIdToResolve())
-    }
-
-    @Test
     fun `a resolved stream is no longer treated as needing resolution`() {
         val resolved = stream(ytId = "dQw4w9WgXcQ").copy(url = "https://manifest.googlevideo.com/master.m3u8")
 
@@ -78,25 +71,5 @@ class StreamYouTubeTest {
         addonName = "Addon",
         addonLogo = null,
         clientResolve = clientResolve
-    )
-
-    private fun cachedTorboxResolve(): StreamClientResolve = StreamClientResolve(
-        type = "debrid",
-        infoHash = "abcdef",
-        fileIdx = null,
-        magnetUri = "magnet:?xt=urn:btih:abcdef",
-        sources = null,
-        torrentName = "Torrent",
-        filename = "video.mkv",
-        mediaType = "movie",
-        mediaId = "tt1",
-        mediaOnlyId = "tt1",
-        title = "Title",
-        season = null,
-        episode = null,
-        service = "torbox",
-        serviceIndex = 0,
-        serviceExtension = null,
-        isCached = true
     )
 }

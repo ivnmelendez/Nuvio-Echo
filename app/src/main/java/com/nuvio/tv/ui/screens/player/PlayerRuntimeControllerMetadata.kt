@@ -47,25 +47,6 @@ internal fun PlayerRuntimeController.fetchMetaDetails(id: String?, type: String?
     }
 }
 
-internal fun PlayerRuntimeController.initializeCloudPlaybackSequence() {
-    val playbackContext = cloudPlaybackContext ?: return
-    metaVideos = playbackContext.asVideos()
-    val currentFile = playbackContext.currentFile ?: return
-    currentVideoId = playbackContext.videoId(currentFile)
-    currentSeason = 1
-    currentEpisode = playbackContext.currentIndex + 1
-    currentEpisodeTitle = currentFile.name
-    _uiState.update {
-        it.copy(
-            currentVideoId = currentVideoId,
-            currentSeason = currentSeason,
-            currentEpisode = currentEpisode,
-            currentEpisodeTitle = currentEpisodeTitle
-        )
-    }
-    recomputeNextEpisode(resetVisibility = false)
-}
-
 internal fun PlayerRuntimeController.applyMetaDetails(meta: Meta) {
     metaVideos = meta.videos
     metaGenres = meta.genres

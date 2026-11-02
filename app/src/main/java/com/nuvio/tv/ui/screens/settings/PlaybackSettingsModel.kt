@@ -32,8 +32,7 @@ internal enum class PlaybackSection(
     AUDIO(R.string.audio_section, R.string.playback_section_audio_only_desc, Icons.AutoMirrored.Filled.VolumeUp),
     SUBTITLES(R.string.playback_section_subtitles, R.string.playback_section_subtitles_desc, Icons.Default.Subtitles),
     VIDEO(R.string.video_section, R.string.playback_section_video_desc, Icons.Default.VideoSettings),
-    BUFFER_NETWORK(R.string.playback_section_buffer_network, R.string.playback_section_buffer_network_desc, Icons.Default.NetworkCheck),
-    P2P(R.string.settings_p2p_title, R.string.settings_p2p_subtitle, Icons.Default.Hub)
+    BUFFER_NETWORK(R.string.playback_section_buffer_network, R.string.playback_section_buffer_network_desc, Icons.Default.NetworkCheck)
 }
 
 internal fun visiblePlaybackSections(settings: PlayerSettings): List<PlaybackSection> =
@@ -71,8 +70,5 @@ internal enum class PlaybackDialog {
     LIBASS_RENDER_TYPE,
     FRAME_RATE_MATCHING,
     DV7_HANDLING_MODE,
-    MPV_HARDWARE_DECODE_MODE,
-    P2P_CONSENT,
-    TORRENT_PROFILE,
-    TORRENT_CACHE_SIZE
+    MPV_HARDWARE_DECODE_MODE
 }

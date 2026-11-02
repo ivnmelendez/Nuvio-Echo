@@ -601,7 +601,8 @@ class NewLookPreviewTest {
                                 modifier = modifier
                             )
                         },
-                        pageScroll = pageScroll
+                        pageScroll = pageScroll,
+                        homeReady = androidx.compose.runtime.mutableIntStateOf(0)
                     )
                 }
                 val focusManager = androidx.compose.ui.platform.LocalFocusManager.current

@@ -173,7 +173,6 @@ class ProfileSettingsSyncService @Inject constructor(
     private val profileManager: ProfileManager,
     private val profileDataStoreFactory: ProfileDataStoreFactory,
     private val syncClientIdentity: SyncClientIdentity,
-    private val providerCredentialSyncService: ProviderCredentialSyncService,
     private val tmdbSettingsDataStore: TmdbSettingsDataStore,
     private val metaRepository: MetaRepository,
     private val cwEnrichmentCache: ContinueWatchingEnrichmentCache
@@ -276,12 +275,6 @@ class ProfileSettingsSyncService @Inject constructor(
                     require(profileManager.profiles.value.any { it.id == targetProfileId })
 
                     val targetFeatures = if (authManager.isAuthenticated) {
-                        if (
-                            copyProviderCredentials &&
-                            profileManager.activeProfileId.value in setOf(sourceProfileId, targetProfileId)
-                        ) {
-                            providerCredentialSyncService.syncFromRemote().getOrThrow()
-                        }
                         val sourceBlob = if (sourceProfileId == profileManager.activeProfileId.value) {
                             exportSettingsBlob(sourceProfileId).also { blob ->
                                 pushProfileToRemote(sourceProfileId, blob)
@@ -337,15 +330,6 @@ class ProfileSettingsSyncService @Inject constructor(
                         featuresJson = targetFeatures,
                         signature = buildSettingsSignature(targetFeatures)
                     )
-                    if (copyProviderCredentials) {
-                        if (authManager.isAuthenticated) {
-                            if (profileManager.activeProfileId.value == targetProfileId) {
-                                providerCredentialSyncService.syncFromRemote(targetProfileId).getOrThrow()
-                            }
-                        } else {
-                            copyProviderCredentialsLocally(sourceProfileId, targetProfileId)
-                        }
-                    }
                     Log.d(TAG, "Copied profile setup from $sourceProfileId to $targetProfileId")
                     Result.success(Unit)
                 } catch (e: CancellationException) {
@@ -358,7 +342,6 @@ class ProfileSettingsSyncService @Inject constructor(
         }
 
     fun requestForegroundPull(force: Boolean = false) {
-        providerCredentialSyncService.requestForegroundPull(force)
         if (!authManager.isAuthenticated) return
 
         val now = SystemClock.elapsedRealtime()
@@ -436,22 +419,6 @@ class ProfileSettingsSyncService @Inject constructor(
             prefs[key] = enabled
         }
         return changed
-    }
-
-    private suspend fun copyProviderCredentialsLocally(sourceProfileId: Int, targetProfileId: Int) {
-        credentialProfileSettingsKeys.forEach { (feature, keyNames) ->
-            val sourcePreferences = profileDataStoreFactory.get(sourceProfileId, feature).data.first()
-            profileDataStoreFactory.get(targetProfileId, feature).edit { targetPreferences ->
-                keyNames.forEach { keyName ->
-                    val key = stringPreferencesKey(keyName)
-                    val sourceValue = sourcePreferences[key]?.trim().orEmpty()
-                    val targetValue = targetPreferences[key]?.trim().orEmpty()
-                    if (sourceValue.isNotEmpty() && targetValue.isEmpty()) {
-                        targetPreferences[key] = sourceValue
-                    }
-                }
-            }
-        }
     }
 
     private suspend fun exportSettingsBlob(profileId: Int): JsonObject {

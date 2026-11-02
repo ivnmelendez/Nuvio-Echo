@@ -17,7 +17,6 @@ internal fun PlayerRuntimeController.releasePlayer(flushPlaybackState: Boolean) 
     if (flushPlaybackState) {
         cancelSourceSwitch()
         cancelAutoQualityChange(byViewer = false)
-        stopTorrentStream()
         flushPlaybackSnapshotForSwitchOrExit()
     }
 

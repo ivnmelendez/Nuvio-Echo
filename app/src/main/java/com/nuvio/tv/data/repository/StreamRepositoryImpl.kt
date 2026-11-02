@@ -5,18 +5,14 @@ import android.util.Log
 import com.nuvio.tv.R
 import com.nuvio.tv.core.network.NetworkResult
 import com.nuvio.tv.core.network.safeApiCall
-import com.nuvio.tv.core.debrid.DebridStreamPresentation
-import com.nuvio.tv.core.debrid.LocalDebridAvailabilityService
 import com.nuvio.tv.core.plugin.PluginManager
 import com.nuvio.tv.core.plugin.resolvePluginSeasonEpisode
 import com.nuvio.tv.core.profile.ProfileManager
 import com.nuvio.tv.core.tmdb.TmdbService
-import com.nuvio.tv.data.local.DebridSettingsDataStore
 import com.nuvio.tv.data.mapper.toDomain
 import com.nuvio.tv.data.remote.api.AddonApi
 import com.nuvio.tv.domain.model.Addon
 import com.nuvio.tv.domain.model.AddonStreams
-import com.nuvio.tv.domain.model.DebridSettings
 import com.nuvio.tv.domain.model.LocalScraperResult
 import com.nuvio.tv.domain.model.PluginRepository
 import com.nuvio.tv.domain.model.ProxyHeaders
@@ -52,10 +48,7 @@ class StreamRepositoryImpl @Inject constructor(
     private val addonRepository: AddonRepository,
     private val pluginManager: PluginManager,
     private val profileManager: ProfileManager,
-    private val debridSettingsDataStore: DebridSettingsDataStore,
     private val tmdbService: TmdbService,
-    private val debridStreamPresentation: DebridStreamPresentation,
-    private val localDebridAvailabilityService: LocalDebridAvailabilityService,
     private val betaPerformanceSettings: com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore
 ) : StreamRepository {
     private val streamSearchSessions = StreamSearchSessionCache()
@@ -82,8 +75,7 @@ class StreamRepositoryImpl @Inject constructor(
         val pluginsEnabled: Boolean,
         val enabledScrapers: List<ScraperInfo>,
         val groupPluginsByRepository: Boolean,
-        val pluginRepositories: List<PluginRepository>,
-        val debridSettings: DebridSettings
+        val pluginRepositories: List<PluginRepository>
     )
 
     override fun getStreamsFromAllAddons(
@@ -106,10 +98,7 @@ class StreamRepositoryImpl @Inject constructor(
                 pluginsEnabled = sourceConfiguration.pluginsEnabled,
                 enabledScrapers = sourceConfiguration.enabledScrapers,
                 groupPluginsByRepository = sourceConfiguration.groupPluginsByRepository,
-                pluginRepositories = sourceConfiguration.pluginRepositories,
-                debridPresentationConfiguration = sourceConfiguration.debridSettings
-                    .withoutRawCredentials()
-                    .toString()
+                pluginRepositories = sourceConfiguration.pluginRepositories
             )
         )
 
@@ -125,7 +114,6 @@ class StreamRepositoryImpl @Inject constructor(
                     season = season,
                     episode = episode,
                     addons = sourceConfiguration.addons,
-                    debridSettings = sourceConfiguration.debridSettings,
                     hasCompatiblePlugins = sourceConfiguration.pluginsEnabled &&
                         sourceConfiguration.enabledScrapers.any { scraper -> scraper.supportsType(type) }
                 )
@@ -141,7 +129,6 @@ class StreamRepositoryImpl @Inject constructor(
             val enabledScrapers = if (pluginsEnabled) pluginManager.enabledScrapers.first() else emptyList()
             val groupPluginsByRepository = pluginsEnabled && pluginManager.groupStreamsByRepository.first()
             val pluginRepositories = if (groupPluginsByRepository) pluginManager.repositories.first() else emptyList()
-            val debridSettings = debridSettingsDataStore.settings.first()
 
             if (profileManager.activeProfileId.value != profileId) continue
 
@@ -151,8 +138,7 @@ class StreamRepositoryImpl @Inject constructor(
                 pluginsEnabled = pluginsEnabled,
                 enabledScrapers = enabledScrapers,
                 groupPluginsByRepository = groupPluginsByRepository,
-                pluginRepositories = pluginRepositories,
-                debridSettings = debridSettings
+                pluginRepositories = pluginRepositories
             )
         }
     }
@@ -164,7 +150,6 @@ class StreamRepositoryImpl @Inject constructor(
         season: Int?,
         episode: Int?,
         addons: List<Addon>,
-        debridSettings: DebridSettings,
         hasCompatiblePlugins: Boolean
     ): Flow<NetworkResult<List<AddonStreams>>> = flow {
         emit(NetworkResult.Loading)
@@ -293,11 +278,9 @@ class StreamRepositoryImpl @Inject constructor(
 
                 // Emit results as they arrive
                 for (result in resultChannel) {
-                    val checkingResult = localDebridAvailabilityService.markChecking(listOf(result)).firstOrNull() ?: result
-                    val checkedResult = localDebridAvailabilityService.annotateCachedAvailability(listOf(checkingResult)).firstOrNull() ?: checkingResult
-                    mergePresentedResult(accumulatedResults, checkedResult, debridSettings)
+                    mergePresentedResult(accumulatedResults, result)
                     emit(NetworkResult.Success(accumulatedResults.toList()))
-                    Log.d(TAG, "Emitted ${accumulatedResults.size} addon(s), latest: ${checkedResult.addonName} with ${checkedResult.streams.size} streams")
+                    Log.d(TAG, "Emitted ${accumulatedResults.size} addon(s), latest: ${result.addonName} with ${result.streams.size} streams")
                 }
             }
 
@@ -327,8 +310,7 @@ class StreamRepositoryImpl @Inject constructor(
         pluginsEnabled: Boolean,
         enabledScrapers: List<ScraperInfo>,
         groupPluginsByRepository: Boolean,
-        pluginRepositories: List<PluginRepository>,
-        debridPresentationConfiguration: String
+        pluginRepositories: List<PluginRepository>
     ): String = buildString {
         append("addons:")
         addons.forEach { addon ->
@@ -344,14 +326,7 @@ class StreamRepositoryImpl @Inject constructor(
                 append("|repo:").append(repository)
             }
         }
-        append("|debrid:").append(debridPresentationConfiguration)
     }.sha256()
-
-    private fun DebridSettings.withoutRawCredentials(): DebridSettings = copy(
-        torboxApiKey = torboxApiKey.sha256(),
-        premiumizeApiKey = premiumizeApiKey.sha256(),
-        realDebridApiKey = realDebridApiKey.sha256()
-    )
 
     private fun String.sha256(): String =
         MessageDigest.getInstance("SHA-256")
@@ -404,8 +379,7 @@ class StreamRepositoryImpl @Inject constructor(
 
     private suspend fun mergePresentedResult(
         accumulatedResults: MutableList<AddonStreams>,
-        result: AddonStreams,
-        debridSettings: DebridSettings
+        result: AddonStreams
     ) {
         val existingIndex = accumulatedResults.indexOfFirst { it.addonName == result.addonName }
         if (existingIndex >= 0) {
@@ -413,18 +387,10 @@ class StreamRepositoryImpl @Inject constructor(
             val merged = existing.copy(
                 streams = mergeStreams(existing.streams, result.streams)
             )
-            accumulatedResults[existingIndex] = presentStreams(merged, debridSettings)
+            accumulatedResults[existingIndex] = merged
         } else {
-            accumulatedResults.add(presentStreams(result, debridSettings))
+            accumulatedResults.add(result)
         }
-    }
-
-    private fun presentStreams(result: AddonStreams, debridSettings: DebridSettings): AddonStreams {
-        return debridStreamPresentation.apply(
-            groups = listOf(result),
-            settings = debridSettings,
-            includeBadgeMatches = false
-        ).firstOrNull() ?: result
     }
 
     private fun mergeStreams(existing: List<Stream>, incoming: List<Stream>): List<Stream> {

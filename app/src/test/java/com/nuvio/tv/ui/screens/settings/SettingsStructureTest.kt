@@ -21,8 +21,7 @@ class SettingsStructureTest {
                 PlaybackSection.AUDIO,
                 PlaybackSection.SUBTITLES,
                 PlaybackSection.VIDEO,
-                PlaybackSection.BUFFER_NETWORK,
-                PlaybackSection.P2P
+                PlaybackSection.BUFFER_NETWORK
             ),
             visiblePlaybackSections(PlayerSettings(internalPlayerEngine = InternalPlayerEngine.EXOPLAYER))
         )

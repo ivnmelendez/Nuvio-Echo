@@ -94,7 +94,6 @@ import com.nuvio.tv.data.local.PlayerPreference
 import com.nuvio.tv.domain.model.Stream
 import com.nuvio.tv.ui.components.SourceChipItem
 import com.nuvio.tv.ui.components.SourceChipStatus
-import com.nuvio.tv.ui.components.P2pConsentDialog
 import com.nuvio.tv.ui.components.StreamBadgeChips
 import com.nuvio.tv.ui.components.StreamsSkeletonList
 import com.nuvio.tv.ui.screens.player.LoadingOverlay
@@ -141,9 +140,6 @@ fun StreamScreen(
     var pendingRestoreOnResume by rememberSaveable { mutableStateOf(false) }
     var showPlayerChoiceDialog by remember { mutableStateOf(false) }
     var pendingPlaybackInfo by remember { mutableStateOf<StreamPlaybackInfo?>(null) }
-    var showP2pConsentDialog by remember { mutableStateOf(false) }
-    var pendingTorrentPlaybackInfo by remember { mutableStateOf<StreamPlaybackInfo?>(null) }
-    val p2pEnabled by viewModel.p2pEnabled.collectAsStateWithLifecycle(initialValue = false)
     val streamBadgeSettings by viewModel.streamBadgeSettings.collectAsStateWithLifecycle(
         initialValue = StreamBadgeSettings()
     )
@@ -200,17 +196,13 @@ fun StreamScreen(
             return
         }
         val preference = playerPreference ?: return
-        if (playbackInfo.isTorrent && !p2pEnabled) {
-            pendingTorrentPlaybackInfo = playbackInfo
-            showP2pConsentDialog = true
-            return
-        }
+        if (playbackInfo.isTorrent) return
         when (preference) {
             PlayerPreference.INTERNAL -> {
                 launchInternalPlayer(playbackInfo)
             }
             PlayerPreference.EXTERNAL -> {
-                if (playbackInfo.url != null || playbackInfo.isTorrent) {
+                if (playbackInfo.url != null) {
                     launchExternalPlayer(playbackInfo)
                 }
             }
@@ -226,10 +218,8 @@ fun StreamScreen(
             viewModel.onEvent(StreamScreenEvent.OnAutoPlayConsumed)
             return
         }
-        // Always check P2P consent for torrents, even in direct auto-play flow
-        if (playbackInfo.isTorrent && !p2pEnabled) {
-            pendingTorrentPlaybackInfo = playbackInfo
-            showP2pConsentDialog = true
+        if (playbackInfo.isTorrent) {
+            viewModel.onEvent(StreamScreenEvent.OnAutoPlayConsumed)
             return
         }
         val preference = playerPreference ?: return
@@ -322,13 +312,7 @@ fun StreamScreen(
             viewModel.onEvent(StreamScreenEvent.OnAutoPlayConsumed)
             return@LaunchedEffect
         }
-        if (playbackInfo.url != null || (playbackInfo.isTorrent && playbackInfo.infoHash != null)) {
-            // Torrent cached links still need P2P consent
-            if (playbackInfo.isTorrent && !p2pEnabled) {
-                pendingTorrentPlaybackInfo = playbackInfo
-                showP2pConsentDialog = true
-                return@LaunchedEffect
-            }
+        if (playbackInfo.url != null) {
             // Respect player preference for cached links too
             when (playerPreference ?: return@LaunchedEffect) {
                 PlayerPreference.EXTERNAL -> {
@@ -532,24 +516,6 @@ fun StreamScreen(
                 onDismiss = {
                     showPlayerChoiceDialog = false
                     pendingPlaybackInfo = null
-                }
-            )
-        }
-
-        if (showP2pConsentDialog && pendingTorrentPlaybackInfo != null) {
-            P2pConsentDialog(
-                onEnableP2p = {
-                    viewModel.enableP2p()
-                    showP2pConsentDialog = false
-                    val info = pendingTorrentPlaybackInfo!!
-                    pendingTorrentPlaybackInfo = null
-                    routePlayback(info)
-                },
-                onDismiss = {
-                    showP2pConsentDialog = false
-                    pendingTorrentPlaybackInfo = null
-                    // Cancelled P2P consent — fall back to manual stream selection
-                    viewModel.onEvent(StreamScreenEvent.OnAutoPlayConsumed)
                 }
             )
         }

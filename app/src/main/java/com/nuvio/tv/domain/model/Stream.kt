@@ -1,7 +1,6 @@
 package com.nuvio.tv.domain.model
 
 import androidx.compose.runtime.Immutable
-import com.nuvio.tv.core.debrid.DebridProviders
 
 /**
  * Represents a stream source from a Stremio addon
@@ -93,12 +92,7 @@ data class Stream(
         return idxStr.toIntOrNull()
     }
 
-    fun isDirectDebrid(): Boolean {
-        val resolve = clientResolve ?: return false
-        return resolve.type.equals("debrid", ignoreCase = true) &&
-            DebridProviders.isSupported(resolve.service) &&
-            resolve.isCached == true
-    }
+    fun isDirectDebrid(): Boolean = false
 
     /**
      * Returns true if this is a YouTube stream

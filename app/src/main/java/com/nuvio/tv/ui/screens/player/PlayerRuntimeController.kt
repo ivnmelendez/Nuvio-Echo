@@ -13,16 +13,9 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer
 import com.nuvio.tv.core.player.BitrateAwareLoadControl
 import com.nuvio.tv.core.player.LastPlaybackDiagnostics
-import com.nuvio.tv.core.debrid.DirectDebridResolver
-import com.nuvio.tv.core.debrid.DirectDebridStreamPreparer
-import com.nuvio.tv.core.cloud.CloudLibraryPlaybackContext
-import com.nuvio.tv.core.cloud.CloudLibraryPlaybackProgressStore
-import com.nuvio.tv.core.cloud.CloudLibraryPlaybackSessionStore
-import com.nuvio.tv.core.cloud.CloudLibraryRepository
 import com.nuvio.tv.core.plugin.PluginManager
 import com.nuvio.tv.core.tracking.TrackingMediaReference
 import com.nuvio.tv.core.tracking.TrackingScrobbleCoordinator
-import com.nuvio.tv.core.torrent.TorrentService
 import com.nuvio.tv.data.local.AutoSkipSegmentType
 import com.nuvio.tv.data.local.InternalPlayerEngine
 import com.nuvio.tv.data.local.MpvHardwareDecodeMode
@@ -87,17 +80,10 @@ class PlayerRuntimeController(
     internal val watchedItemsPreferences: com.nuvio.tv.data.local.WatchedItemsPreferences,
     internal val trackPreferenceDataStore: com.nuvio.tv.data.local.TrackPreferenceDataStore,
     internal val audioDelayRouteDataStore: AudioDelayRouteDataStore,
-    internal val torrentService: TorrentService,
-    internal val torrentSettings: com.nuvio.tv.core.torrent.TorrentSettings,
     internal val tmdbService: com.nuvio.tv.core.tmdb.TmdbService,
     internal val tmdbMetadataService: com.nuvio.tv.core.tmdb.TmdbMetadataService,
     internal val tmdbSettingsDataStore: com.nuvio.tv.data.local.TmdbSettingsDataStore,
-    internal val directDebridResolver: DirectDebridResolver,
     internal val youTubeStreamResolver: com.nuvio.tv.core.streams.YouTubeStreamResolver,
-    internal val directDebridStreamPreparer: DirectDebridStreamPreparer,
-    internal val cloudLibraryRepository: CloudLibraryRepository,
-    internal val cloudPlaybackProgressStore: CloudLibraryPlaybackProgressStore,
-    internal val cloudPlaybackSessionStore: CloudLibraryPlaybackSessionStore,
     internal val streamBadgePresentation: com.nuvio.tv.core.streams.StreamBadgePresentation,
     internal val playbackIssueReportRepository: PlaybackIssueReportRepository,
     internal val tvRecommendationManager: com.nuvio.tv.core.recommendations.TvRecommendationManager,
@@ -507,8 +493,6 @@ class PlayerRuntimeController(
     internal var configuredBackBufferMs: Int = 0
     internal var metaVideos: List<Video> = emptyList()
     internal var playbackShuffleState: com.nuvio.tv.core.player.PlaybackShuffleState? = null
-    internal var cloudPlaybackContext: CloudLibraryPlaybackContext? =
-        cloudPlaybackSessionStore.load(cloudSessionToken)
     internal var metaGenres: List<String> = emptyList()
     internal var metaCountry: String? = null
     internal var metaFetchJob: Job? = null
@@ -804,27 +788,14 @@ class PlayerRuntimeController(
         // causing the resume seek to be silently lost when ExoPlayer's STATE_READY
         // fired before the DB read completed.
         observeSubtitleSettings()
-        if (contentType.equals("cloud", ignoreCase = true)) {
-            initializeCloudPlaybackSequence()
-        } else {
-            fetchMetaDetails(contentId, contentType)
-        }
+        fetchMetaDetails(contentId, contentType)
         observeBlurUnwatchedEpisodes()
         observeEpisodeWatchProgress()
-        observeTorrentSettings()
         observeStreamBadgeSettings()
         observeDeviceLocalAspectMode()
         observeDeviceLocalTransparentLetterbox()
         observeDeviceLocalTunneledSurfaceFill()
         observePlayerStatsHud()
-    }
-
-    private fun observeTorrentSettings() {
-        scope.launch {
-            torrentSettings.settings.collect { settings ->
-                _uiState.update { it.copy(hideTorrentStats = settings.hideTorrentStats) }
-            }
-        }
     }
 
     private fun observeStreamBadgeSettings() {
@@ -843,8 +814,6 @@ class PlayerRuntimeController(
 
     fun onCleared() {
         releasePlayer()
-        stopTorrentStream()
-        torrentService.shutdown()
         startupLoadingReportJob?.cancel()
         vodTelemetryJob?.cancel()
         mediaSourceFactory.shutdown()

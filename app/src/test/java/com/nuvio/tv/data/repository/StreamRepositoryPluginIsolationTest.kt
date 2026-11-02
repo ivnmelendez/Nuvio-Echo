@@ -1,20 +1,16 @@
 package com.nuvio.tv.data.repository
 
 import android.content.Context
-import com.nuvio.tv.core.debrid.DebridStreamPresentation
-import com.nuvio.tv.core.debrid.LocalDebridAvailabilityService
 import com.nuvio.tv.core.network.NetworkResult
 import com.nuvio.tv.core.plugin.PluginManager
 import com.nuvio.tv.core.profile.ProfileManager
 import com.nuvio.tv.core.tmdb.TmdbService
-import com.nuvio.tv.data.local.DebridSettingsDataStore
 import com.nuvio.tv.data.remote.api.AddonApi
 import com.nuvio.tv.data.remote.dto.StreamDto
 import com.nuvio.tv.data.remote.dto.StreamResponseDto
 import com.nuvio.tv.domain.model.Addon
 import com.nuvio.tv.domain.model.AddonResource
 import com.nuvio.tv.domain.model.AddonStreams
-import com.nuvio.tv.domain.model.DebridSettings
 import com.nuvio.tv.domain.model.RepositoryType
 import com.nuvio.tv.domain.model.ScraperInfo
 import com.nuvio.tv.domain.repository.AddonRepository
@@ -150,19 +146,6 @@ class StreamRepositoryPluginIsolationTest {
         every { profileManager.activeProfileId } returns MutableStateFlow(1)
 
         val tmdbService = mockk<TmdbService>(relaxed = true)
-        val debridSettingsDataStore = mockk<DebridSettingsDataStore>()
-        every { debridSettingsDataStore.settings } returns flowOf(DebridSettings())
-        val presentation = mockk<DebridStreamPresentation>()
-        every { presentation.apply(any(), any<DebridSettings>(), any(), any()) } answers {
-            firstArg<List<AddonStreams>>()
-        }
-        val availability = mockk<LocalDebridAvailabilityService>()
-        coEvery { availability.markChecking(any()) } coAnswers {
-            firstArg<List<AddonStreams>>()
-        }
-        coEvery { availability.annotateCachedAvailability(any()) } coAnswers {
-            firstArg<List<AddonStreams>>()
-        }
 
         return Harness(
             repository = StreamRepositoryImpl(
@@ -171,10 +154,7 @@ class StreamRepositoryPluginIsolationTest {
                 addonRepository = addonRepository,
                 pluginManager = pluginManager,
                 profileManager = profileManager,
-                debridSettingsDataStore = debridSettingsDataStore,
                 tmdbService = tmdbService,
-                debridStreamPresentation = presentation,
-                localDebridAvailabilityService = availability,
                 betaPerformanceSettings = mockk<com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore> {
                     every { current } returns kotlinx.coroutines.flow.MutableStateFlow(
                         com.nuvio.tv.data.local.BetaPerformanceSettings()

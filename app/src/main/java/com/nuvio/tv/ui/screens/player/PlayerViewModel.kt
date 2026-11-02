@@ -5,16 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.exoplayer.ExoPlayer
-import com.nuvio.tv.core.debrid.DirectDebridResolver
-import com.nuvio.tv.core.debrid.DirectDebridStreamPreparer
-import com.nuvio.tv.core.cloud.CloudLibraryPlaybackSessionStore
-import com.nuvio.tv.core.cloud.CloudLibraryPlaybackProgressStore
-import com.nuvio.tv.core.cloud.CloudLibraryRepository
 import com.nuvio.tv.core.plugin.PluginManager
 import com.nuvio.tv.core.player.StreamAutoPlayPolicy
 import com.nuvio.tv.core.tracking.TrackingScrobbleCoordinator
-import com.nuvio.tv.core.torrent.TorrentService
-import com.nuvio.tv.core.torrent.TorrentSettings
 import com.nuvio.tv.data.local.AudioDelayRouteDataStore
 import com.nuvio.tv.data.local.PlayerSettingsDataStore
 import com.nuvio.tv.data.local.DeviceLocalPlayerPreferences
@@ -71,8 +64,6 @@ class PlayerViewModel @Inject constructor(
     private val watchedSeriesStateHolder: WatchedSeriesStateHolder,
     private val trackPreferenceDataStore: com.nuvio.tv.data.local.TrackPreferenceDataStore,
     private val audioDelayRouteDataStore: AudioDelayRouteDataStore,
-    private val torrentService: TorrentService,
-    private val torrentSettings: TorrentSettings,
     private val tmdbService: TmdbService,
     private val tmdbMetadataService: TmdbMetadataService,
     private val tmdbSettingsDataStore: TmdbSettingsDataStore,
@@ -86,12 +77,7 @@ class PlayerViewModel @Inject constructor(
     private val traktSettingsDataStore: TraktSettingsDataStore,
     private val simklRelatedService: com.nuvio.tv.data.simkl.SimklRelatedService,
     private val simklAuthRepository: com.nuvio.tv.data.simkl.SimklAuthRepository,
-    private val directDebridResolver: DirectDebridResolver,
     private val youTubeStreamResolver: com.nuvio.tv.core.streams.YouTubeStreamResolver,
-    private val directDebridStreamPreparer: DirectDebridStreamPreparer,
-    private val cloudLibraryRepository: CloudLibraryRepository,
-    private val cloudPlaybackProgressStore: CloudLibraryPlaybackProgressStore,
-    private val cloudPlaybackSessionStore: CloudLibraryPlaybackSessionStore,
     private val streamBadgePresentation: com.nuvio.tv.core.streams.StreamBadgePresentation,
     private val playbackIssueReportRepository: com.nuvio.tv.data.repository.PlaybackIssueReportRepository,
     private val externalPlaybackTracker: com.nuvio.tv.core.player.ExternalPlaybackTracker,
@@ -129,17 +115,10 @@ class PlayerViewModel @Inject constructor(
         episodeShufflePlayback = episodeShufflePlayback,
         trackPreferenceDataStore = trackPreferenceDataStore,
         audioDelayRouteDataStore = audioDelayRouteDataStore,
-        torrentService = torrentService,
-        torrentSettings = torrentSettings,
         tmdbService = tmdbService,
         tmdbMetadataService = tmdbMetadataService,
         tmdbSettingsDataStore = tmdbSettingsDataStore,
-        directDebridResolver = directDebridResolver,
         youTubeStreamResolver = youTubeStreamResolver,
-        directDebridStreamPreparer = directDebridStreamPreparer,
-        cloudLibraryRepository = cloudLibraryRepository,
-        cloudPlaybackProgressStore = cloudPlaybackProgressStore,
-        cloudPlaybackSessionStore = cloudPlaybackSessionStore,
         streamBadgePresentation = streamBadgePresentation,
         playbackIssueReportRepository = playbackIssueReportRepository,
         tvRecommendationManager = tvRecommendationManager,
@@ -313,7 +292,6 @@ class PlayerViewModel @Inject constructor(
             return
         }
         val contentId = controller.contentId
-            ?: controller.cloudPlaybackContext?.item?.stableKey
             ?: run {
             onResult(false)
             return

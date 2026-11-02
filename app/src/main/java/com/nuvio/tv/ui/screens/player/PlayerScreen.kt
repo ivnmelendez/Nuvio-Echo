@@ -1260,21 +1260,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Torrent stats overlay (top-right corner)
-        TorrentOverlay(
-            visible = uiState.isTorrentStream && uiState.showTorrentStats &&
-                !uiState.hideTorrentStats && uiState.error == null && !postPlayRecommendationState.isVisible,
-            downloadSpeed = uiState.torrentDownloadSpeed,
-            uploadSpeed = uiState.torrentUploadSpeed,
-            peers = uiState.torrentPeers,
-            seeds = uiState.torrentSeeds,
-            totalProgress = uiState.torrentTotalProgress,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = NuvioTheme.spacing.lg, end = NuvioTheme.spacing.lg)
-                .zIndex(2.7f)
-        )
-
         // Buffering indicator — isolated in its own composable scope so that
         // isBuffering state changes only recompose this small subtree instead
         // of the entire PlayerScreen.
