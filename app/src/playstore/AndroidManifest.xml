@@ -21,6 +21,21 @@
         <service
             android:name=".core.player.ExternalPlaybackKeepAliveService"
             tools:node="remove" />
+        <activity
+            android:name=".launcher.AppIconArcticBlue"
+            tools:node="remove" />
+        <activity
+            android:name=".launcher.AppIconEmerald"
+            tools:node="remove" />
+        <activity
+            android:name=".launcher.AppIconRoseGold"
+            tools:node="remove" />
+        <activity
+            android:name=".launcher.AppIconCopper"
+            tools:node="remove" />
+        <activity
+            android:name=".launcher.AppIconGraphite"
+            tools:node="remove" />
     </application>
 
 </manifest>
