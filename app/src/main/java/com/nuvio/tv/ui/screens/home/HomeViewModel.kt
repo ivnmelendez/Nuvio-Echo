@@ -60,11 +60,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     @ApplicationContext internal val appContext: Context,
     internal val addonRepository: AddonRepository,
-    internal val startupSyncService: com.nuvio.tv.core.sync.StartupSyncService,
     internal val catalogRepository: CatalogRepository,
     internal val watchProgressRepository: WatchProgressRepository,
     internal val libraryRepository: LibraryRepository,
     internal val metaRepository: MetaRepository,
+    internal val manualAddonRefresh: com.nuvio.tv.core.addons.ManualAddonRefresh,
+    internal val authSessionNoticeDataStore: AuthSessionNoticeDataStore,
     internal val episodeShuffleStore: com.nuvio.tv.data.local.EpisodeShuffleStore,
     internal val episodeShuffle: com.nuvio.tv.domain.model.EpisodeShuffle,
     internal val collectionsDataStore: CollectionsDataStore,
@@ -73,7 +74,6 @@ class HomeViewModel @Inject constructor(
     internal val tmdbSettingsDataStore: TmdbSettingsDataStore,
     internal val mdbListSettingsDataStore: MDBListSettingsDataStore,
     internal val traktSettingsDataStore: TraktSettingsDataStore,
-    internal val authSessionNoticeDataStore: AuthSessionNoticeDataStore,
     internal val tmdbService: TmdbService,
     internal val tmdbMetadataService: TmdbMetadataService,
     internal val mdbListRepository: MDBListRepository,
@@ -818,7 +818,7 @@ class HomeViewModel @Inject constructor(
      */
     private fun observeManualAddonRefresh() {
         viewModelScope.launch {
-            startupSyncService.manualAddonRefreshes.collect {
+            manualAddonRefresh.events.collect {
                 if (addonsCache.isEmpty()) return@collect
                 lastHomeCatalogRefreshAtMs = android.os.SystemClock.elapsedRealtime()
                 refreshVisibleCatalogsPipeline(requestedByUser = true)

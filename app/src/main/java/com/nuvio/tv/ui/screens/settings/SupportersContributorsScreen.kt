@@ -184,7 +184,7 @@ fun SupportersContributorsScreen(
                 showQr = showMembershipQr,
                 onShowQr = { showMembershipQr = true },
                 onHideQr = { showMembershipQr = false },
-                onRefresh = viewModel::refreshMembership
+                onRefresh = {}
             )
 
             SupportersContentPanel(

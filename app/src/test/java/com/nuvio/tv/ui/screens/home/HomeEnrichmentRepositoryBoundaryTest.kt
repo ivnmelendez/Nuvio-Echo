@@ -180,7 +180,7 @@ class HomeEnrichmentRepositoryBoundaryTest {
             episodeShuffle = com.nuvio.tv.domain.model.EpisodeShuffle(),
             appContext = mockk(relaxed = true),
             addonRepository = mockk(relaxed = true),
-            startupSyncService = mockk(relaxed = true),
+            manualAddonRefresh = com.nuvio.tv.core.addons.ManualAddonRefresh(),
             catalogRepository = mockk(relaxed = true),
             watchProgressRepository = watchProgressRepository,
             libraryRepository = mockk(relaxed = true),

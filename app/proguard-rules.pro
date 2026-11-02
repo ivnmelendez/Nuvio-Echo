@@ -91,10 +91,8 @@
 }
 
 # ── Supabase / Ktor / Kotlinx Serialization ───────────────────────────────────
--keep class io.github.jan.supabase.** { *; }
 -keep class io.ktor.** { *; }
 -dontwarn io.ktor.**
--keep class com.nuvio.tv.data.remote.supabase.** { *; }
 # Keep @Serializable classes and their generated serializers
 -keepclassmembers class * {
     kotlinx.serialization.KSerializer serializer(...);

@@ -4,11 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.R
-import com.nuvio.tv.core.sync.CollectionSyncService
-import com.nuvio.tv.core.sync.HomeCatalogSettingsSyncService
-import com.nuvio.tv.core.sync.StartupSyncService
-import com.nuvio.tv.core.sync.homeCatalogKey
-import com.nuvio.tv.core.sync.homeLegacyDisabledCatalogKey
 import com.nuvio.tv.core.network.NetworkResult
 import com.nuvio.tv.core.qr.QrCodeGenerator
 import com.nuvio.tv.core.server.AddonConfigServer
@@ -34,6 +29,8 @@ import com.nuvio.tv.core.server.TraktSourceSearchResultInfo
 import com.nuvio.tv.core.profile.ProfileManager
 import com.nuvio.tv.core.tmdb.TmdbCollectionSourceResolver
 import com.nuvio.tv.core.trakt.TraktPublicListSourceResolver
+import com.nuvio.tv.data.local.homeCatalogKey
+import com.nuvio.tv.data.local.homeLegacyDisabledCatalogKey
 import com.nuvio.tv.data.local.CollectionsDataStore
 import com.nuvio.tv.data.local.ExperienceModeDataStore
 import com.nuvio.tv.data.local.LayoutPreferenceDataStore
@@ -68,10 +65,8 @@ class AddonManagerViewModel @Inject constructor(
     private val layoutPreferenceDataStore: LayoutPreferenceDataStore,
     private val experienceModeDataStore: ExperienceModeDataStore,
     private val collectionsDataStore: CollectionsDataStore,
-    private val collectionSyncService: CollectionSyncService,
-    private val homeCatalogSettingsSyncService: HomeCatalogSettingsSyncService,
-    private val startupSyncService: StartupSyncService,
     private val profileManager: ProfileManager,
+    private val manualAddonRefresh: com.nuvio.tv.core.addons.ManualAddonRefresh,
     private val tmdbCollectionSourceResolver: TmdbCollectionSourceResolver,
     private val traktPublicListSourceResolver: TraktPublicListSourceResolver,
     @ApplicationContext private val context: Context
@@ -108,7 +103,7 @@ class AddonManagerViewModel @Inject constructor(
     }
 
     fun requestAddonSyncNow() {
-        startupSyncService.requestAddonSyncNow()
+        manualAddonRefresh.request()
     }
 
     private fun loadLogoBytes() {
@@ -609,7 +604,6 @@ class AddonManagerViewModel @Inject constructor(
                 try {
                     val newCollections = parseCollectionsFromJson(pending.proposedCollectionsJson)
                     collectionsDataStore.setCollections(newCollections)
-                    collectionSyncService.triggerPush()
                 } catch (_: Exception) { }
             }
             // Apply disabled collection key changes
@@ -617,7 +611,6 @@ class AddonManagerViewModel @Inject constructor(
                 val nonCollectionDisabledKeys = disabledHomeCatalogKeys.filter { !it.startsWith("collection_") }
                 val mergedDisabledKeys = nonCollectionDisabledKeys + pending.proposedDisabledCollectionKeys
                 layoutPreferenceDataStore.setDisabledHomeCatalogKeys(mergedDisabledKeys)
-                homeCatalogSettingsSyncService.triggerPush()
             }
             // Apply follow addons order change
             if (pending.proposedFollowAddonsOrder != null) {
@@ -678,7 +671,6 @@ class AddonManagerViewModel @Inject constructor(
 
         layoutPreferenceDataStore.setHomeCatalogOrderKeys(validCatalogOrder)
         layoutPreferenceDataStore.setDisabledHomeCatalogKeys(validDisabledCatalogs)
-        homeCatalogSettingsSyncService.triggerPush()
     }
 
     private fun observeCatalogPreferences() {

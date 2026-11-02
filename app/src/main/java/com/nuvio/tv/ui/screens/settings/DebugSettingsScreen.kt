@@ -197,13 +197,6 @@ fun DebugSettingsContent(
             }
 
             item(key = "debug_sign_in_card") {
-                DebugSignInCard(
-                    isLoading = uiState.signInLoading,
-                    result = uiState.signInResult,
-                    onSignIn = { email, password ->
-                        viewModel.onEvent(DebugSettingsEvent.SignIn(email, password))
-                    }
-                )
             }
         }
         SettingsVerticalScrollIndicators(state = debugListState)
@@ -479,61 +472,3 @@ private fun DebugGenerateLibraryCard(
     }
 }
 
-@Composable
-private fun DebugSignInCard(
-    isLoading: Boolean,
-    result: String?,
-    onSignIn: (email: String, password: String) -> Unit
-) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(NuvioTheme.spacing.xs),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.debug_manual_signin_title),
-            style = MaterialTheme.typography.titleMedium,
-            color = NuvioTheme.colors.TextPrimary
-        )
-        Text(
-            text = stringResource(R.string.debug_manual_signin_subtitle),
-            style = MaterialTheme.typography.bodySmall,
-            color = NuvioTheme.colors.TextSecondary
-        )
-
-        InputField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = stringResource(R.string.debug_email_placeholder),
-            keyboardType = KeyboardType.Email
-        )
-
-        InputField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = stringResource(R.string.debug_password_placeholder),
-            isPassword = true
-        )
-
-        if (result != null) {
-            Text(
-                text = result,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (result.startsWith("Failed")) NuvioTheme.colors.Error else NuvioTheme.colors.Secondary
-            )
-        }
-
-        DebugDialogButton(
-            text = if (isLoading) stringResource(R.string.debug_signing_in) else stringResource(R.string.debug_sign_in),
-            onClick = {
-                if (!isLoading && email.isNotBlank() && password.isNotBlank()) {
-                    onSignIn(email.trim(), password)
-                }
-            }
-        )
-    }
-}

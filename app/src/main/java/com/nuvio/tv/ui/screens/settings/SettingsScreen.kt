@@ -158,8 +158,6 @@ private sealed interface ExperienceModeLoadState {
 
 @Composable
 private fun settingsSectionSpec(category: SettingsCategory): SettingsSectionSpec = when (category) {
-    SettingsCategory.ACCOUNT -> SettingsSectionSpec(category, stringResource(R.string.settings_account), Icons.Default.Person, destination = SettingsSectionDestination.Inline)
-    SettingsCategory.PROFILES -> SettingsSectionSpec(category, stringResource(R.string.settings_profiles), Icons.Default.People, destination = SettingsSectionDestination.Inline)
     SettingsCategory.APPEARANCE -> SettingsSectionSpec(category, stringResource(R.string.appearance_title), Icons.Default.Palette, destination = SettingsSectionDestination.Inline)
     SettingsCategory.LAYOUT -> SettingsSectionSpec(category, stringResource(R.string.settings_layout), Icons.Default.GridView, destination = SettingsSectionDestination.Inline)
     SettingsCategory.CONTENT_DISCOVERY -> SettingsSectionSpec(category, stringResource(R.string.settings_content_discovery), Icons.Default.Explore, destination = SettingsSectionDestination.Inline)
@@ -180,14 +178,11 @@ fun SettingsScreen(
     onNavigateToTracking: () -> Unit = {},
     onNavigateToAddons: () -> Unit = {},
     onNavigateToPlugins: () -> Unit = {},
-    onNavigateToAuthQrSignIn: () -> Unit = {},
-    onNavigateToManageProfiles: () -> Unit = {},
     onNavigateToSupportersContributors: () -> Unit = {},
     onNavigateToLicensesAttributions: () -> Unit = {},
-    profileViewModel: ProfileSettingsViewModel = hiltViewModel(),
     experienceModeViewModel: ExperienceModeSettingsViewModel = hiltViewModel()
 ) {
-    val isPrimaryProfileActive by profileViewModel.isPrimaryProfileActive.collectAsStateWithLifecycle()
+    val isPrimaryProfileActive = true
     val experienceModeState by remember(experienceModeViewModel) {
         experienceModeViewModel.mode.map<ExperienceMode?, ExperienceModeLoadState> {
             ExperienceModeLoadState.Loaded(it)
@@ -230,14 +225,12 @@ fun SettingsScreen(
         mapOf(
             SettingsCategory.APPEARANCE to FocusRequester(),
             SettingsCategory.EXPERIENCE to FocusRequester(),
-            SettingsCategory.PROFILES to FocusRequester(),
             SettingsCategory.LAYOUT to FocusRequester(),
             SettingsCategory.CONTENT_DISCOVERY to FocusRequester(),
             SettingsCategory.INTEGRATION to FocusRequester(),
             SettingsCategory.PLAYBACK to FocusRequester(),
             SettingsCategory.ADVANCED to FocusRequester(),
             SettingsCategory.ABOUT to FocusRequester(),
-            SettingsCategory.ACCOUNT to FocusRequester(),
             SettingsCategory.TRACKING to FocusRequester(),
             SettingsCategory.ADDONS to FocusRequester(),
             SettingsCategory.LANGUAGE to FocusRequester()
@@ -439,7 +432,6 @@ fun SettingsScreen(
                         // return aims at the options of a category that was never opened.
                         allowDetailAutofocus = false
                         when (section.category) {
-                            SettingsCategory.ACCOUNT -> onNavigateToAuthQrSignIn()
                             SettingsCategory.TRACKING -> onNavigateToTracking()
                             SettingsCategory.ADDONS -> onNavigateToAddons()
                             else -> Unit
@@ -646,10 +638,8 @@ fun SettingsScreen(
                                     integrationTmdbFocusRequester = integrationTmdbFocusRequester,
                                     integrationMdbListFocusRequester = integrationMdbListFocusRequester,
                                     integrationAnimeSkipFocusRequester = integrationAnimeSkipFocusRequester,
-                                    onNavigateToManageProfiles = onNavigateToManageProfiles,
                                     onNavigateToAddons = onNavigateToAddons,
                                     onNavigateToPlugins = onNavigateToPlugins,
-                                    onNavigateToAuthQrSignIn = onNavigateToAuthQrSignIn,
                                     onNavigateToSupportersContributors = onNavigateToSupportersContributors,
                                     onNavigateToLicensesAttributions = onNavigateToLicensesAttributions
                                 )
@@ -784,10 +774,8 @@ fun SettingsScreen(
                             integrationTmdbFocusRequester = integrationTmdbFocusRequester,
                             integrationMdbListFocusRequester = integrationMdbListFocusRequester,
                             integrationAnimeSkipFocusRequester = integrationAnimeSkipFocusRequester,
-                            onNavigateToManageProfiles = onNavigateToManageProfiles,
                             onNavigateToAddons = onNavigateToAddons,
                             onNavigateToPlugins = onNavigateToPlugins,
-                            onNavigateToAuthQrSignIn = onNavigateToAuthQrSignIn,
                             onNavigateToSupportersContributors = onNavigateToSupportersContributors,
                             onNavigateToLicensesAttributions = onNavigateToLicensesAttributions
                         )
@@ -812,10 +800,8 @@ private fun SettingsDetailPane(
     integrationTmdbFocusRequester: FocusRequester,
     integrationMdbListFocusRequester: FocusRequester,
     integrationAnimeSkipFocusRequester: FocusRequester,
-    onNavigateToManageProfiles: () -> Unit,
     onNavigateToAddons: () -> Unit,
     onNavigateToPlugins: () -> Unit,
-    onNavigateToAuthQrSignIn: () -> Unit,
     onNavigateToSupportersContributors: () -> Unit,
     onNavigateToLicensesAttributions: () -> Unit
 ) {
@@ -824,14 +810,6 @@ private fun SettingsDetailPane(
             experienceModeViewModel = experienceModeViewModel,
             initialFocusRequester = if (allowDetailAutofocus) {
                 contentFocusRequesters[SettingsCategory.EXPERIENCE]
-            } else {
-                null
-            }
-        )
-        SettingsCategory.PROFILES -> ProfileSettingsContent(
-            onManageProfiles = onNavigateToManageProfiles,
-            initialFocusRequester = if (allowDetailAutofocus) {
-                contentFocusRequesters[SettingsCategory.PROFILES]
             } else {
                 null
             }
@@ -924,14 +902,6 @@ private fun SettingsDetailPane(
             showPlugins = AppFeaturePolicy.pluginsEnabled && !isEssentialMode,
             initialFocusRequester = if (allowDetailAutofocus) {
                 contentFocusRequesters[SettingsCategory.CONTENT_DISCOVERY]
-            } else {
-                null
-            }
-        )
-        SettingsCategory.ACCOUNT -> AccountSettingsInline(
-            onNavigateToAuthQrSignIn = onNavigateToAuthQrSignIn,
-            initialFocusRequester = if (allowDetailAutofocus) {
-                contentFocusRequesters[SettingsCategory.ACCOUNT]
             } else {
                 null
             }
@@ -1029,37 +999,6 @@ private fun EssentialAdvancedSettingsContent(
             onConfirm = { experienceModeViewModel.setMode(ExperienceMode.ADVANCED) },
             onDismiss = { showConfirmation = false }
         )
-    }
-}
-
-@Composable
-private fun AccountSettingsInline(
-    onNavigateToAuthQrSignIn: () -> Unit,
-    initialFocusRequester: FocusRequester?
-) {
-    val accountViewModel: com.nuvio.tv.ui.screens.account.AccountViewModel = hiltViewModel()
-    val accountUiState by accountViewModel.uiState.collectAsStateWithLifecycle()
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(NuvioTheme.spacing.md)
-    ) {
-        SettingsDetailHeader(
-            title = stringResource(R.string.settings_account),
-            subtitle = stringResource(R.string.settings_account_section_subtitle)
-        )
-        SettingsGroupCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            com.nuvio.tv.ui.screens.account.AccountSettingsContent(
-                uiState = accountUiState,
-                viewModel = accountViewModel,
-                onNavigateToAuthQrSignIn = onNavigateToAuthQrSignIn,
-                initialFocusRequester = initialFocusRequester
-            )
-        }
     }
 }
 

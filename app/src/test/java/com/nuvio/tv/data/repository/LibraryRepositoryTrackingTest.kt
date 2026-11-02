@@ -1,9 +1,7 @@
 package com.nuvio.tv.data.repository
 
 import android.content.Context
-import com.nuvio.tv.core.auth.AuthManager
 import com.nuvio.tv.core.profile.ProfileManager
-import com.nuvio.tv.core.sync.LibrarySyncService
 import com.nuvio.tv.core.tracking.TrackingLibraryProvider
 import com.nuvio.tv.core.tracking.TrackingListManager
 import com.nuvio.tv.core.tracking.TrackingLibraryProviderRegistry
@@ -204,8 +202,6 @@ class LibraryRepositoryTrackingTest {
             appContext = mockk<Context>(relaxed = true),
             libraryPreferences = mockk<LibraryPreferences>(relaxed = true),
             traktSettingsDataStore = settings,
-            librarySyncService = mockk<LibrarySyncService>(relaxed = true),
-            authManager = mockk<AuthManager>(relaxed = true),
             metaRepository = mockk<MetaRepository>(relaxed = true),
             trackingProviders = TrackingLibraryProviderRegistry(providers),
             profileManager = mockk<ProfileManager> { every { activeProfileId } returns MutableStateFlow(1) }

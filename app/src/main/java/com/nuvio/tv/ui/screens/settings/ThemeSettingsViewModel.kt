@@ -3,7 +3,7 @@ package com.nuvio.tv.ui.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.data.local.ThemeDataStore
-import com.nuvio.tv.data.repository.MemberAccessRepository
+import com.nuvio.tv.domain.model.MemberAccess
 import com.nuvio.tv.domain.model.AppFont
 import com.nuvio.tv.domain.model.AppIconOption
 import com.nuvio.tv.domain.model.AppTheme
@@ -15,6 +15,7 @@ import com.nuvio.tv.domain.model.resolveAppTheme
 import com.nuvio.tv.domain.model.resolveCustomThemeColors
 import com.nuvio.tv.launcher.AppIconManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,7 +53,6 @@ sealed class ThemeSettingsEvent {
 @HiltViewModel
 class ThemeSettingsViewModel @Inject constructor(
     private val themeDataStore: ThemeDataStore,
-    private val memberAccessRepository: MemberAccessRepository,
     private val appIconManager: AppIconManager
 ) : ViewModel() {
 
@@ -70,18 +70,15 @@ class ThemeSettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                themeDataStore.themeSelection,
-                memberAccessRepository.access
-            ) { selection, memberAccess ->
-                val entitlements = memberAccess.entitlements
+            themeDataStore.themeSelection.map { selection ->
+                val entitlements = MemberAccess.None.entitlements
                 Triple(
                     selection.copy(
                         theme = resolveAppTheme(selection.theme, entitlements),
-                        customColors = resolveCustomThemeColors(selection.customColors, memberAccess.tier)
+                        customColors = resolveCustomThemeColors(selection.customColors, MemberAccess.None.tier)
                     ),
                     availableAppThemes(entitlements),
-                    memberAccess.tier != null
+                    false
                 )
             }
                 .distinctUntilChanged()
@@ -156,16 +153,14 @@ class ThemeSettingsViewModel @Inject constructor(
     private fun selectTheme(theme: AppTheme) {
         if (currentTheme() == theme) return
         viewModelScope.launch {
-            val access = memberAccessRepository.access.value
-            if (theme !in availableAppThemes(access.entitlements)) return@launch
+            if (theme !in availableAppThemes(MemberAccess.None.entitlements)) return@launch
             themeDataStore.setTheme(theme)
         }
     }
 
     private fun saveCustomTheme(colors: CustomThemeColors) {
         viewModelScope.launch {
-            val access = memberAccessRepository.access.value
-            themeDataStore.setCustomTheme(resolveCustomThemeColors(colors, access.tier))
+            themeDataStore.setCustomTheme(resolveCustomThemeColors(colors, MemberAccess.None.tier))
         }
     }
 

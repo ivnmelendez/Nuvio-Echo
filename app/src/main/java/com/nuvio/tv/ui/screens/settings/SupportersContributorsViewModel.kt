@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.data.repository.GitHubContributor
 import com.nuvio.tv.data.repository.GitHubContributorsRepository
-import com.nuvio.tv.data.repository.MembershipOverviewRepository
 import com.nuvio.tv.data.repository.DevelopmentSponsor
 import com.nuvio.tv.data.repository.SponsorsRepository
 import com.nuvio.tv.data.repository.SupporterMember
@@ -50,24 +49,14 @@ class SupportersContributorsViewModel @Inject constructor(
     private val supportersRepository: SupportersRepository,
     private val sponsorsRepository: SponsorsRepository,
     private val contributorsRepository: GitHubContributorsRepository,
-    private val membershipOverviewRepository: MembershipOverviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SupportersContributorsUiState())
     val uiState: StateFlow<SupportersContributorsUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            membershipOverviewRepository.state.collect { membership ->
-                _uiState.update { it.copy(membership = membership) }
-            }
-        }
         loadContributorsIfNeeded()
         loadSupportersIfNeeded()
-    }
-
-    fun refreshMembership() {
-        membershipOverviewRepository.refresh()
     }
 
     fun onSelectTab(tab: SupportersContributorsTab) {

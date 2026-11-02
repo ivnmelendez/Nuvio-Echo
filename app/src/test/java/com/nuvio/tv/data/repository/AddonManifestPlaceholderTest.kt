@@ -1,8 +1,6 @@
 package com.nuvio.tv.data.repository
 
 import android.content.Context
-import com.nuvio.tv.core.auth.AuthManager
-import com.nuvio.tv.core.sync.AddonSyncService
 import com.nuvio.tv.data.local.AddonPreferences
 import com.nuvio.tv.data.remote.api.AddonApi
 import com.nuvio.tv.data.remote.dto.AddonManifestDto
@@ -261,8 +259,6 @@ class AddonManifestPlaceholderTest {
             repository = AddonRepositoryImpl(
                 api = api,
                 preferences = preferences,
-                addonSyncService = mockk<AddonSyncService>(relaxed = true),
-                authManager = mockk<AuthManager>(relaxed = true),
                 context = newContext(),
                 dispatcher = dispatcher,
                 clock = clock

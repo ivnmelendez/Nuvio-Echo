@@ -9,8 +9,6 @@ internal enum class SettingsRailGroup {
 }
 
 internal enum class SettingsCategory(val group: SettingsRailGroup) {
-    ACCOUNT(SettingsRailGroup.YOU),
-    PROFILES(SettingsRailGroup.YOU),
     APPEARANCE(SettingsRailGroup.LOOK),
     LAYOUT(SettingsRailGroup.LOOK),
     CONTENT_DISCOVERY(SettingsRailGroup.WATCH),
@@ -33,6 +31,8 @@ internal fun visibleSettingsCategories(
     // Settings only shows these for now; the rest stays in the code, hidden.
     category == SettingsCategory.PLAYBACK ||
         category == SettingsCategory.ADDONS ||
+        category == SettingsCategory.INTEGRATION ||
+        category == SettingsCategory.TRACKING ||
         category == SettingsCategory.LANGUAGE ||
         category == SettingsCategory.ABOUT
 }

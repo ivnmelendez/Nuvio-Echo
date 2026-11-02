@@ -5,9 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.R
 import com.nuvio.tv.core.home.BuiltInRow
 import com.nuvio.tv.core.home.HomeRowOrder
-import com.nuvio.tv.core.sync.HomeCatalogSettingsSyncService
-import com.nuvio.tv.core.sync.homeCatalogKey
-import com.nuvio.tv.core.sync.homeLegacyDisabledCatalogKey
+import com.nuvio.tv.data.local.homeCatalogKey
+import com.nuvio.tv.data.local.homeLegacyDisabledCatalogKey
 import com.nuvio.tv.data.local.BetaPerformanceSettings
 import com.nuvio.tv.data.local.BetaPerformanceSettingsDataStore
 import com.nuvio.tv.data.local.CollectionsDataStore
@@ -32,7 +31,6 @@ class CatalogOrderViewModel @Inject constructor(
     private val addonRepository: AddonRepository,
     private val collectionsDataStore: CollectionsDataStore,
     private val layoutPreferenceDataStore: LayoutPreferenceDataStore,
-    private val homeCatalogSettingsSyncService: HomeCatalogSettingsSyncService,
     private val betaSettings: BetaPerformanceSettingsDataStore
 ) : ViewModel() {
 
@@ -71,7 +69,6 @@ class CatalogOrderViewModel @Inject constructor(
         viewModelScope.launch {
             if (catalogOrder != merged.filterNot(HomeRowOrder::isBuiltIn)) {
                 layoutPreferenceDataStore.setHomeCatalogOrderKeys(catalogOrder)
-                homeCatalogSettingsSyncService.triggerPush()
             }
             betaSettings.setHomeRowOrder(moved)
         }
@@ -116,7 +113,6 @@ class CatalogOrderViewModel @Inject constructor(
         }
         viewModelScope.launch {
             layoutPreferenceDataStore.setDisabledHomeCatalogKeys(updatedDisabled.toList())
-            homeCatalogSettingsSyncService.triggerPush()
         }
     }
 
@@ -135,7 +131,6 @@ class CatalogOrderViewModel @Inject constructor(
 
         viewModelScope.launch {
             layoutPreferenceDataStore.setHomeCatalogOrderKeys(reordered)
-            homeCatalogSettingsSyncService.triggerPush()
         }
     }
 
@@ -202,7 +197,6 @@ class CatalogOrderViewModel @Inject constructor(
 
         viewModelScope.launch {
             layoutPreferenceDataStore.setHomeCatalogOrderKeys(reordered)
-            homeCatalogSettingsSyncService.triggerPush()
         }
     }
 

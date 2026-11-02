@@ -63,8 +63,6 @@ private const val MANIFEST_SUFFIX = "/manifest.json"
 class PluginManager @Inject constructor(
     private val dataStore: PluginDataStore,
     private val runtime: PluginRuntime,
-    private val pluginSyncService: com.nuvio.tv.core.sync.PluginSyncService,
-    private val authManager: com.nuvio.tv.core.auth.AuthManager,
     private val externalRepoParser: ExternalRepoParser,
     private val externalExtensionLoader: ExternalExtensionLoader,
     private val externalExtensionRunner: ExternalExtensionRunner
@@ -256,29 +254,6 @@ class PluginManager @Inject constructor(
     fun flushPendingSync() {
         if (pendingPushAfterSync) {
             pendingPushAfterSync = false
-            Log.d(TAG, "flushPendingSync: firing deferred push")
-            triggerRemoteSync()
-        }
-    }
-
-    private var syncJob: kotlinx.coroutines.Job? = null
-
-    private fun triggerRemoteSync() {
-        if (isSyncingFromRemote) {
-            Log.d(TAG, "triggerRemoteSync: skipped (syncing from remote), will push after sync")
-            pendingPushAfterSync = true
-            return
-        }
-        if (!authManager.isAuthenticated) {
-            Log.d(TAG, "triggerRemoteSync: skipped (not authenticated, state=${authManager.authState.value})")
-            return
-        }
-        Log.d(TAG, "triggerRemoteSync: scheduling push in 500ms")
-        syncJob?.cancel()
-        syncJob = syncScope.launch {
-            kotlinx.coroutines.delay(500)
-            val result = pluginSyncService.pushToRemote()
-            Log.d(TAG, "triggerRemoteSync: push result=${result.isSuccess} ${result.exceptionOrNull()?.message ?: ""}")
         }
     }
 
@@ -412,7 +387,6 @@ class PluginManager @Inject constructor(
         downloadJsScrapers(repo.id, canonicalManifestUrl, manifest.scrapers)
 
         Log.d(TAG, "NuvioTV repository added: ${repo.name} with ${manifest.scrapers.size} scrapers")
-        triggerRemoteSync()
         return Result.success(repo)
     }
 
@@ -443,7 +417,6 @@ class PluginManager @Inject constructor(
         downloadDexExtensions(repo.id, parseResult.plugins)
 
         Log.d(TAG, "External repository added: ${repo.name} with ${parseResult.plugins.size} extensions")
-        triggerRemoteSync()
         return Result.success(repo)
     }
     
@@ -470,14 +443,6 @@ class PluginManager @Inject constructor(
         // Remove repository
         dataStore.removeRepository(repoId)
 
-        // Push synchronously when user-initiated (not during reconciliation)
-        // to prevent the next sync pull from re-adding the removed repo
-        if (!isSyncingFromRemote && authManager.isAuthenticated) {
-            Log.d(TAG, "removeRepository: pushing removal to remote synchronously")
-            pluginSyncService.pushToRemote()
-        } else if (isSyncingFromRemote) {
-            pendingPushAfterSync = true
-        }
     }
 
     

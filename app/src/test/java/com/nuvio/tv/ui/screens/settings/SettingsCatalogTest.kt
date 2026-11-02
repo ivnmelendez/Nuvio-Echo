@@ -2,120 +2,55 @@ package com.nuvio.tv.ui.screens.settings
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SettingsCatalogTest {
 
-    @Test
-    fun `primary profile in advanced debug build sees every category in group order`() {
-        val categories = visibleSettingsCategories(
-            isPrimaryProfile = true,
-            isEssentialMode = false,
-            isDebugBuild = true
-        )
+    private fun visible(debug: Boolean = false, essential: Boolean = false) =
+        visibleSettingsCategories(isPrimaryProfile = true, isEssentialMode = essential, isDebugBuild = debug)
 
+    @Test
+    fun `settings shows playback, addons, integrations, tracking, language and about in that order`() {
         assertEquals(
             listOf(
-                SettingsCategory.ACCOUNT,
-                SettingsCategory.PROFILES,
-                SettingsCategory.APPEARANCE,
-                SettingsCategory.LAYOUT,
-                SettingsCategory.CONTENT_DISCOVERY,
                 SettingsCategory.PLAYBACK,
+                SettingsCategory.ADDONS,
                 SettingsCategory.INTEGRATION,
                 SettingsCategory.TRACKING,
-                SettingsCategory.ADVANCED,
-                SettingsCategory.ABOUT,
-                SettingsCategory.DEBUG
+                SettingsCategory.LANGUAGE,
+                SettingsCategory.ABOUT
             ),
-            categories
+            visible()
         )
     }
 
     @Test
-    fun `secondary profile does not see account or profiles`() {
-        val categories = visibleSettingsCategories(
-            isPrimaryProfile = false,
-            isEssentialMode = false,
-            isDebugBuild = false
-        )
-
-        assertFalse(SettingsCategory.ACCOUNT in categories)
-        assertFalse(SettingsCategory.PROFILES in categories)
-        assertEquals(SettingsCategory.APPEARANCE, categories.first())
+    fun `the list is the same in debug builds and in essential mode`() {
+        assertEquals(visible(), visible(debug = true))
+        assertEquals(visible(), visible(essential = true))
     }
 
     @Test
-    fun `debug is hidden in release builds and in essential mode`() {
-        assertFalse(SettingsCategory.DEBUG in visibleSettingsCategories(true, isEssentialMode = false, isDebugBuild = false))
-        assertFalse(SettingsCategory.DEBUG in visibleSettingsCategories(true, isEssentialMode = true, isDebugBuild = true))
+    fun `debug and experience never appear in the rail`() {
+        assertFalse(SettingsCategory.DEBUG in visible(debug = true))
+        assertFalse(SettingsCategory.EXPERIENCE in visible(debug = true))
     }
 
     @Test
-    fun `experience never appears in the rail`() {
-        allCombinations().forEach { categories ->
-            assertFalse(SettingsCategory.EXPERIENCE in categories)
-        }
-    }
-
-    @Test
-    fun `about is the last regular category`() {
-        allCombinations().forEach { categories ->
-            val withoutDebug = categories - SettingsCategory.DEBUG
-            assertEquals(SettingsCategory.ABOUT, withoutDebug.last())
-        }
-    }
-
-    @Test
-    fun `each group is contiguous in every configuration`() {
-        allCombinations().forEach { categories ->
-            val groupRuns = categories.map { it.group }.fold(mutableListOf<SettingsRailGroup>()) { runs, group ->
-                if (runs.lastOrNull() != group) runs.add(group)
-                runs
-            }
-            assertEquals(groupRuns.distinct(), groupRuns)
-        }
+    fun `each group is contiguous`() {
+        val groups = visible().map { it.group }
+        assertEquals(groups.distinct(), groups.fold(emptyList<SettingsRailGroup>()) { acc, g ->
+            if (acc.lastOrNull() == g) acc else acc + g
+        })
     }
 
     @Test
     fun `dividers are placed only where the group changes`() {
-        val categories = visibleSettingsCategories(
-            isPrimaryProfile = true,
-            isEssentialMode = false,
-            isDebugBuild = true
-        )
+        val categories = visible()
         val dividerBefore = categories.indices.filter { categories.startsNewGroup(it) }.map { categories[it] }
-
         assertEquals(
-            listOf(
-                SettingsCategory.APPEARANCE,
-                SettingsCategory.CONTENT_DISCOVERY,
-                SettingsCategory.INTEGRATION,
-                SettingsCategory.ADVANCED
-            ),
+            listOf(SettingsCategory.INTEGRATION, SettingsCategory.LANGUAGE),
             dividerBefore
         )
-        assertFalse(categories.startsNewGroup(0))
     }
-
-    @Test
-    fun `secondary profile rail starts without a divider`() {
-        val categories = visibleSettingsCategories(
-            isPrimaryProfile = false,
-            isEssentialMode = true,
-            isDebugBuild = false
-        )
-        assertFalse(categories.startsNewGroup(0))
-        assertTrue(categories.startsNewGroup(categories.indexOf(SettingsCategory.CONTENT_DISCOVERY)))
-    }
-
-    private fun allCombinations(): List<List<SettingsCategory>> =
-        listOf(true, false).flatMap { primary ->
-            listOf(true, false).flatMap { essential ->
-                listOf(true, false).map { debug ->
-                    visibleSettingsCategories(primary, essential, debug)
-                }
-            }
-        }
 }

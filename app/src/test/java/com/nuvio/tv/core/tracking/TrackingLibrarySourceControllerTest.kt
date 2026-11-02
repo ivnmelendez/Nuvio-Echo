@@ -41,6 +41,6 @@ class TrackingLibrarySourceControllerTest {
         TrackingSourceController(
             settings, TrackingProgressProviderRegistry(emptySet()), TrackingLibraryProviderRegistry(setOf(provider)),
             mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true),
-            mockk(relaxed = true), mockk(relaxed = true), mockk<ProfileManager> { every { activeProfileId } returns profiles }
+            mockk<ProfileManager> { every { activeProfileId } returns profiles }
         )
 }

@@ -1,7 +1,5 @@
 package com.nuvio.tv.core.tracking
 
-import com.nuvio.tv.core.sync.StartupSyncService
-import com.nuvio.tv.core.sync.WatchedItemsSyncService
 import com.nuvio.tv.core.profile.ProfileManager
 import com.nuvio.tv.data.local.ContinueWatchingEnrichmentCache
 import com.nuvio.tv.data.local.TraktSettingsDataStore
@@ -20,10 +18,8 @@ class TrackingSourceController @Inject constructor(
     private val settingsDataStore: TraktSettingsDataStore,
     private val progressProviders: TrackingProgressProviderRegistry,
     private val libraryProviders: TrackingLibraryProviderRegistry,
-    private val startupSyncService: StartupSyncService,
     private val watchedItemsPreferences: WatchedItemsPreferences,
     private val watchProgressPreferences: WatchProgressPreferences,
-    private val watchedItemsSyncService: WatchedItemsSyncService,
     private val watchedSeriesStateHolder: WatchedSeriesStateHolder,
     private val continueWatchingEnrichmentCache: ContinueWatchingEnrichmentCache,
     private val profileManager: ProfileManager
@@ -85,11 +81,6 @@ class TrackingSourceController @Inject constructor(
             watchedItemsPreferences.clearAll(profileId)
             watchedSeriesStateHolder.update(emptySet())
             provider.refresh(TrackingRefreshIntent.USER_INITIATED)
-        } else if (source == WatchProgressSource.NUVIO_SYNC) {
-            repopulateWatchedItemsFromNuvioSync(profileId)
-            if (profileManager.activeProfileId.value == profileId) {
-                startupSyncService.requestSyncNow()
-            }
         }
     }
 
@@ -97,11 +88,5 @@ class TrackingSourceController @Inject constructor(
         settingsDataStore.setLibrarySourceMode(mode, profileId)
         if (profileManager.activeProfileId.value != profileId) return
         mode.providerId?.let(libraryProviders::provider)?.refresh(TrackingRefreshIntent.USER_INITIATED)
-    }
-
-    private suspend fun repopulateWatchedItemsFromNuvioSync(profileId: Int) {
-        runCatching {
-            watchedItemsSyncService.syncSnapshotFromRemote(profileId).getOrElse { return }
-        }
     }
 }

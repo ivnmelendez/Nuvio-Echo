@@ -156,10 +156,6 @@ sealed class Screen(val route: String) {
     data object Plugins : Screen("plugins")
     data object ExperienceModeSelection : Screen("experience_mode_selection")
     data object LayoutSettings : Screen("layout_settings")
-    data object Account : Screen("account")
-    data object ManageProfiles : Screen("manage_profiles")
-    data object AuthSignIn : Screen("auth_sign_in")
-    data object AuthQrSignIn : Screen("auth_qr_sign_in")
     data object SyncCodeGenerate : Screen("sync_code_generate")
     data object SyncCodeClaim : Screen("sync_code_claim")
     data object CatalogSeeAll : Screen("catalog_see_all/{catalogId}/{addonId}/{type}?fromSearch={fromSearch}") {
@@ -188,7 +184,6 @@ sealed class Screen(val route: String) {
         }
     }
 
-    data object ProfileSelection : Screen("profile_selection")
 
     data object CastDetail : Screen("cast_detail/{personId}/{personName}?preferCrew={preferCrew}") {
         private fun encode(value: String): String =

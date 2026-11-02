@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.gson.Gson
 import com.nuvio.tv.core.profile.ProfileManager
-import com.nuvio.tv.core.sync.library.LibrarySyncLocalStore
 import com.nuvio.tv.domain.model.LibraryDeltaApplyResult
 import com.nuvio.tv.domain.model.LibraryDeltaEvent
 import com.nuvio.tv.domain.model.LibrarySnapshotApplyResult
@@ -29,7 +28,7 @@ import javax.inject.Singleton
 class LibraryPreferences @Inject constructor(
     private val factory: ProfileDataStoreFactory,
     private val profileManager: ProfileManager
-) : LibrarySyncLocalStore {
+) {
     private val gson = Gson()
     private val libraryItemsKey = stringSetPreferencesKey("library_items")
     private val deltaCursorKey = longPreferencesKey("library_delta_cursor")
@@ -120,11 +119,11 @@ class LibraryPreferences @Inject constructor(
         }
     }
 
-    override suspend fun getSyncState(profileId: Int): LibrarySyncState {
+    suspend fun getSyncState(profileId: Int): LibrarySyncState {
         return store(profileId).data.first().toLibrarySyncState()
     }
 
-    override suspend fun applyRemoteSnapshot(
+    suspend fun applyRemoteSnapshot(
         profileId: Int,
         remoteItems: Collection<SavedLibraryItem>,
         cursorEventId: Long
@@ -141,7 +140,7 @@ class LibraryPreferences @Inject constructor(
         return result
     }
 
-    override suspend fun applyRemoteDelta(
+    suspend fun applyRemoteDelta(
         profileId: Int,
         events: Collection<LibraryDeltaEvent>
     ): LibraryDeltaApplyResult {
@@ -156,7 +155,7 @@ class LibraryPreferences @Inject constructor(
         return result
     }
 
-    override suspend fun queueAllItemsForPush(profileId: Int): LibrarySyncState {
+    suspend fun queueAllItemsForPush(profileId: Int): LibrarySyncState {
         lateinit var result: LibrarySyncState
         store(profileId).edit { preferences ->
             result = LibrarySyncReducer.queueAllItemsForPush(
@@ -167,7 +166,7 @@ class LibraryPreferences @Inject constructor(
         return result
     }
 
-    override suspend fun acknowledgePush(
+    suspend fun acknowledgePush(
         profileId: Int,
         expectedMutationRevision: Long
     ): Boolean {

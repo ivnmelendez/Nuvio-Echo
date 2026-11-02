@@ -1,10 +1,6 @@
 package com.nuvio.tv.data.repository
 
-import com.nuvio.tv.core.auth.AuthManager
 import com.nuvio.tv.core.network.NetworkResult
-import com.nuvio.tv.core.sync.WatchProgressSyncService
-import com.nuvio.tv.core.sync.WatchStateMutationStore
-import com.nuvio.tv.core.sync.WatchedItemsSyncService
 import android.os.SystemClock
 import android.util.Log
 import com.nuvio.tv.data.local.TraktSettingsDataStore
@@ -77,32 +73,6 @@ private data class RemoteProgressWrite(
     val sentAtMs: Long
 )
 
-internal class RemoteProgressWriteDeduplicator(
-    private val windowMs: Long = REMOTE_PROGRESS_WRITE_DEDUP_WINDOW_MS
-) {
-    private val lock = Any()
-    private val recentWrites = mutableMapOf<RemoteProgressWriteKey, RemoteProgressWrite>()
-
-    fun shouldSend(
-        profileId: Int,
-        progressKey: String,
-        progress: WatchProgress,
-        nowMs: Long
-    ): Boolean = synchronized(lock) {
-        recentWrites.entries.removeAll { (_, write) ->
-            val elapsedMs = nowMs - write.sentAtMs
-            elapsedMs < 0L || elapsedMs >= windowMs
-        }
-        val key = RemoteProgressWriteKey(profileId, progressKey)
-        val normalizedProgress = progress.copy(lastWatched = 0L)
-        if (recentWrites[key]?.progress == normalizedProgress) {
-            return@synchronized false
-        }
-        recentWrites[key] = RemoteProgressWrite(normalizedProgress, nowMs)
-        true
-    }
-}
-
 internal fun resolveProviderEpisodeProgress(
     contentId: String,
     season: Int,
@@ -128,16 +98,12 @@ class WatchProgressRepositoryImpl @Inject constructor(
     private val watchProgressPreferences: WatchProgressPreferences,
     private val traktSettingsDataStore: TraktSettingsDataStore,
     private val layoutPreferenceDataStore: com.nuvio.tv.data.local.LayoutPreferenceDataStore,
-    private val watchProgressSyncService: WatchProgressSyncService,
     private val watchedItemsPreferences: WatchedItemsPreferences,
-    private val watchedItemsSyncService: WatchedItemsSyncService,
-    private val authManager: AuthManager,
     private val metaRepository: MetaRepository,
     private val tmdbService: TmdbService,
     private val profileManager: com.nuvio.tv.core.profile.ProfileManager,
     private val trackingProgressProviders: TrackingProgressProviderRegistry,
     private val trackingHistoryWriters: TrackingHistoryWriterRegistry,
-    private val mutationStore: WatchStateMutationStore,
 ) : WatchProgressRepository {
     companion object {
         private const val TAG = "WatchProgressRepo"
@@ -165,12 +131,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
 
     private val syncScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val hydratedProgressKeys = mutableSetOf<ProfileContentKey>()
-    private val syncJobs = mutableMapOf<Int, Job>()
-    private val syncJobsLock = Any()
-    private val remoteProgressWriteDeduplicator = RemoteProgressWriteDeduplicator()
-    var isSyncingFromRemote = false
-    var hasCompletedInitialPull = false
-    var hasCompletedInitialWatchedItemsPull = false
 
     private val metadataState = MutableStateFlow<Map<String, ContentMetadata>>(emptyMap())
     private val optimisticContinueWatchingUpdates = MutableSharedFlow<WatchProgress>(
@@ -182,40 +142,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
     private val metadataMutex = Mutex()
     private val inFlightMetadataKeys = mutableSetOf<ProfileContentKey>()
     private val metadataHydrationLimit = 30
-
-    private fun triggerRemoteSync(profileId: Int) {
-        if (isSyncingFromRemote) return
-        if (!hasCompletedInitialPull) return
-        if (!authManager.isAuthenticated) return
-        synchronized(syncJobsLock) {
-            syncJobs.remove(profileId)?.cancel()
-            syncJobs[profileId] = syncScope.launch {
-                delay(2000)
-                withContext(NonCancellable) {
-                    watchProgressSyncService.pushToRemote(profileId)
-                }
-            }
-        }
-    }
-
-    private fun triggerWatchedItemsSync(
-        items: Collection<WatchedItem>,
-        profileId: Int
-    ) {
-        if (items.isEmpty()) return
-        triggerWatchedItemsSync(profileId)
-    }
-
-    private fun triggerWatchedItemsSync(profileId: Int) {
-        if (isSyncingFromRemote) return
-        if (!hasCompletedInitialWatchedItemsPull) return
-        if (!authManager.isAuthenticated) return
-        syncScope.launch {
-            withContext(NonCancellable) {
-                watchedItemsSyncService.pushToRemote(profileId)
-            }
-        }
-    }
 
     private fun hydrateMetadata(progressList: List<WatchProgress>, profileId: Int) {
         val sorted = progressList.sortedByDescending { it.lastWatched }
@@ -750,43 +676,14 @@ class WatchProgressRepositoryImpl @Inject constructor(
             traktSettingsDataStore.removeDismissedNextUpKeysForContent(progress.contentId, profileId)
         }
         val progressKey = progressKey(progress)
-        val shouldPushRemote = syncRemote &&
-            authManager.isAuthenticated &&
-            remoteProgressWriteDeduplicator.shouldSend(
-                profileId = profileId,
-                progressKey = progressKey,
-                progress = progress,
-                nowMs = SystemClock.elapsedRealtime()
-            )
-        if (syncRemote) {
-            mutationStore.queueProgressUpserts(mapOf(progressKey to progress), profileId)
-        }
         if (profileManager.activeProfileId.value == profileId) {
             activeProgressProvider()?.applyOptimisticProgress(progress, quiet = !syncRemote)
         }
         watchProgressPreferences.saveProgress(progress, profileId = profileId)
 
-        if (shouldPushRemote) {
-            syncScope.launch(NonCancellable) {
-                watchProgressSyncService.pushSingleToRemote(progressKey, progress, profileId)
-                    .onFailure { error ->
-                        Log.w(TAG, "Failed single progress push; pending mutation retained", error)
-                        triggerRemoteSync(profileId)
-                    }
-            }
-        } else if (syncRemote && authManager.isAuthenticated) {
-            triggerRemoteSync(profileId)
-        }
-
         if (progress.isCompleted()) {
             val watchedItem = progress.toWatchedItem()
             watchedItemsPreferences.markAsWatched(watchedItem, profileId = profileId)
-            if (syncRemote) {
-                mutationStore.queueWatchedUpserts(listOf(watchedItem), profileId)
-            }
-            if (syncRemote && authManager.isAuthenticated) {
-                triggerWatchedItemsSync(listOf(watchedItem), profileId = profileId)
-            }
             if (profileManager.activeProfileId.value == profileId) {
                 optimisticContinueWatchingUpdates.tryEmit(progress)
             }
@@ -797,12 +694,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
         if (progressList.isEmpty()) return
         val profileId = profileManager.activeProfileId.value
         if (syncRemote) {
-            mutationStore.queueProgressUpserts(
-                progressList.associateBy(::progressKey),
-                profileId
-            )
-        }
-        if (syncRemote) {
             if (profileManager.activeProfileId.value == profileId) {
                 activeProgressProvider()?.let { provider ->
                     progressList.forEach { progress -> provider.applyOptimisticProgress(progress, quiet = false) }
@@ -811,28 +702,18 @@ class WatchProgressRepositoryImpl @Inject constructor(
         }
         watchProgressPreferences.saveProgressBatch(progressList, profileId = profileId)
 
-        if (syncRemote && authManager.isAuthenticated) {
-            triggerRemoteSync(profileId = profileId)
-        }
 
         val completedWatchedItems = progressList
             .filter { it.isCompleted() }
             .map { progress -> progress.toWatchedItem() }
         if (completedWatchedItems.isNotEmpty()) {
             watchedItemsPreferences.markAsWatchedBatch(completedWatchedItems, profileId = profileId)
-            if (syncRemote) {
-                mutationStore.queueWatchedUpserts(completedWatchedItems, profileId)
-            }
-            if (syncRemote && authManager.isAuthenticated) {
-                triggerWatchedItemsSync(completedWatchedItems, profileId = profileId)
-            }
         }
     }
 
     override suspend fun removeProgress(contentId: String, season: Int?, episode: Int?) {
         val profileId = profileManager.activeProfileId.value
         val remoteDeleteKeys = resolveRemoteDeleteKeys(contentId, season, episode, profileId = profileId)
-        mutationStore.queueProgressDeletes(remoteDeleteKeys, profileId)
         supervisorScope {
             connectedProgressProviders().map { provider ->
                 async {
@@ -845,21 +726,12 @@ class WatchProgressRepositoryImpl @Inject constructor(
             }.forEach { operation -> operation.await() }
         }
         watchProgressPreferences.removeProgress(contentId, season, episode, profileId)
-        if (authManager.isAuthenticated && remoteDeleteKeys.isNotEmpty()) {
-            watchProgressSyncService.deleteFromRemote(remoteDeleteKeys, profileId)
-                .onFailure { error ->
-                    Log.w(TAG, "removeProgress remote delete failed; pending mutation retained", error)
-                }
-        }
-        triggerRemoteSync(profileId = profileId)
     }
 
     override suspend fun removeFromHistory(contentId: String, videoId: String?, season: Int?, episode: Int?) {
         val profileId = profileManager.activeProfileId.value
         val remoteDeleteKeys = resolveRemoteDeleteKeys(contentId, season, episode, profileId = profileId)
         val watchedDeleteKey = WatchedMutationKey(contentId, season, episode)
-        mutationStore.queueProgressDeletes(remoteDeleteKeys, profileId)
-        mutationStore.queueWatchedDeletes(listOf(watchedDeleteKey), profileId)
         val media = buildTrackingMediaReference(
             contentType = if (season != null || episode != null) "series" else "movie",
             parentMetaId = contentId,
@@ -873,20 +745,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
         broadcastHistoryRemoval(profileId, listOf(media))
         watchProgressPreferences.removeProgress(contentId, season, episode, profileId)
         watchedItemsPreferences.unmarkAsWatched(contentId, season, episode, profileId = profileId)
-        if (authManager.isAuthenticated && remoteDeleteKeys.isNotEmpty()) {
-            watchProgressSyncService.deleteFromRemote(remoteDeleteKeys, profileId)
-                .onFailure { error ->
-                    Log.w(TAG, "removeFromHistory remote delete failed; pending mutation retained", error)
-                }
-        }
-        if (authManager.isAuthenticated) {
-            watchedItemsSyncService.deleteFromRemote(contentId, season, episode, profileId = profileId)
-                .onFailure { error ->
-                    Log.w(TAG, "removeFromHistory watched item remote delete failed; pending mutation retained", error)
-                    triggerWatchedItemsSync(profileId)
-                }
-        }
-        triggerRemoteSync(profileId = profileId)
     }
 
     override suspend fun removeFromHistoryBatch(
@@ -903,8 +761,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
         val watchedDeleteKeys = episodePairs.map { (season, episode) ->
             WatchedMutationKey(contentId, season, episode)
         }
-        mutationStore.queueProgressDeletes(remoteDeleteKeys, profileId)
-        mutationStore.queueWatchedDeletes(watchedDeleteKeys, profileId)
         watchProgressPreferences.removeProgressBatch(contentId, episodePairs, profileId)
         watchedItemsPreferences.unmarkAsWatchedBatch(contentId, episodePairs, profileId = profileId)
         connectedProgressProviders().forEach { provider ->
@@ -922,16 +778,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
             )
         }
         broadcastHistoryRemoval(profileId, media)
-        if (authManager.isAuthenticated) {
-            watchProgressSyncService.deleteFromRemote(remoteDeleteKeys.distinct(), profileId)
-                .onFailure { error -> Log.w(TAG, "removeFromHistoryBatch remote delete failed", error) }
-            watchedItemsSyncService.deleteFromRemoteBatch(contentId, episodePairs, profileId = profileId)
-                .onFailure { error ->
-                    Log.w(TAG, "removeFromHistoryBatch watched item remote delete failed; pending mutation retained", error)
-                    triggerWatchedItemsSync(profileId)
-                }
-        }
-        triggerRemoteSync(profileId = profileId)
     }
 
     override suspend fun markAsCompleted(progress: WatchProgress, broadcastTrackingHistory: Boolean) {
@@ -961,7 +807,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
             progressPercent = 100f,
             lastWatched = now
         )
-        mutationStore.queueProgressUpserts(mapOf(progressKey to completed), profileId)
         if (profileManager.activeProfileId.value == profileId) {
             optimisticContinueWatchingUpdates.tryEmit(completed)
             activeProgressProvider()?.applyOptimisticProgress(completed, quiet = false)
@@ -969,12 +814,9 @@ class WatchProgressRepositoryImpl @Inject constructor(
         watchProgressPreferences.saveProgress(completed, profileId = profileId)
         val watchedItem = completed.toWatchedItem(watchedAt = now)
         watchedItemsPreferences.markAsWatched(watchedItem, profileId = profileId)
-        mutationStore.queueWatchedUpserts(listOf(watchedItem), profileId)
         if (broadcastTrackingHistory) {
             broadcastHistoryAdd(profileId, listOf(completed.toTrackingHistoryItem(now)))
         }
-        triggerRemoteSync(profileId = profileId)
-        triggerWatchedItemsSync(listOf(watchedItem), profileId = profileId)
     }
 
     override suspend fun markAsCompletedBatch(progressList: List<WatchProgress>) {
@@ -1000,7 +842,6 @@ class WatchProgressRepositoryImpl @Inject constructor(
             )
         }
 
-        mutationStore.queueProgressUpserts(completedList.associateBy(::progressKey), profileId)
         if (profileManager.activeProfileId.value == profileId) {
             activeProgressProvider()?.let { provider ->
                 completedList.forEach { progress ->
@@ -1012,10 +853,7 @@ class WatchProgressRepositoryImpl @Inject constructor(
         watchProgressPreferences.saveProgressBatch(completedList, profileId = profileId)
         val watchedItems = completedList.map { progress -> progress.toWatchedItem(watchedAt = now) }
         watchedItemsPreferences.markAsWatchedBatch(watchedItems, profileId = profileId)
-        mutationStore.queueWatchedUpserts(watchedItems, profileId)
         broadcastHistoryAdd(profileId, completedList.map { it.toTrackingHistoryItem(now) })
-        triggerRemoteSync(profileId = profileId)
-        triggerWatchedItemsSync(watchedItems, profileId = profileId)
     }
 
     private fun WatchProgress.toWatchedItem(watchedAt: Long = System.currentTimeMillis()): WatchedItem =

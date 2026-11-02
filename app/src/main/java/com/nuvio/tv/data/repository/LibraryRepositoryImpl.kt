@@ -1,10 +1,8 @@
 package com.nuvio.tv.data.repository
 
 import android.util.Log
-import com.nuvio.tv.core.auth.AuthManager
 import com.nuvio.tv.core.network.NetworkResult
 import com.nuvio.tv.core.profile.ProfileManager
-import com.nuvio.tv.core.sync.LibrarySyncService
 import com.nuvio.tv.core.tracking.TrackingListManager
 import com.nuvio.tv.core.tracking.TrackingLibraryProviderRegistry
 import com.nuvio.tv.core.tracking.TrackingMembershipApplyResult
@@ -54,8 +52,6 @@ class LibraryRepositoryImpl @Inject constructor(
     @dagger.hilt.android.qualifiers.ApplicationContext private val appContext: android.content.Context,
     private val libraryPreferences: LibraryPreferences,
     private val traktSettingsDataStore: TraktSettingsDataStore,
-    private val librarySyncService: LibrarySyncService,
-    private val authManager: AuthManager,
     private val metaRepository: MetaRepository,
     private val trackingProviders: TrackingLibraryProviderRegistry,
     private val profileManager: ProfileManager,
@@ -70,16 +66,6 @@ class LibraryRepositoryImpl @Inject constructor(
         set(value) { _isSyncingFromRemote.value = value }
     @Volatile
     var hasCompletedInitialPull = false
-
-    private fun triggerRemoteSync(profileId: Int) {
-        if (!hasCompletedInitialPull) return
-        if (!authManager.isAuthenticated) return
-        syncJob?.cancel()
-        syncJob = syncScope.launch {
-            delay(500)
-            librarySyncService.pushToRemote(profileId)
-        }
-    }
 
     private val providerConnections = combine(
         trackingProviders.providers().map { provider ->
@@ -224,7 +210,6 @@ class LibraryRepositoryImpl @Inject constructor(
                 profileId = profileId
             )
         }
-        triggerRemoteSync(profileId)
         return TrackingMembershipApplyResult()
     }
 
@@ -288,7 +273,6 @@ class LibraryRepositoryImpl @Inject constructor(
                     profileId = profileId
                 )
             }
-            triggerRemoteSync(profileId)
         }
 
         val failures = dispatchTrackingMembershipChanges(

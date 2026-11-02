@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nuvio.tv.R
-import com.nuvio.tv.core.sync.CollectionSyncService
 import com.nuvio.tv.core.tmdb.TmdbCollectionSourceResolver
 import com.nuvio.tv.core.trakt.TraktPublicListSearchResult
 import com.nuvio.tv.core.trakt.TraktPublicListSourceResolver
@@ -126,7 +125,6 @@ class CollectionEditorViewModel @Inject constructor(
     private val addonRepository: AddonRepository,
     private val tmdbCollectionSourceResolver: TmdbCollectionSourceResolver,
     private val traktPublicListSourceResolver: TraktPublicListSourceResolver,
-    private val collectionSyncService: CollectionSyncService
 ) : ViewModel() {
 
     private val collectionIdArg: String = savedStateHandle["collectionId"] ?: ""
@@ -1148,7 +1146,6 @@ class CollectionEditorViewModel @Inject constructor(
             } else {
                 collectionsDataStore.updateCollection(collection)
             }
-            collectionSyncService.triggerPush()
             onComplete()
         }
     }
