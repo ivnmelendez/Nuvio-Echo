@@ -2390,4 +2390,5 @@
     <string name="first_launch_notice_title">Welcome to Tivistream</string>
     <string name="first_launch_notice_body">Tivistream is a player and catalog organizer. It does not include or distribute any content. You add your own addons, and what you can watch depends on them. Tivistream is not affiliated with any content provider, nor with TMDB, MDBList or any other service it mentions. You are responsible for using only content you have the right to watch.</string>
     <string name="first_launch_notice_accept">Got it</string>
+    <string name="tmdb_attribution_notice" translatable="false">This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</string>
 </resources>

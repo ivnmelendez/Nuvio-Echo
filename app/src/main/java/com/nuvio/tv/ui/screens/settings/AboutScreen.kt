@@ -153,6 +153,20 @@ fun AboutSettingsContent(
                                 onClick = onNavigateToLicensesAttributions
                             )
 
+                            // TMDB asks for its logo and this notice, in English as it words it, in plain view in the app.
+                            Spacer(modifier = Modifier.height(NuvioTheme.spacing.xs))
+                            Image(
+                                painter = painterResource(id = R.drawable.rating_tmdb),
+                                contentDescription = null,
+                                modifier = Modifier.height(34.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.tmdb_attribution_notice),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = NuvioTheme.colors.TextSecondary,
+                                textAlign = TextAlign.Center
+                            )
+
                             // Light mode lives here because About is the only settings page shown.
                             val betaViewModel: BetaPerformanceSettingsViewModel = androidx.hilt.navigation.compose.hiltViewModel()
                             val betaSettings by betaViewModel.settings.collectAsStateWithLifecycle()
