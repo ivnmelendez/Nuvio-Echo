@@ -71,7 +71,8 @@ class NewLookEnricher @Inject constructor(
                     runtimeMinutes = enrichment?.runtimeMinutes,
                     rating = enrichment?.rating,
                     year = enrichment?.releaseInfo,
-                    overview = enrichment?.description
+                    overview = enrichment?.description?.takeIf { it.isNotBlank() }
+                        ?: englishOverview(tmdbId, isTv, language)
                 )
                 if (withTag) {
                     val (tag, season) = tagFor(item, isTv, tmdbId.toIntOrNull(), details.rating, topTenIds, language)
@@ -85,6 +86,15 @@ class NewLookEnricher @Inject constructor(
                 null
             }
         }
+
+    /** A new title often has no text yet in the app's language; TMDB's English one is better than a blank card. */
+    private suspend fun englishOverview(tmdbId: String, isTv: Boolean, language: String): String? {
+        if (language.startsWith("en", ignoreCase = true)) return null
+        return runCatching {
+            tmdbMetadataService.fetchEnrichment(tmdbId, if (isTv) ContentType.SERIES else ContentType.MOVIE, "en-US")
+                ?.description
+        }.getOrNull()?.takeIf { it.isNotBlank() }
+    }
 
     private suspend fun tagFor(
         item: MetaPreview,
