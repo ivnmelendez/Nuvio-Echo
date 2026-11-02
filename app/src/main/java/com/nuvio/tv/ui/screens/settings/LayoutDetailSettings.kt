@@ -85,7 +85,7 @@ internal fun LayoutDetailPageSection(
             onEvent(LayoutSettingsEvent.SetPreferExternalMetaAddonDetail(!uiState.preferExternalMetaAddonDetail))
         }
     )
-    ParentalGuideRows()
+    if (com.nuvio.tv.core.build.AppFeaturePolicy.parentalGuideAvailable) ParentalGuideRows()
 }
 
 @Composable

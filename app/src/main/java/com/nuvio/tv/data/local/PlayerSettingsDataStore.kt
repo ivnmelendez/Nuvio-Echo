@@ -918,7 +918,8 @@ class PlayerSettingsDataStore @Inject constructor(
                 pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: false,
                 osdClockEnabled = prefs[osdClockEnabledKey] ?: true,
                 skipIntroEnabled = prefs[skipIntroEnabledKey] ?: true,
-                parentalGuideEnabled = prefs[parentalGuideEnabledKey] ?: false,
+                parentalGuideEnabled = com.nuvio.tv.core.build.AppFeaturePolicy.parentalGuideAvailable &&
+                    (prefs[parentalGuideEnabledKey] ?: false),
                 autoSkipSegmentTypes = prefs[autoSkipSegmentTypesKey]
                     ?.mapNotNull(AutoSkipSegmentType::fromStoredValue)
                     ?.toSet()
