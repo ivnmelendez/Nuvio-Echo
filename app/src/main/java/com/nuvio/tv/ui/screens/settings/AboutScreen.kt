@@ -165,6 +165,12 @@ fun AboutSettingsContent(
                                 checked = betaSettings.lightMode,
                                 onToggle = { betaViewModel.setLightMode(!betaSettings.lightMode) }
                             )
+                            SettingsToggleRow(
+                                title = stringResource(R.string.home_trailers_title),
+                                subtitle = stringResource(R.string.home_trailers_subtitle),
+                                checked = betaSettings.homeTrailers,
+                                onToggle = { betaViewModel.setHomeTrailers(!betaSettings.homeTrailers) }
+                            )
                         }
                     }
                 }

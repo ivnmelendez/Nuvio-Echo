@@ -88,6 +88,8 @@
 
     <!-- Reproductor -->
     <string name="light_mode_title">Modo ligero</string>
+    <string name="home_trailers_title">Tráileres en el Inicio</string>
+    <string name="home_trailers_subtitle">Las tarjetas abiertas reproducen su tráiler. Apagado, se queda la imagen y la caja de TV trabaja más ligera. Encendido, vuelven.</string>
     <string name="light_mode_subtitle">Animaciones más cortas y tarjetas más ligeras, para cajas de TV lentas. Apagado, vuelve el aspecto completo.</string>
     <string name="player_btn_audio_quality">Audio</string>
     <string name="player_btn_play">Reproducir</string>

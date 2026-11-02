@@ -36,8 +36,11 @@ data class BetaPerformanceSettings(
     val prefetchOnOpen: Boolean = true,
     /** Start the source search when focus rests on a Continue Watching card or episode row. */
     val prefetchOnFocus: Boolean = true,
-    /** Start the source search when a regular row's poster opens out for its trailer (the new look's Home). */
-    val fetchOnExpansion: Boolean = true,
+    /**
+     * Start the source search when a regular row's poster opens out (the new look's Home). Off by default: it ran an
+     * addon request for every card passed, on a weak TV box, while sources are only needed on Play.
+     */
+    val fetchOnExpansion: Boolean = false,
     /** Open connections to addon servers at launch so the first search skips the handshake. */
     val warmUpAddonConnections: Boolean = true,
     /** Pre-connect to the stream's server and start playback with a smaller initial buffer. */
@@ -78,6 +81,8 @@ data class BetaPerformanceSettings(
     val quietFocus: Boolean = true,
     /** Light mode for weak TV boxes: shorter animations, and cards with no zoom, shadow or picture fade. Off brings the full look back. */
     val lightMode: Boolean = true,
+    /** New look: trailers play on Home's opened cards. Off (the default): the picture stays, nothing is fetched or decoded. */
+    val homeTrailers: Boolean = false,
     /**
      * Trailer quality: [TRAILER_QUALITY_AUTO] fetches each trailer to match what it plays on (a card, a highlight, the
      * hero, full screen); otherwise the tallest picture to fetch, one of [TRAILER_QUALITIES].
@@ -231,6 +236,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
     private val heroEdgeToEdgeKey = booleanPreferencesKey("hero_edge_to_edge")
     private val quietFocusKey = booleanPreferencesKey("quiet_focus")
     private val lightModeKey = booleanPreferencesKey("light_mode")
+    private val homeTrailersKey = booleanPreferencesKey("home_trailers")
     private val trailerQualityKey = intPreferencesKey("trailer_quality")
     private val minimalPlayerKey = booleanPreferencesKey("minimal_player")
     private val playbackIntroKey = booleanPreferencesKey("playback_intro")
@@ -292,6 +298,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
             heroEdgeToEdge = prefs[heroEdgeToEdgeKey] ?: defaults.heroEdgeToEdge,
             quietFocus = prefs[quietFocusKey] ?: defaults.quietFocus,
             lightMode = prefs[lightModeKey] ?: defaults.lightMode,
+            homeTrailers = prefs[homeTrailersKey] ?: defaults.homeTrailers,
             trailerQuality = prefs[trailerQualityKey]?.takeIf { it in BetaPerformanceSettings.TRAILER_QUALITIES }
                 ?: defaults.trailerQuality,
             minimalPlayer = prefs[minimalPlayerKey] ?: defaults.minimalPlayer,
@@ -382,6 +389,7 @@ class BetaPerformanceSettingsDataStore @Inject constructor(
     suspend fun setHeroEdgeToEdge(enabled: Boolean) = set(heroEdgeToEdgeKey, enabled)
     suspend fun setQuietFocus(enabled: Boolean) = set(quietFocusKey, enabled)
     suspend fun setLightMode(enabled: Boolean) = set(lightModeKey, enabled)
+    suspend fun setHomeTrailers(enabled: Boolean) = set(homeTrailersKey, enabled)
     suspend fun setTrailerQuality(height: Int) {
         if (height !in BetaPerformanceSettings.TRAILER_QUALITIES) return
         dataStore.edit { prefs -> prefs[trailerQualityKey] = height }

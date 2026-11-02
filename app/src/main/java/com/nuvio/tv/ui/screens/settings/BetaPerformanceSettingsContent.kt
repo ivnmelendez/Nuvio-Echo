@@ -88,6 +88,7 @@ class BetaPerformanceSettingsViewModel @Inject constructor(
     fun setHeroEdgeToEdge(enabled: Boolean) = viewModelScope.launch { dataStore.setHeroEdgeToEdge(enabled) }
     fun setQuietFocus(enabled: Boolean) = viewModelScope.launch { dataStore.setQuietFocus(enabled) }
     fun setLightMode(enabled: Boolean) = viewModelScope.launch { dataStore.setLightMode(enabled) }
+    fun setHomeTrailers(enabled: Boolean) = viewModelScope.launch { dataStore.setHomeTrailers(enabled) }
     fun setTrailerQuality(height: Int) = viewModelScope.launch { dataStore.setTrailerQuality(height) }
     fun setTrailerVideoLayer(enabled: Boolean) = viewModelScope.launch { dataStore.setTrailerVideoLayer(enabled) }
     fun setEnrichment(level: Int) = viewModelScope.launch { dataStore.setEnrichment(level) }
