@@ -457,7 +457,7 @@ private fun HeroButton(
     onFocused: () -> Unit,
     onClick: () -> Unit
 ) {
-    val scale by animateFloatAsState(if (focused) 1.04f else 1f, tween(120), label = "heroButtonScale")
+    val scale by animateFloatAsState(if (focused) 1.04f else 1f, androidx.compose.animation.core.snap(), label = "heroButtonScale")
     val content = if (focused) Color.White else Color.White.copy(alpha = 0.9f)
     val shape = RoundedCornerShape(if (compact) 14.dp else 16.dp)
     Row(

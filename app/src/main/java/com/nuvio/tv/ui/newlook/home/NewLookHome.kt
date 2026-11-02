@@ -147,7 +147,7 @@ internal enum class HomeArea { HERO, ROWS }
  * The hero (the carousel window with Watch Now / More Info) at the top of Home. Off: Home opens on its first row under
  * the menu bar, the way the page rests when scrolled past the hero. Everything the hero did stays in the code.
  */
-private const val HERO_ENABLED = false
+internal const val HERO_ENABLED = false
 
 /** What the first row sits under: the whole hero, or just the menu bar's room when there is no hero. */
 private val HomeHeaderHeight get() = if (HERO_ENABLED) NewLookLayout.RowsTop else 56.dp
@@ -160,6 +160,10 @@ class NewLookHomeMemory {
     internal val cols = HashMap<String, Int>()
     internal var heroButton = 0
     internal var slide = 0
+    /** Home's rows have held still once already: coming back from a details page it needn't wait for that again. */
+    internal var settled = false
+    /** The rows published for each tab, as last read: back from a details page Home has them on its first frame. */
+    internal val remoteRows = HashMap<String, List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>>()
     /** The featured titles, picked when Home first opens and again after a long time away (see [RESHUFFLE_AFTER_MS]). */
     internal var featuredOrder: List<String>? = null
     /** When Home last went to the background (elapsed realtime), or 0. */
@@ -270,6 +274,8 @@ private fun viewModelSource(
     override suspend fun details(item: MetaPreview, withTag: Boolean, topTen: Set<String>) =
         enricher.details(item, withTag, topTen)
     override fun requestTrailer(itemId: String, title: String, releaseInfo: String?, apiType: String, surfaceHeightPx: Int?) {
+        // Trailers off (About): nothing is fetched, so no card ever has one to play.
+        if (!betaStore.current.value.homeTrailers) return
         viewModel.requestTrailerPreview(itemId, title, releaseInfo, apiType, surfaceHeightPx)
     }
     override fun requestLazyCatalogLoad(catalogKey: String) {
@@ -406,19 +412,23 @@ internal fun NewLookHomeContent(
 
     // The rows published in the remote config for this tab: what's on the device first, then the fresh copy. While
     // none have arrived (first run offline, nothing published) Home keeps its catalogs and built-in rows.
-    var remote by remember(source, remoteTab) { mutableStateOf<List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>?>(null) }
-    var remoteResolved by remember(source, remoteTab) { mutableStateOf(remoteTab == null) }
+    // Seeded from the memory: on the way back from a details page they'd otherwise be read from disk again, and until
+    // then Home built the generic catalog rows (other tabs' cards) and swapped them a moment later.
+    val remembered = remoteTab?.let { memory.remoteRows[it] }
+    var remote by remember(source, remoteTab) { mutableStateOf<List<com.nuvio.tv.data.remoteconfig.RemoteRowItems>?>(remembered) }
+    var remoteResolved by remember(source, remoteTab) { mutableStateOf(remoteTab == null || remembered != null) }
     var remoteLoadedAt by remember(source, remoteTab) { mutableLongStateOf(0L) }
     suspend fun refreshRemote(tab: String) {
         val fresh = runCatching { source.loadRemoteRows(tab) }.getOrDefault(emptyList())
-        if (fresh.isNotEmpty() && fresh != remote) remote = fresh
+        if (fresh.isNotEmpty() && fresh != remote) { remote = fresh; memory.remoteRows[tab] = fresh }
         remoteLoadedAt = android.os.SystemClock.elapsedRealtime()
     }
     LaunchedEffect(source, remoteTab) {
         val tab = remoteTab ?: return@LaunchedEffect
         val saved = runCatching { source.cachedRemoteRows(tab) }.getOrDefault(emptyList())
         if (saved.isNotEmpty()) {
-            remote = saved
+            if (remote == null) remote = saved
+            memory.remoteRows[tab] = remote ?: saved
             remoteResolved = true
         }
         refreshRemote(tab)
@@ -473,14 +483,17 @@ internal fun NewLookHomeContent(
     val homePosterPattern = uiState.customPosterUrlPattern
         .takeIf { com.nuvio.tv.core.poster.CustomPosterScreen.HOME in uiState.customPosterEnabledScreens }
         .orEmpty()
-    val rows = remember(
+    val builtRows = remember(
         presentation.rows, builtIns, titles,
         settings.highlightedRows, settings.hiddenBuiltInRows, settings.plainBuiltInRows, settings.grandRows,
         settings.homeRowOrder, smartHighlights, settings.enrichment, settings.smartHighlightAiNames,
-        settings.blockedHighlights, settings.snoozedHighlights, settings.highlightExclusions, homePosterPattern, remote
+        settings.blockedHighlights, settings.snoozedHighlights, settings.highlightExclusions, homePosterPattern, remote, remoteResolved
     ) {
         val published = remote
-        if (remoteTab != null && !published.isNullOrEmpty()) {
+        if (remoteTab != null && !remoteResolved) {
+            // The tab's rows aren't known yet: nothing but black, never another tab's cards.
+            emptyList()
+        } else if (remoteTab != null && !published.isNullOrEmpty()) {
             // Only the published rows; Continue Watching stays on Home.
             buildRemoteNewLookRows(
                 published, presentation.rows.list,
@@ -493,7 +506,13 @@ internal fun NewLookHomeContent(
             )
         }
     }
-    var sourcesIn by remember { mutableStateOf(false) }
+    // Light mode: the Top 10 rows are plain poster rows, like the others (the first card open, the rest vertical). Each
+    // ranked card drew a number as tall as the card, twice (an outline, then a fill), and sat a number's width off its start.
+    val numbersOff = com.nuvio.tv.ui.newlook.LocalLightMode.current
+    val rows = remember(builtRows, numbersOff) {
+        if (numbersOff) builtRows.map { if (it.ranked) it.copy(ranked = false, kind = RowKind.POSTER) else it } else builtRows
+    }
+    var sourcesIn by remember { mutableStateOf(memory.settled) }
     LaunchedEffect(source) {
         source.awaitStartupSources()
         // The published rows too, so Home never opens on the built-in ones and then swaps them.
@@ -504,17 +523,19 @@ internal fun NewLookHomeContent(
     val currentOnSettled by rememberUpdatedState(onSettled)
     // True once the rows have held still (or the cap passed): the first focus waits for it, so it lands on the row that
     // ends up first and not on one that was first only until the rest arrived.
-    var rowsSettled by remember { mutableStateOf(false) }
+    var rowsSettled by remember { mutableStateOf(memory.settled) }
     LaunchedEffect(sourcesIn, rowLayout) {
         if (sourcesIn) {
             delay(SETTLE_QUIET_MS)
             rowsSettled = true
+            memory.settled = true
             currentOnSettled()
         }
     }
     LaunchedEffect(Unit) {
         delay(SETTLE_CAP_MS)
         rowsSettled = true
+        memory.settled = true
         currentOnSettled()
     }
 
@@ -765,6 +786,11 @@ internal fun NewLookHomeContent(
     // First focus: the window's Watch Now, or wherever Home was left.
     var initialFocusDone by remember { mutableStateOf(false) }
     val contentReady = rowsSettled && (slides.isNotEmpty() || rows.isNotEmpty())
+    // Tells the scaffold Home is up, so the pinned bar and its band appear with the rows and not before them.
+    DisposableEffect(rowsSettled, chrome) {
+        if (rowsSettled) chrome?.homeReadyUp()
+        onDispose { if (rowsSettled) chrome?.homeReadyDown() }
+    }
     LaunchedEffect(contentReady, savedRowBuilt, savedRowWaitOver) {
         if (!contentReady || initialFocusDone) return@LaunchedEffect
         if (!savedRowBuilt && !savedRowWaitOver) return@LaunchedEffect
@@ -839,7 +865,23 @@ internal fun NewLookHomeContent(
     }
     // The page's speed when a glide is cut short by the next press, so the next one carries on from it.
     val pageVelocity = remember { floatArrayOf(0f) }
+    val lightMode = com.nuvio.tv.ui.newlook.LocalLightMode.current
+    // Light mode: the page is put in place in the same layout pass that moves focus. Done from the effect below it
+    // ran a frame later, and on a slow box (100 to 200 ms a frame) the focus ring showed on the new row's old place
+    // before the page jumped under it.
+    val appliedScroll = remember { intArrayOf(Int.MIN_VALUE) }
+    if (lightMode) {
+        val savedRowPending = restoringRow && area == HomeArea.ROWS && rows.none { it.key == focusedRowKey }
+        SideEffect {
+            if (!savedRowPending && appliedScroll[0] != targetScroll) {
+                appliedScroll[0] = targetScroll
+                val (item, offset) = NewLookScroll.toItem(targetScroll, headerHeightPx, rowHeightsPx)
+                listState.requestScrollToItem(item, offset)
+            }
+        }
+    }
     LaunchedEffect(targetScroll) {
+        if (lightMode) return@LaunchedEffect
         // The saved row isn't built yet: stay where Home was left rather than gliding to the top and back.
         if (restoringRow && area == HomeArea.ROWS && rows.none { it.key == focusedRowKey }) return@LaunchedEffect
         val (index, offset) = NewLookScroll.toItem(targetScroll, headerHeightPx, rowHeightsPx)
@@ -870,6 +912,31 @@ internal fun NewLookHomeContent(
             }
         }
         pageVelocity[0] = 0f
+    }
+
+    // The three rows below the focused one: their first cards' pictures are warmed now, so when the page scrolls to them
+    // (or they peek in under the row in focus) their posters are there and don't appear one by one.
+    LaunchedEffect(focusedRowKey, rows, lightMode) {
+        val at = rows.indexOfFirst { it.key == focusedRowKey }
+        if (at < 0) return@LaunchedEffect
+        for (row in rows.drop(at + 1).take(3).filter { it.kind != RowKind.WIDE }) {
+            row.items.take(8).forEachIndexed { i, item ->
+                val url = when {
+                    row.kind == RowKind.POSTER -> item.heroPreview.poster ?: item.imageUrl
+                    else -> item.heroPreview.backdrop ?: item.imageUrl
+                }
+                url?.let { context.imageLoader.enqueue(coil3.request.ImageRequest.Builder(context).data(if (lightMode) lightSizedUrl(it) else it).build()) }
+                if (i == 0 && row.kind == RowKind.POSTER) {
+                    // The row's open card: its backdrop and logo.
+                    item.heroPreview.backdrop?.let { b ->
+                        context.imageLoader.enqueue(coil3.request.ImageRequest.Builder(context).data(if (lightMode) lightSizedUrl(b) else b).build())
+                    }
+                    item.heroPreview.logo?.let { l ->
+                        context.imageLoader.enqueue(coil3.request.ImageRequest.Builder(context).data(l).build())
+                    }
+                }
+            }
+        }
     }
 
     // Rows that haven't loaded yet load as they come near the screen.
@@ -1035,7 +1102,7 @@ internal fun NewLookHomeContent(
     val contentFocusRequester = LocalContentFocusRequester.current
     val pageDrop by animateFloatAsState(
         targetValue = if (menuOnTop && hideMenu && chrome?.topBarFocused == true) 40f else 0f,
-        animationSpec = tween(240),
+        animationSpec = androidx.compose.animation.core.snap(),
         label = "pageDrop"
     )
     // Home paints its own background over the whole screen, so the app's Surface under it (the theme's background,
@@ -1294,6 +1361,18 @@ internal fun NewLookHomeContent(
                 .height(140.dp)
                 .background(shadeBrush)
         )
+        // Solid OLED black from the top of the screen to just under the tab bar, where the rows rest: a row scrolling
+        // off the page goes under it and vanishes, instead of showing around the bar or through its glass. It is part
+        // of Home, so it arrives with the rows and leaves with them.
+        if (menuOnTop && !hideMenu) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(Color.Black)
+            )
+        }
     }
 
     smartOptions?.let { (row, item) ->
@@ -1519,7 +1598,7 @@ private fun HeroBlock(
         }
         // After the window: an edge-to-edge hero runs under the bar.
         if (topBar != null) {
-            val alpha by animateFloatAsState(if (topBarVisible) 1f else 0f, tween(240), label = "topBarAlpha")
+            val alpha by animateFloatAsState(if (topBarVisible) 1f else 0f, androidx.compose.animation.core.snap(), label = "topBarAlpha")
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1598,7 +1677,7 @@ private fun NewLookRowView(
         }
         // The row with focus leads; the others' titles step back a little. Faded as a layer, read while drawing, so
         // moving between rows doesn't recompose both titles for every frame of the fade.
-        val titleAlpha = animateFloatAsState(if (rowShown) 1f else 0.72f, tween(200), label = "rowTitle")
+        val titleAlpha = animateFloatAsState(if (rowShown) 1f else 0.72f, androidx.compose.animation.core.snap(), label = "rowTitle")
         if (!row.hideTitle) Text(
             text = row.title,
             color = Color.White,
@@ -1617,10 +1696,29 @@ private fun NewLookRowView(
         // before its picture is there.
         if (row.kind == RowKind.POSTER && rowActive) {
             val appContext = androidx.compose.ui.platform.LocalContext.current
-            LaunchedEffect(col, row.items.size) {
-                for (i in col..(col + 4).coerceAtMost(row.items.lastIndex)) {
-                    val item = row.items[i]
-                    val url = item.heroPreview.backdrop ?: item.metaPreview?.id?.let { details[it]?.backdrop } ?: continue
+            val light = com.nuvio.tv.ui.newlook.LocalLightMode.current
+            // The urls are worked out while composing, so each card's details arriving (that is where its backdrop's
+            // address comes from) re-runs this. Done once, at focus, it ran before those details were in, skipped
+            // every card it didn't know yet, and never came back: most opened cards then showed their picture late.
+            val ahead = if (light) 3 else 4
+            // Two behind as well: going back fast, the cards left behind may have left the memory cache (or never
+            // loaded, passed too quickly) and showed their picture late.
+            val backdrops = ((col - 2).coerceAtLeast(0)..(col + ahead).coerceAtMost(row.items.lastIndex)).mapNotNull { i ->
+                val item = row.items[i]
+                val url = item.heroPreview.backdrop ?: item.metaPreview?.id?.let { details[it]?.backdrop }
+                url?.let { if (light) lightSizedUrl(it) else it }
+            }
+            // The closed cards that come in at the right as the row moves, and the logos the opened ones will wear: loaded
+            // only once composed, they popped in on nearly every step.
+            val lastIndex = row.items.lastIndex
+            val posters = (col..(col + 9).coerceAtMost(lastIndex)).mapNotNull { i ->
+                val item = row.items[i]
+                (item.heroPreview.poster ?: item.imageUrl)?.let { if (light) lightSizedUrl(it) else it }
+            }
+            val logos = (col..(col + ahead).coerceAtMost(lastIndex)).mapNotNull { i -> row.items[i].heroPreview.logo }
+            val warm = backdrops + posters + logos
+            LaunchedEffect(warm) {
+                warm.forEach { url ->
                     appContext.imageLoader.enqueue(coil3.request.ImageRequest.Builder(appContext).data(url).build())
                 }
             }
@@ -1684,7 +1782,7 @@ private fun NewLookRowView(
             }
         }
         if (row.kind != RowKind.WIDE && row.kind != RowKind.GRAND && shownItem != null) {
-            val metaAlpha = animateFloatAsState(if (rowShown) 1f else 0f, tween(200), label = "rowMeta")
+            val metaAlpha = animateFloatAsState(if (rowShown) 1f else 0f, androidx.compose.animation.core.snap(), label = "rowMeta")
             // Only the focused row (and one fading out) has its details composed: rows coming on screen as the page
             // scrolls don't lay out a synopsis nobody sees.
             val fading by remember { derivedStateOf { metaAlpha.value > 0f } }

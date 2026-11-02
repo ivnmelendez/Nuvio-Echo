@@ -173,7 +173,7 @@ internal fun NotificationHost(
     val drop = remember(current.id) { Animatable(0f) }
     val contentAlpha = remember(current.id) { Animatable(0f) }
     val presence = remember(current.id) { Animatable(0f) }
-    val open = spring<Float>(dampingRatio = 0.72f, stiffness = 260f)
+    val open = androidx.compose.animation.core.snap<Float>()
 
     // Up for the usual few seconds, or a countdown notice until its moment; either folds away early if cancelled.
     suspend fun hold(usualMs: Long) {
@@ -190,15 +190,15 @@ internal fun NotificationHost(
             if (style == NotificationStyle.ISLAND) {
                 // Drops in small, swells open, holds, shrinks back and rises out of sight.
                 presence.snapTo(1f)
-                drop.animateTo(1f, spring(dampingRatio = 0.6f, stiffness = 300f))
+                drop.animateTo(1f, androidx.compose.animation.core.snap())
                 launch { width.animateTo(1f, open) }
                 height.animateTo(1f, open)
-                contentAlpha.animateTo(1f, tween(220))
+                contentAlpha.animateTo(1f, androidx.compose.animation.core.snap())
                 hold(3_900)
-                contentAlpha.animateTo(0f, tween(160))
-                launch { width.animateTo(0f, tween(380)) }
-                height.animateTo(0f, tween(380))
-                drop.animateTo(0f, tween(320))
+                contentAlpha.animateTo(0f, androidx.compose.animation.core.snap())
+                launch { width.animateTo(0f, androidx.compose.animation.core.snap()) }
+                height.animateTo(0f, androidx.compose.animation.core.snap())
+                drop.animateTo(0f, androidx.compose.animation.core.snap())
             } else {
                 // Grows out of the avatar (which nudges forward as it lets go), holds, folds back in.
                 avatar.visible = true
@@ -208,12 +208,12 @@ internal fun NotificationHost(
                 delay(80)
                 launch { width.animateTo(1f, open) }
                 height.animateTo(1f, open)
-                contentAlpha.animateTo(1f, tween(220))
+                contentAlpha.animateTo(1f, androidx.compose.animation.core.snap())
                 hold(3_600)
-                contentAlpha.animateTo(0f, tween(160))
-                launch { width.animateTo(0f, tween(420)) }
-                height.animateTo(0f, tween(420))
-                presence.animateTo(0f, tween(160))
+                contentAlpha.animateTo(0f, androidx.compose.animation.core.snap())
+                launch { width.animateTo(0f, androidx.compose.animation.core.snap()) }
+                height.animateTo(0f, androidx.compose.animation.core.snap())
+                presence.animateTo(0f, androidx.compose.animation.core.snap())
                 avatar.lifted = false
                 delay(150)
                 avatar.visible = false

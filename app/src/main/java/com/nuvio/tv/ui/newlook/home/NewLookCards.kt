@@ -122,15 +122,19 @@ internal fun NewLookCard(
         shape = CardDefaults.shape(shape),
         // Clear, not grey: while a row slides, a card whose artwork is still loading showed as a dark box for a frame
         // or two before its picture came in. Now the artwork just fades in where the card is.
-        colors = CardDefaults.colors(containerColor = Color.Transparent, focusedContainerColor = Color.Transparent),
-        // Quiet focus lifts the card a little and lays a soft shadow under it, with the white hairline.
-        scale = CardDefaults.scale(focusedScale = if (quiet && lift && !light) QUIET_FOCUS_LIFT else 1f, pressedScale = 0.98f),
+        colors = CardDefaults.colors(
+            containerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            pressedContainerColor = Color.Transparent
+        ),
+        // Focus is the white hairline alone: no growth and no shadow, which cost frames on weak boxes.
+        scale = CardDefaults.scale(focusedScale = if (quiet && lift && !light) QUIET_FOCUS_LIFT else 1f, pressedScale = 1f),
         border = CardDefaults.border(
             border = Border.None,
             focusedBorder = Border(BorderStroke(ringWidth, ring), shape = shape),
             pressedBorder = Border(BorderStroke(ringWidth, ring), shape = shape)
         ),
-        glow = if (quiet && !light) CardDefaults.glow(focusedGlow = QuietFocusShadow, pressedGlow = QuietFocusShadow) else CardDefaults.glow()
+        glow = CardDefaults.glow()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             androidx.compose.runtime.CompositionLocalProvider(LocalArtworkShown provides artwork) { content() }
@@ -141,10 +145,8 @@ internal fun NewLookCard(
     }
 }
 
-/** How much a focused card grows with Quiet focus: enough to read as lifted, not enough to crowd its row. */
-private const val QUIET_FOCUS_LIFT = 1.035f
-
-private val QuietFocusShadow = androidx.tv.material3.Glow(elevationColor = Color.Black.copy(alpha = 0.6f), elevation = 14.dp)
+/** A focused card no longer grows: the scale animation read as a bounce and cost frames on weak boxes. The ring alone marks focus. */
+private const val QUIET_FOCUS_LIFT = 1f
 
 /** A card's "artwork is in" flag, which [Artwork] sets once its picture (or its title, with none) is up. */
 internal val LocalArtworkShown = androidx.compose.runtime.compositionLocalOf<androidx.compose.runtime.MutableState<Boolean>?> { null }
@@ -183,7 +185,10 @@ internal fun Artwork(
     val light = com.nuvio.tv.ui.newlook.LocalLightMode.current
     // Built once per image, not on every recomposition of the card.
     val request = remember(url, fallbackUrl, light) {
-        ImageRequest.Builder(context).data(url).customPosterFallback(url, fallbackUrl).crossfade(!light).build()
+        // Light mode asks TMDB for the size the card is drawn at: a poster card is about 260 px wide and an opened one
+        // about 700, so w500 and w1280 were fetched and decoded at nearly twice what the screen shows.
+        val sized = if (light) lightSizedUrl(url) else url
+        ImageRequest.Builder(context).data(sized).customPosterFallback(sized, fallbackUrl).crossfade(!light).build()
     }
     // Tells the card when its picture is up (the card's depth waits for it). A card showing two pictures (a poster
     // under its backdrop) counts as in once the first is.
@@ -196,6 +201,18 @@ internal fun Artwork(
         modifier = modifier
     )
 }
+
+/** The TMDB size light mode asks for (see [Artwork]); the prefetch uses it too, so what it warms is what a card reads. */
+internal fun lightSizedUrl(url: String): String =
+    url.replace("/t/p/w500/", "/t/p/w342/").replace("/t/p/w1280/", "/t/p/w780/").replace("/t/p/original/", "/t/p/w780/")
+
+/**
+ * Continue Watching's card is about 630 px wide, and its episode picture often arrives as a TMDB still at w300 (or w185):
+ * stretched to the card it looked soft. Asks TMDB for w780 instead (a TMDB url only; any other is left as it is).
+ */
+internal fun sharperContinueUrl(url: String): String =
+    url.replace("/t/p/w300/", "/t/p/w780/").replace("/t/p/w185/", "/t/p/w780/").replace("/t/p/w92/", "/t/p/w780/")
+        .replace("/t/p/w500/", "/t/p/w780/")
 
 /** Logo bottom-left, or the title as bold text when there's no logo. */
 @Composable
@@ -272,7 +289,7 @@ internal fun ContinueWatchingCard(
 ) {
     val hasProgress = progress != null && progress > 0f
     NewLookCard(dims.cwWidth, dims.cwHeight, onClick, onLongClick, onFocusChanged, modifier, depth = CardDepthSurface.CONTINUE_WATCHING, lift = false) {
-        Artwork(image, Modifier.fillMaxSize(), fallbackTitle = title)
+        Artwork(image?.let(::sharperContinueUrl), Modifier.fillMaxSize(), fallbackTitle = title)
         Box(modifier = Modifier.fillMaxSize().bottomShade())
         Column(
             modifier = Modifier
@@ -493,7 +510,7 @@ internal fun RankNumber(rank: Int, dims: NewLookDimens, focused: Boolean, modifi
     val twoDigits = rank >= 10
     val outline by androidx.compose.animation.animateColorAsState(
         if (focused) Color(240, 240, 240, 153) else Color(215, 215, 215, 77),
-        tween(240),
+        androidx.compose.animation.core.snap(),
         label = "rankOutline"
     )
     val base = TextStyle(
@@ -560,16 +577,8 @@ internal fun SkeletonCard(
     onFocusChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val pulse = androidx.compose.animation.core.rememberInfiniteTransition(label = "skeleton")
-    val alpha = pulse.animateFloat(
-        initialValue = 0.55f,
-        targetValue = 1f,
-        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
-            tween(900, easing = androidx.compose.animation.core.LinearEasing),
-            androidx.compose.animation.core.RepeatMode.Reverse
-        ),
-        label = "skeletonAlpha"
-    )
+    // Still, not pulsing: an endless animation redraws every frame while the row loads.
+    val alpha = androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0.8f) }
     NewLookCard(width, height, onClick = {}, onLongClick = null, onFocusChanged = onFocusChanged, modifier = modifier) {
         // Read while drawing, so the pulse redraws the card without recomposing it.
         Box(modifier = Modifier.fillMaxSize().graphicsLayer { this.alpha = alpha.value }.background(PlaceholderShade))
