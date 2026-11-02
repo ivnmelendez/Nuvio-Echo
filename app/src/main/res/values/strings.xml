@@ -526,51 +526,6 @@
     <string name="action_back">Back</string>
     <string name="action_close">Close</string>
 
-    <string name="supporters_contributors_back_button">Back to details</string>
-    <string name="supporter_membership_title">Tivistream Supporter Membership</string>
-    <string name="supporter_membership_description">Supporting Tivistream helps cover infrastructure and ongoing development while keeping the core experience free for everyone.</string>
-    <string name="supporter_membership_view">View Membership</string>
-    <string name="supporter_membership_manage">Manage membership</string>
-    <string name="supporter_membership_refresh">Refresh</string>
-    <string name="supporter_membership_refreshing">Refreshing</string>
-    <string name="supporter_membership_loading">Loading membership…</string>
-    <string name="supporter_membership_unable_load">Unable to load membership status. Please try again.</string>
-    <string name="supporter_membership_you_are">You’re a</string>
-    <string name="supporter_membership_thank_you">Thank you.</string>
-    <string name="supporter_membership_supporter_since">Supporter since %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Supporter</string>
-    <string name="supporter_membership_tier_supporter_plus">Supporter Plus</string>
-    <string name="supporter_membership_connected_title">Patreon is connected</string>
-    <string name="supporter_membership_connected_description">No active Tivistream tier was found on this Patreon account. View the available options or refresh after changing your Patreon membership.</string>
-    <string name="supporter_membership_scan_support">Scan to view membership</string>
-    <string name="supporter_membership_scan_support_description">Open the Supporter Membership page on your phone.</string>
-    <string name="supporter_membership_scan_manage">Scan to manage membership</string>
-    <string name="supporter_membership_scan_manage_description">Open Patreon membership settings on your phone.</string>
-    <string name="cd_membership_qr">Membership page QR code</string>
-    <string name="supporters_tab">Supporters</string>
-    <string name="sponsors_tab">Sponsors</string>
-    <string name="contributors_tab">Contributors</string>
-    <string name="supporters_loading">Loading supporters…</string>
-    <string name="supporters_empty">No supporters found yet.</string>
-    <string name="supporters_error_title">Couldn’t load supporters</string>
-    <string name="supporters_level_supporter">Supporter</string>
-    <string name="supporters_level_supporter_plus">Supporter+</string>
-    <string name="supporters_since">Supporting Tivistream since %1$s</string>
-    <string name="supporters_since_unknown">Proudly supporting Tivistream</string>
-    <string name="supporters_open_donations">Open support page</string>
-    <string name="sponsors_loading">Loading sponsors…</string>
-    <string name="sponsors_empty">No sponsors found yet.</string>
-    <string name="sponsors_error_title">Couldn’t load sponsors</string>
-    <string name="sponsors_detail_copy">Sponsors help move Tivistream forward through support across the different parts of development.</string>
-    <string name="sponsors_channel_unavailable">Sponsor channel unavailable.</string>
-    <string name="sponsors_open_channel">Open sponsor channel</string>
-    <string name="contributors_loading">Loading GitHub contributors…</string>
-    <string name="contributors_empty">No contributors found yet.</string>
-    <string name="contributors_error_title">Couldn’t load contributors</string>
-    <string name="contributors_open_github">Open GitHub Profile</string>
-    <string name="contributors_show_kofi_qr">Show Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Hide Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">GitHub profile link unavailable.</string>
 
     <string name="playback_section_player_title">Player</string>
     <string name="playback_section_player_title_desc">Default player, internal engine and error fallback.</string>
@@ -1728,7 +1683,6 @@
     <string name="cd_trakt_logo">Trakt Logo</string>
     <string name="cd_trakt_qr">Trakt activation QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Contributor support QR code</string>
     <string name="cd_expand">Expand %1$s</string>
     <string name="cd_collapse">Collapse %1$s</string>
 
@@ -2170,16 +2124,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Unable to load supporters.</string>
-    <string name="contributors_error_load">Unable to load contributors.</string>
-    <string name="sponsors_error_load">Unable to load sponsors.</string>
-    <string name="contributors_error_api_not_configured">Contributors API is not configured.</string>
-    <string name="contributors_error_api_http">Contributors API error: %1$d</string>
-    <string name="supporters_error_api_http">Donations API error: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Translator</string>
-    <string name="contributor_role_maintainer">Maintainer</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Empty response body</string>

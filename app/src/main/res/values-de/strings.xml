@@ -416,27 +416,6 @@
     <string name="action_close">Schließen</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Zurück zu den Details</string>
-    <string name="supporters_tab">Unterstützer</string>
-    <string name="sponsors_tab">Sponsoren</string>
-    <string name="contributors_tab">Mitwirkende</string>
-    <string name="supporters_loading">Unterstützer werden geladen…</string>
-    <string name="supporters_empty">Es wurden noch keine Unterstützer gefunden.</string>
-    <string name="supporters_error_title">Unterstützer konnten nicht geladen werden</string>
-    <string name="supporters_open_donations">Spendenseite öffnen</string>
-    <string name="sponsors_loading">Lade Sponsoren…</string>
-    <string name="sponsors_empty">Keine Sponsoren gefunden.</string>
-    <string name="sponsors_error_title">Sponsoren konnten nicht geladen werden</string>
-    <string name="sponsors_detail_copy">Sponsoren helfen dabei, dass Tivistream stetig weiterentwickelt werden kann.</string>
-    <string name="sponsors_channel_unavailable">Sponsoren-Kanal nicht verfügbar.</string>
-    <string name="sponsors_open_channel">Sponsoren-Kanal öffnen</string>
-    <string name="contributors_loading">GitHub-Mitwirkende werden geladen…</string>
-    <string name="contributors_empty">Es wurden noch keine Mitwirkenden gefunden.</string>
-    <string name="contributors_error_title">Beitragende konnten nicht geladen werden</string>
-    <string name="contributors_open_github">GitHub-Profil öffnen</string>
-    <string name="contributors_show_kofi_qr">Ko-fi-QR-Code anzeigen</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi-QR-Code ausblenden</string>
-    <string name="contributors_profile_unavailable">GitHub-Profil-Link nicht verfügbar.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Lade-Overlay</string>
@@ -1302,7 +1281,6 @@
     <string name="cd_trakt_logo">Trakt Logo</string>
     <string name="cd_trakt_qr">Trakt Aktivierungs-QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Contributor support QR code</string>
     <string name="cd_expand">Expand %1$s</string>
     <string name="cd_collapse">Collapse %1$s</string>
 
@@ -1699,16 +1677,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Unable to load supporters.</string>
-    <string name="contributors_error_load">Unable to load contributors.</string>
-    <string name="sponsors_error_load">Unable to load sponsors.</string>
-    <string name="contributors_error_api_not_configured">Contributors API is not configured.</string>
-    <string name="contributors_error_api_http">Contributors API error: %1$d</string>
-    <string name="supporters_error_api_http">Donations API error: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Translator</string>
-    <string name="contributor_role_maintainer">Maintainer</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Empty response body</string>

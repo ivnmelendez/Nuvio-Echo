@@ -532,51 +532,6 @@
     <string name="action_close">Kapat</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Ayrıntılara Dön</string>
-    <string name="supporter_membership_title">Tivistream Destekçi Üyeliği</string>
-    <string name="supporter_membership_description">Tivistream\'yu desteklemek, temel deneyimi herkes için ücretsiz tutarken altyapı ve geliştirme masraflarını karşılamaya yardımcı olur.</string>
-    <string name="supporter_membership_view">Üyeliği Görüntüle</string>
-    <string name="supporter_membership_manage">Üyeliği yönet</string>
-    <string name="supporter_membership_refresh">Yenile</string>
-    <string name="supporter_membership_refreshing">Yenileniyor</string>
-    <string name="supporter_membership_loading">Üyelik yükleniyor…</string>
-    <string name="supporter_membership_unable_load">Üyelik durumu yüklenemedi. Lütfen tekrar deneyin.</string>
-    <string name="supporter_membership_you_are">Seviyeniz:</string>
-    <string name="supporter_membership_thank_you">Teşekkür ederiz.</string>
-    <string name="supporter_membership_supporter_since">%1$s tarihinden beri destekçi.</string>
-    <string name="supporter_membership_tier_supporter">Destekçi</string>
-    <string name="supporter_membership_tier_supporter_plus">Destekçi Plus</string>
-    <string name="supporter_membership_connected_title">Patreon bağlandı</string>
-    <string name="supporter_membership_connected_description">Bu Patreon hesabında aktif bir Tivistream seviyesi bulunamadı. Mevcut seçenekleri görüntüleyin veya Patreon üyeliğinizi değiştirdikten sonra yenileyin.</string>
-    <string name="supporter_membership_scan_support">Üyeliği görüntülemek için taratın</string>
-    <string name="supporter_membership_scan_support_description">Telefonunuzda Destekçi Üyeliği sayfasını açın.</string>
-    <string name="supporter_membership_scan_manage">Üyeliği yönetmek için taratın</string>
-    <string name="supporter_membership_scan_manage_description">Telefonunuzda Patreon üyelik ayarlarını açın.</string>
-    <string name="cd_membership_qr">Üyelik sayfası QR kodu</string>
-    <string name="supporters_tab">Destekleyenler</string>
-    <string name="sponsors_tab">Sponsorlar</string>
-    <string name="contributors_tab">Katkıda Bulunanlar</string>
-    <string name="supporters_loading">Destekleyenler yükleniyor…</string>
-    <string name="supporters_empty">Henüz bir bağışçımız görünmüyor.</string>
-    <string name="supporters_error_title">Destekleyenler paneli yüklenemedi</string>
-    <string name="supporters_level_supporter">Destekçi</string>
-    <string name="supporters_level_supporter_plus">Destekçi+</string>
-    <string name="supporters_since">%1$s tarihinden beri Tivistream\'yu destekliyor</string>
-    <string name="supporters_since_unknown">Tivistream\'yu gururla destekliyor</string>
-    <string name="supporters_open_donations">Bağış Sayfasına Git</string>
-    <string name="sponsors_loading">Sponsorlar yükleniyor...</string>
-    <string name="sponsors_empty">Sponsor bulunamadı</string>
-    <string name="sponsors_error_title">Sponsorlar Yüklenemedi</string>
-    <string name="sponsors_detail_copy">ID Kopyala</string>
-    <string name="sponsors_channel_unavailable">Kanal kullanılamıyor</string>
-    <string name="sponsors_open_channel">Kanalı Aç</string>
-    <string name="contributors_loading">GitHub katkıda bulunanları yükleniyor…</string>
-    <string name="contributors_empty">Şu an için katkıda bulunan kimse yok.</string>
-    <string name="contributors_error_title">Katkıda bulunanlar listesi yüklenemedi</string>
-    <string name="contributors_open_github">GitHub Profiline Git</string>
-    <string name="contributors_show_kofi_qr">Ko-fi QR Kodunu Göster</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi QR Kodunu Gizle</string>
-    <string name="contributors_profile_unavailable">Bu kişinin GitHub profiline ulaşılamıyor.</string>
     <string name="playback_section_player_title">Oynatıcı</string>
     <string name="playback_section_player_title_desc">Varsayılan oynatıcı, dahili motor ve hata durumunda alternatif oynatıcı.</string>
     <string name="playback_section_stream_selection">Yayın Seçimi</string>
@@ -1895,7 +1850,6 @@
     <string name="cd_simkl_qr">Simkl etkinleştirme QR kodu</string>
     <string name="cd_simkl_logo">Simkl logosu</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Katkıda bulunanlar için destek QR kodu</string>
     <string name="cd_expand">%1$s öğesini genişlet</string>
     <string name="cd_collapse">%1$s öğesini daralt</string>
 
@@ -2365,14 +2319,6 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="contributor_role_translator">Çevirmen</string>
-    <string name="contributor_role_maintainer">Geliştirici</string>
-    <string name="supporters_error_load">Destekleyenler yüklenemedi.</string>
-    <string name="contributors_error_load">Katkıda bulunanlar yüklenemedi.</string>
-    <string name="sponsors_error_load">Sponsorlar yüklenemedi.</string>
-    <string name="contributors_error_api_not_configured">Katkıda bulunanlar API\'si yapılandırılmamış.</string>
-    <string name="contributors_error_api_http">Katkıda bulunanlar API hatası: %1$d</string>
-    <string name="supporters_error_api_http">Bağış API hatası: %1$d</string>
 
     <!-- Stream Throughput Speed & Chunk Diagnostic Test -->
     <string name="stream_test_section_header">Akış Performans Testi (Throughput)</string>

@@ -302,44 +302,6 @@
     <string name="action_close">Закрыть</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Назад к деталям</string>
-    <string name="supporter_membership_title">Членство спонсора Tivistream</string>
-    <string name="supporter_membership_description">Поддержка Tivistream помогает покрывать расходы на инфраструктуру и дальнейшую разработку, оставляя основной функционал бесплатным для всех.</string>
-    <string name="supporter_membership_view">Просмотреть членство</string>
-    <string name="supporter_membership_manage">Управление членством</string>
-    <string name="supporter_membership_refresh">Обновить</string>
-    <string name="supporter_membership_refreshing">Обновление</string>
-    <string name="supporter_membership_loading">Загрузка данных о членстве…</string>
-    <string name="supporter_membership_unable_load">Не удалось загрузить статус членства. Попробуйте ещё раз.</string>
-    <string name="supporter_membership_you_are">Вы —</string>
-    <string name="supporter_membership_thank_you">Спасибо.</string>
-    <string name="supporter_membership_supporter_since">Спонсор с %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Спонсор</string>
-    <string name="supporter_membership_tier_supporter_plus">Спонсор Plus</string>
-    <string name="supporter_membership_connected_title">Patreon подключён</string>
-    <string name="supporter_membership_connected_description">На этом аккаунте Patreon не найден активный уровень Tivistream. Просмотрите доступные варианты или обновите данные после изменения членства Patreon.</string>
-    <string name="supporter_membership_scan_support">Отсканируйте, чтобы просмотреть членство</string>
-    <string name="supporter_membership_scan_support_description">Откройте страницу членства спонсора на телефоне.</string>
-    <string name="supporter_membership_scan_manage">Отсканируйте, чтобы управлять членством</string>
-    <string name="supporter_membership_scan_manage_description">Откройте настройки членства Patreon на телефоне.</string>
-    <string name="cd_membership_qr">QR-код страницы членства</string>
-    <string name="supporters_tab">Спонсоры</string>
-    <string name="contributors_tab">Участники</string>
-    <string name="supporters_loading">Загрузка спонсоров…</string>
-    <string name="supporters_empty">Пока нет спонсоров.</string>
-    <string name="supporters_error_title">Не удалось загрузить спонсоров</string>
-    <string name="supporters_level_supporter">Спонсор</string>
-    <string name="supporters_level_supporter_plus">Спонсор+</string>
-    <string name="supporters_since">Поддерживает Tivistream с %1$s</string>
-    <string name="supporters_since_unknown">С гордостью поддерживает Tivistream</string>
-    <string name="supporters_open_donations">Открыть страницу пожертвований</string>
-    <string name="contributors_loading">Загрузка участников GitHub…</string>
-    <string name="contributors_empty">Пока нет участников.</string>
-    <string name="contributors_error_title">Не удалось загрузить участников</string>
-    <string name="contributors_open_github">Открыть профиль GitHub</string>
-    <string name="contributors_show_kofi_qr">Показать Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Скрыть Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Ссылка на профиль GitHub недоступна.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Экран загрузки</string>
@@ -1160,7 +1122,6 @@
     <string name="cd_trakt_logo">Логотип Trakt</string>
     <string name="cd_trakt_qr">QR-код активации Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR-код поддержки участника</string>
     <string name="cd_expand">Развернуть %1$s</string>
     <string name="cd_collapse">Свернуть %1$s</string>
 
@@ -1446,13 +1407,6 @@
     <string name="confirm_exit_toast">Нажмите «Назад» ещё раз для выхода</string>
     <string name="action_apply">Применить</string>
     <string name="sub_opacity">Прозрачность</string>
-    <string name="sponsors_tab">Спонсоры</string>
-    <string name="sponsors_loading">Загрузка спонсоров…</string>
-    <string name="sponsors_empty">Пока нет спонсоров.</string>
-    <string name="sponsors_error_title">Не удалось загрузить спонсоров</string>
-    <string name="sponsors_detail_copy">Спонсоры помогают развивать Tivistream через поддержку различных аспектов разработки.</string>
-    <string name="sponsors_channel_unavailable">Канал спонсора недоступен.</string>
-    <string name="sponsors_open_channel">Открыть канал спонсора</string>
     <!-- Batch 4: playback parental/skip/AFR, video/audio DV7, cache duration -->
     <string name="playback_auto_skip_segments">Автоматический пропуск</string>
     <string name="playback_auto_skip_segments_sub">Выберите, какие сегменты пропускать автоматически.</string>
@@ -2024,14 +1978,6 @@
     <string name="web_tmdb_company_fallback">Компания TMDB %1$d</string>
     <string name="web_tmdb_collection_fallback">Коллекция TMDB %1$d</string>
     <string name="web_error_invalid_request_body">Неверное тело запроса</string>
-    <string name="supporters_error_load">Не удалось загрузить спонсоров.</string>
-    <string name="contributors_error_load">Не удалось загрузить участников.</string>
-    <string name="sponsors_error_load">Не удалось загрузить спонсоров.</string>
-    <string name="contributors_error_api_not_configured">API участников не настроен.</string>
-    <string name="contributors_error_api_http">Ошибка API участников: %1$d</string>
-    <string name="supporters_error_api_http">Ошибка API пожертвований: %1$d</string>
-    <string name="contributor_role_translator">Переводчик</string>
-    <string name="contributor_role_maintainer">Мейнтейнер</string>
     <string name="network_error_empty_response_body">Пустое тело ответа</string>
     <string name="network_error_unknown">Неизвестная ошибка сети</string>
     <string name="network_fast_error_script_path_missing">Отсутствует путь скрипта fast.com</string>

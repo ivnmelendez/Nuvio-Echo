@@ -839,20 +839,6 @@
     <string name="settings_rounded_ui">Zaokrąglony interfejs</string>
 
     <string name="action_close">Zamknij</string>
-    <string name="supporters_contributors_back_button">Wróć do szczegółów</string>
-    <string name="supporters_tab">Wspierający</string>
-    <string name="contributors_tab">Współtwórcy</string>
-    <string name="supporters_loading">Ładowanie wspierających…</string>
-    <string name="supporters_empty">Nie znaleziono jeszcze wspierających.</string>
-    <string name="supporters_error_title">Nie można załadować wspierających</string>
-    <string name="supporters_open_donations">Otwórz stronę dotacji</string>
-    <string name="contributors_loading">Ładowanie współtwórców GitHub…</string>
-    <string name="contributors_empty">Nie znaleziono jeszcze współtwórców.</string>
-    <string name="contributors_error_title">Nie można załadować współtwórców</string>
-    <string name="contributors_open_github">Otwórz GitHub</string>
-    <string name="contributors_show_kofi_qr">Pokaż QR Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Ukryj QR Ko-fi</string>
-    <string name="contributors_profile_unavailable">Link do profilu GitHub niedostępny.</string>
     <string name="update_close">Zamknij</string>
     <string name="update_open_settings">Otwórz ustawienia</string>
     <string name="update_install">Zainstaluj</string>
@@ -1060,7 +1046,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">Kod QR aktywacji Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Kod QR wsparcia współtwórcy</string>
     <string name="cd_expand">Rozwiń %1$s</string>
     <string name="cd_collapse">Zwiń %1$s</string>
 
@@ -1560,13 +1545,6 @@
     <string name="plugin_repo_removed">Repozytorium usunięte</string>
     <string name="plugin_url_or_short_code_placeholder">URL lub krótki kod</string>
     <string name="settings_experience">Doświadczenie</string>
-    <string name="sponsors_channel_unavailable">Kanał sponsora niedostępny.</string>
-    <string name="sponsors_detail_copy">Sponsorzy pomagają rozwijać Tivistream wspierając różne obszary rozwoju.</string>
-    <string name="sponsors_empty">Nie znaleziono jeszcze sponsorów.</string>
-    <string name="sponsors_error_title">Nie udało się załadować sponsorów</string>
-    <string name="sponsors_loading">Ładowanie sponsorów…</string>
-    <string name="sponsors_open_channel">Otwórz kanał sponsora</string>
-    <string name="sponsors_tab">Sponsorzy</string>
     <string name="stream_filter_all">Wszystkie</string>
     <string name="subtitle_auto_sync_applied">Synchronizacja zastosowana: %1$s</string>
     <string name="subtitle_auto_sync_select_addon_track">Wybierz ścieżkę napisów z dodatku, aby użyć Auto Sync.</string>
@@ -1717,11 +1695,6 @@
     <string name="collections_import_error_source_invalid">Kolekcja \"%1$s\", folder \"%2$s\", źródło %3$d: nieprawidłowy format</string>
     <string name="collections_import_error_source_required_fields">Kolekcja \"%1$s\", folder \"%2$s\", źródło %3$d: brak wymaganych pól</string>
     <string name="collections_import_error_sources_array">Kolekcja \"%1$s\", folder \"%2$s\": \"sources\" musi być tablicą</string>
-    <string name="contributor_role_maintainer">Opiekun</string>
-    <string name="contributor_role_translator">Tłumacz</string>
-    <string name="contributors_error_api_http">Błąd API współtwórców: %1$d</string>
-    <string name="contributors_error_api_not_configured">API współtwórców nie jest skonfigurowane.</string>
-    <string name="contributors_error_load">Nie można załadować współtwórców.</string>
     <string name="detail_all_previous_seasons_watched">Wszystkie poprzednie sezony już obejrzane</string>
     <string name="detail_error_update_episode_watched_failed">Nie udało się zaktualizować statusu obejrzenia odcinka</string>
     <string name="detail_error_update_library_failed">Nie udało się zaktualizować biblioteki</string>
@@ -1806,7 +1779,6 @@
     <string name="poster_options_error_update_lists_failed">Nie udało się zaktualizować list</string>
     <string name="search_error_failed">Wyszukiwanie nie powiodło się</string>
     <string name="search_error_load_addons_failed">Nie udało się załadować dodatków</string>
-    <string name="sponsors_error_load">Nie można załadować sponsorów.</string>
     <string name="still_watching_continue">Odtwarzaj</string>
     <string name="still_watching_countdown">Zatrzymanie za %1$d</string>
     <string name="still_watching_exit">Wyjdź</string>
@@ -1826,8 +1798,6 @@
     <string name="subtitle_download_failed_http">Pobieranie napisów nie powiodło się (HTTP %1$d)</string>
     <string name="subtitle_timing_file_no_lines">Nie znaleziono linii napisów w tym pliku.</string>
     <string name="subtitle_timing_load_lines_failed">Nie udało się załadować linii napisów.</string>
-    <string name="supporters_error_api_http">Błąd API darowizn: %1$d</string>
-    <string name="supporters_error_load">Nie można załadować wspierających.</string>
     <string name="trakt_error_mark_watched_failed">Nie udało się oznaczyć jako obejrzane na Trakt (%1$d)</string>
     <string name="trakt_error_request_failed">Żądanie Trakt nie powiodło się</string>
     <string name="trakt_library_error_add_to_list_failed">Nie udało się dodać do listy</string>
@@ -2345,30 +2315,6 @@
     <string name="profile_editor_tab_avatar">Awatar</string>
     <string name="profile_editor_tab_background">Tło</string>
 
-    <string name="supporter_membership_title">Członkostwo Tivistream Supporter</string>
-    <string name="supporter_membership_description">Wsparcie Tivistream pokrywa koszty infrastruktury i rozwoju, jednocześnie zachowując podstawowe funkcje bezpłatnie dla wszystkich.</string>
-    <string name="supporter_membership_view">Zobacz członkostwo</string>
-    <string name="supporter_membership_manage">Zarządzaj członkostwem</string>
-    <string name="supporter_membership_refresh">Odśwież</string>
-    <string name="supporter_membership_refreshing">Odświeżanie</string>
-    <string name="supporter_membership_loading">Ładowanie członkostwa…</string>
-    <string name="supporter_membership_unable_load">Nie udało się załadować statusu członkostwa. Spróbuj ponownie.</string>
-    <string name="supporter_membership_you_are">Jesteś</string>
-    <string name="supporter_membership_thank_you">Dziękujemy.</string>
-    <string name="supporter_membership_supporter_since">Supporter od %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Supporter</string>
-    <string name="supporter_membership_tier_supporter_plus">Supporter Plus</string>
-    <string name="supporter_membership_connected_title">Patreon jest połączony</string>
-    <string name="supporter_membership_connected_description">Nie znaleziono aktywnego poziomu Tivistream na tym koncie Patreon. Zobacz dostępne opcje lub odśwież po zmianie członkostwa.</string>
-    <string name="supporter_membership_scan_support">Zeskanuj, aby zobaczyć członkostwo</string>
-    <string name="supporter_membership_scan_support_description">Otwórz stronę członkostwa Supporter na telefonie.</string>
-    <string name="supporter_membership_scan_manage">Zeskanuj, aby zarządzać członkostwem</string>
-    <string name="supporter_membership_scan_manage_description">Otwórz ustawienia członkostwa Patreon na telefonie.</string>
-    <string name="cd_membership_qr">Kod QR strony członkostwa</string>
-    <string name="supporters_level_supporter">Supporter</string>
-    <string name="supporters_level_supporter_plus">Supporter+</string>
-    <string name="supporters_since">Wspiera Tivistream od %1$s</string>
-    <string name="supporters_since_unknown">Z dumą wspiera Tivistream</string>
 
     <string name="debug_member_tier_title">Symuluj poziom Supportera</string>
     <string name="debug_member_tier_subtitle">Wybierz zweryfikowany poziom supportera zwracany w tym buildzie debug</string>

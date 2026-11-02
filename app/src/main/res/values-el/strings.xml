@@ -454,52 +454,7 @@
   <string name="action_back">Πίσω</string>
   <string name="action_close">Κλείσιμο</string>
   <!-- SupportersContributorsScreen -->
-  <string name="supporters_contributors_back_button">Επιστροφή σε λεπτομέρειες</string>
-  <string name="supporters_tab">Υποστηρικτές</string>
-  <string name="sponsors_tab">Χορηγοί</string>
-  <string name="contributors_tab">Συνεισφέροντες</string>
-  <string name="supporters_loading">Φόρτωση υποστηρικτών…</string>
-  <string name="supporters_empty">Δεν βρέθηκαν ακόμα υποστηρικτές.</string>
-  <string name="supporters_error_title">Δεν ήταν δυνατή η φόρτωση υποστηρικτών</string>
-  <string name="supporters_open_donations">Άνοιγμα σελίδας δωρεών</string>
-  <string name="sponsors_loading">Φόρτωση χορηγών…</string>
-  <string name="sponsors_empty">Δεν βρέθηκαν ακόμα χορηγοί.</string>
-  <string name="sponsors_error_title">Δεν ήταν δυνατή η φόρτωση χορηγών</string>
-  <string name="sponsors_detail_copy">Οι χορηγοί βοηθούν την πρόοδο του Tivistream με υποστήριξη σε διαφορετικά μέρη της ανάπτυξης.</string>
-  <string name="sponsors_channel_unavailable">Το κανάλι χορηγών δεν είναι διαθέσιμο.</string>
-  <string name="sponsors_open_channel">Άνοιγμα καναλιού χορηγών</string>
-  <string name="contributors_loading">Φόρτωση συνεισφερόντων από GitHub…</string>
-  <string name="contributors_empty">Δεν βρέθηκαν ακόμα συνεισφέροντες.</string>
-  <string name="contributors_error_title">Δεν ήταν δυνατή η φόρτωση συνεισφερόντων</string>
-  <string name="contributors_open_github">Άνοιγμα προφίλ GitHub</string>
-  <string name="contributors_show_kofi_qr">Εμφάνιση QR Ko-fi</string>
-  <string name="contributors_hide_kofi_qr">Απόκρυψη QR Ko-fi</string>
-  <string name="contributors_profile_unavailable">Ο σύνδεσμος προφίλ GitHub δεν είναι διαθέσιμος.</string>
   <!-- SupporterMembershipPanel -->
-  <string name="supporter_membership_title">Συνδρομή υποστηρικτή Tivistream</string>
-  <string name="supporter_membership_description">Η υποστήριξη του Tivistream βοηθά στην κάλυψη της υποδομής και της συνεχούς ανάπτυξης, διατηρώντας παράλληλα τη βασική εμπειρία δωρεάν για όλους.</string>
-  <string name="supporter_membership_view">Προβολή συνδρομής</string>
-  <string name="supporter_membership_manage">Διαχείριση συνδρομής</string>
-  <string name="supporter_membership_refresh">Ανανέωση</string>
-  <string name="supporter_membership_refreshing">Ανανέωση…</string>
-  <string name="supporter_membership_loading">Φόρτωση συνδρομής…</string>
-  <string name="supporter_membership_unable_load">Δεν ήταν δυνατή η φόρτωση της κατάστασης συνδρομής. Δοκιμάστε ξανά.</string>
-  <string name="supporter_membership_you_are">Είστε</string>
-  <string name="supporter_membership_thank_you">Σας ευχαριστούμε.</string>
-  <string name="supporter_membership_supporter_since">Υποστηρικτής από %1$s.</string>
-  <string name="supporter_membership_tier_supporter">Υποστηρικτής</string>
-  <string name="supporter_membership_tier_supporter_plus">Υποστηρικτής Plus</string>
-  <string name="supporter_membership_connected_title">Το Patreon είναι συνδεδεμένο</string>
-  <string name="supporter_membership_connected_description">Δεν βρέθηκε ενεργή βαθμίδα Tivistream σε αυτόν τον λογαριασμό Patreon. Δείτε τις διαθέσιμες επιλογές ή ανανεώστε μετά την αλλαγή της συνδρομής σας στο Patreon.</string>
-  <string name="supporter_membership_scan_support">Σάρωση για προβολή συνδρομής</string>
-  <string name="supporter_membership_scan_support_description">Ανοίξτε τη σελίδα Συνδρομή υποστηρικτή στο κινητό σας.</string>
-  <string name="supporter_membership_scan_manage">Σάρωση για διαχείριση συνδρομής</string>
-  <string name="supporter_membership_scan_manage_description">Ανοίξτε τις ρυθμίσεις συνδρομής Patreon στο κινητό σας.</string>
-  <string name="cd_membership_qr">QR code σελίδας συνδρομής</string>
-  <string name="supporters_level_supporter">Υποστηρικτής</string>
-  <string name="supporters_level_supporter_plus">Υποστηρικτής+</string>
-  <string name="supporters_since">Υποστηρίζει το Tivistream από %1$s</string>
-  <string name="supporters_since_unknown">Υποστηρίζει με υπερηφάνεια το Tivistream</string>
   <!-- PlaybackSettingsSections -->
   <string name="playback_section_player_title">Player</string>
   <string name="playback_section_player_title_desc">Προεπιλεγμένος player, εσωτερική μηχανή και εφεδρική εναλλαγή σε περίπτωση σφάλματος.</string>
@@ -1565,7 +1520,6 @@
   <string name="cd_trakt_logo">Λογότυπο Trakt</string>
   <string name="cd_trakt_qr">QR ενεργοποίησης Trakt</string>
   <string name="cd_imdb">IMDb</string>
-  <string name="cd_contributor_qr">Κωδικός QR υποστήριξης συνεισφερόντων</string>
   <string name="cd_expand">Ανάπτυξη %1$s</string>
   <string name="cd_collapse">Σύμπτυξη %1$s</string>
   <!-- Debug -->
@@ -1949,15 +1903,7 @@
   <string name="web_error_invalid_request_body">Μη έγκυρο σώμα αιτήματος</string>
   <!-- Subtitle preferred language fallback -->
   <!-- Supporters / contributors / sponsors errors -->
-  <string name="supporters_error_load">Δεν ήταν δυνατή η φόρτωση των υποστηρικτών.</string>
-  <string name="contributors_error_load">Δεν ήταν δυνατή η φόρτωση των συντελεστών.</string>
-  <string name="sponsors_error_load">Δεν ήταν δυνατή η φόρτωση των χορηγών.</string>
-  <string name="contributors_error_api_not_configured">Το API συντελεστών δεν είναι ρυθμισμένο.</string>
-  <string name="contributors_error_api_http">Σφάλμα API συντελεστών: %1$d</string>
-  <string name="supporters_error_api_http">Σφάλμα API δωρητών: %1$d</string>
   <!-- Contributor role badges -->
-  <string name="contributor_role_translator">Μεταφραστής</string>
-  <string name="contributor_role_maintainer">Συντηρητής</string>
   <!-- Network / safe API errors -->
   <string name="network_error_empty_response_body">Κενό σώμα απάντησης</string>
   <string name="network_error_unknown">Προέκυψε άγνωστο σφάλμα</string>

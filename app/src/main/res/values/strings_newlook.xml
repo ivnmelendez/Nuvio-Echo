@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Settings -->
-    <string name="beta_settings_group_new_look">New look</string>
     <string name="beta_poster_delay_title">Poster expand delay</string>
     <string name="beta_poster_delay_subtitle">Wait before a poster opens.</string>
     <string name="beta_trailer_delay_title">Trailer start delay</string>
@@ -56,15 +55,6 @@
         <item quantity="one">%d title</item>
         <item quantity="other">%d titles</item>
     </plurals>
-    <string name="home_tag_award_winner">Award Winner</string>
-    <string name="home_tag_airing_now">Airing Now</string>
-    <string name="home_tag_new_episodes">New Episodes Airing</string>
-    <string name="home_tag_new_release">New Release</string>
-    <string name="home_tag_coming_soon">Season %d Coming Soon</string>
-    <string name="home_tag_top_10">Top 10 Today</string>
-    <string name="home_tag_trending">Trending Now</string>
-    <string name="home_tag_popular">Popular</string>
-    <string name="home_tag_highly_rated">Highly Rated</string>
 
     <!-- Notifications -->
     <string name="notif_new_episode_title">New episode today</string>

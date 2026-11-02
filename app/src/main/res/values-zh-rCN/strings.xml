@@ -522,51 +522,6 @@
     <string name="action_back">返回</string>
     <string name="action_close">关闭</string>
 
-    <string name="supporters_contributors_back_button">返回详情</string>
-    <string name="supporter_membership_title">Tivistream 支持者会员</string>
-    <string name="supporter_membership_description">支持 Tivistream 有助于支付基础设施和持续开发的费用，同时让核心体验对所有人保持免费。</string>
-    <string name="supporter_membership_view">查看会员</string>
-    <string name="supporter_membership_manage">管理会员</string>
-    <string name="supporter_membership_refresh">刷新</string>
-    <string name="supporter_membership_refreshing">刷新中</string>
-    <string name="supporter_membership_loading">正在加载会员信息…</string>
-    <string name="supporter_membership_unable_load">无法加载会员状态。请重试。</string>
-    <string name="supporter_membership_you_are">您是</string>
-    <string name="supporter_membership_thank_you">谢谢您。</string>
-    <string name="supporter_membership_supporter_since">自 %1$s 起成为支持者。</string>
-    <string name="supporter_membership_tier_supporter">支持者</string>
-    <string name="supporter_membership_tier_supporter_plus">支持者 Plus</string>
-    <string name="supporter_membership_connected_title">Patreon 已连接</string>
-    <string name="supporter_membership_connected_description">在此 Patreon 账户上未找到有效的 Tivistream 会员等级。查看可用选项，或在更改 Patreon 会员后刷新。</string>
-    <string name="supporter_membership_scan_support">扫描以查看会员</string>
-    <string name="supporter_membership_scan_support_description">在手机上打开支持者会员页面。</string>
-    <string name="supporter_membership_scan_manage">扫描以管理会员</string>
-    <string name="supporter_membership_scan_manage_description">在手机上打开 Patreon 会员设置。</string>
-    <string name="cd_membership_qr">会员页面 QR 码</string>
-    <string name="supporters_tab">支持者</string>
-    <string name="sponsors_tab">赞助商</string>
-    <string name="contributors_tab">贡献者</string>
-    <string name="supporters_loading">正在加载支持者…</string>
-    <string name="supporters_empty">尚未找到支持者。</string>
-    <string name="supporters_error_title">无法加载支持者</string>
-    <string name="supporters_level_supporter">支持者</string>
-    <string name="supporters_level_supporter_plus">支持者+</string>
-    <string name="supporters_since">自 %1$s 起支持 Tivistream</string>
-    <string name="supporters_since_unknown">自豪地支持 Tivistream</string>
-    <string name="supporters_open_donations">打开支持页面</string>
-    <string name="sponsors_loading">正在加载赞助商…</string>
-    <string name="sponsors_empty">尚未找到赞助商。</string>
-    <string name="sponsors_error_title">无法加载赞助商</string>
-    <string name="sponsors_detail_copy">赞助商通过支持开发的各个方面来帮助 Tivistream 前进。</string>
-    <string name="sponsors_channel_unavailable">赞助商频道不可用。</string>
-    <string name="sponsors_open_channel">打开赞助商频道</string>
-    <string name="contributors_loading">正在加载 GitHub 贡献者…</string>
-    <string name="contributors_empty">尚未找到贡献者。</string>
-    <string name="contributors_error_title">无法加载贡献者</string>
-    <string name="contributors_open_github">打开 GitHub 个人资料</string>
-    <string name="contributors_show_kofi_qr">显示 Ko-fi QR 码</string>
-    <string name="contributors_hide_kofi_qr">隐藏 Ko-fi QR 码</string>
-    <string name="contributors_profile_unavailable">GitHub 个人资料链接不可用。</string>
 
     <string name="playback_loading_overlay">加载覆盖层</string>
     <string name="playback_loading_overlay_sub">在出现第一个视频画面之前显示加载画面。</string>
@@ -1663,7 +1618,6 @@
     <string name="cd_trakt_logo">Trakt 标志</string>
     <string name="cd_trakt_qr">Trakt 启用 QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">贡献者支持 QR 码</string>
     <string name="cd_expand">展开 %1$s</string>
     <string name="cd_collapse">折叠 %1$s</string>
 
@@ -2104,16 +2058,8 @@
     <!-- 字幕偏好语言备用文字 -->
 
     <!-- 支持者 / 贡献者 / 赞助商错误 -->
-    <string name="supporters_error_load">无法加载支持者。</string>
-    <string name="contributors_error_load">无法加载贡献者。</string>
-    <string name="sponsors_error_load">无法加载赞助商。</string>
-    <string name="contributors_error_api_not_configured">贡献者 API 未配置。</string>
-    <string name="contributors_error_api_http">贡献者 API 错误：%1$d</string>
-    <string name="supporters_error_api_http">捐赠 API 错误：%1$d</string>
 
     <!-- 贡献者角色徽章 -->
-    <string name="contributor_role_translator">翻译者</string>
-    <string name="contributor_role_maintainer">维护者</string>
 
     <!-- 网络 / 安全 API 错误 -->
     <string name="network_error_empty_response_body">空响应主体</string>

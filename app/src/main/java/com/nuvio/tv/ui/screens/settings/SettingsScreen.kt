@@ -178,7 +178,6 @@ fun SettingsScreen(
     onNavigateToTracking: () -> Unit = {},
     onNavigateToAddons: () -> Unit = {},
     onNavigateToPlugins: () -> Unit = {},
-    onNavigateToSupportersContributors: () -> Unit = {},
     onNavigateToLicensesAttributions: () -> Unit = {},
     experienceModeViewModel: ExperienceModeSettingsViewModel = hiltViewModel()
 ) {
@@ -640,7 +639,6 @@ fun SettingsScreen(
                                     integrationAnimeSkipFocusRequester = integrationAnimeSkipFocusRequester,
                                     onNavigateToAddons = onNavigateToAddons,
                                     onNavigateToPlugins = onNavigateToPlugins,
-                                    onNavigateToSupportersContributors = onNavigateToSupportersContributors,
                                     onNavigateToLicensesAttributions = onNavigateToLicensesAttributions
                                 )
                             }
@@ -776,7 +774,6 @@ fun SettingsScreen(
                             integrationAnimeSkipFocusRequester = integrationAnimeSkipFocusRequester,
                             onNavigateToAddons = onNavigateToAddons,
                             onNavigateToPlugins = onNavigateToPlugins,
-                            onNavigateToSupportersContributors = onNavigateToSupportersContributors,
                             onNavigateToLicensesAttributions = onNavigateToLicensesAttributions
                         )
                     }
@@ -802,7 +799,6 @@ private fun SettingsDetailPane(
     integrationAnimeSkipFocusRequester: FocusRequester,
     onNavigateToAddons: () -> Unit,
     onNavigateToPlugins: () -> Unit,
-    onNavigateToSupportersContributors: () -> Unit,
     onNavigateToLicensesAttributions: () -> Unit
 ) {
     when (selectedCategory) {
@@ -888,7 +884,6 @@ private fun SettingsDetailPane(
             }
         )
         SettingsCategory.ABOUT -> AboutSettingsContent(
-            onNavigateToSupportersContributors = onNavigateToSupportersContributors,
             onNavigateToLicensesAttributions = onNavigateToLicensesAttributions,
             initialFocusRequester = if (allowDetailAutofocus) {
                 contentFocusRequesters[SettingsCategory.ABOUT]

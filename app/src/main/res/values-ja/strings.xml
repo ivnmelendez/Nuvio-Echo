@@ -407,27 +407,6 @@
     <string name="action_none">なし</string>
     <string name="action_close">閉じる</string>
 
-    <string name="supporters_contributors_back_button">詳細に戻る</string>
-    <string name="supporters_tab">サポーター</string>
-    <string name="sponsors_tab">スポンサー</string>
-    <string name="contributors_tab">貢献者</string>
-    <string name="supporters_loading">サポーターを読み込み中…</string>
-    <string name="supporters_empty">まだサポーターが見つかりません</string>
-    <string name="supporters_error_title">サポーターを読み込めませんでした</string>
-    <string name="supporters_open_donations">寄付ページを開く</string>
-    <string name="sponsors_loading">スポンサーを読み込み中…</string>
-    <string name="sponsors_empty">まだスポンサーが見つかりません</string>
-    <string name="sponsors_error_title">スポンサーを読み込めませんでした</string>
-    <string name="sponsors_detail_copy">スポンサーは開発のさまざまな部分を支援することでNuvioを前進させます。</string>
-    <string name="sponsors_channel_unavailable">スポンサーチャンネルは利用できません。</string>
-    <string name="sponsors_open_channel">スポンサーチャンネルを開く</string>
-    <string name="contributors_loading">GitHub貢献者を読み込み中…</string>
-    <string name="contributors_empty">まだ貢献者が見つかりません</string>
-    <string name="contributors_error_title">貢献者を読み込めませんでした</string>
-    <string name="contributors_open_github">GitHubプロフィールを開く</string>
-    <string name="contributors_show_kofi_qr">Ko-fi QRを表示</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi QRを非表示</string>
-    <string name="contributors_profile_unavailable">GitHubプロフィールリンクは利用できません</string>
 
     <string name="playback_loading_overlay">ローディングオーバーレイ</string>
     <string name="playback_loading_overlay_sub">最初のフレームが表示されるまでローディング画面を表示</string>
@@ -1348,7 +1327,6 @@
     <string name="cd_trakt_logo">Traktロゴ</string>
     <string name="cd_trakt_qr">Trakt認証QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">貢献者サポートQRコード</string>
     <string name="cd_expand">%1$sを展開</string>
     <string name="cd_collapse">%1$sを折りたたむ</string>
 
@@ -1746,16 +1724,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">サポーターを読み込めませんでした。</string>
-    <string name="contributors_error_load">貢献者を読み込めませんでした。</string>
-    <string name="sponsors_error_load">スポンサーを読み込めませんでした。</string>
-    <string name="contributors_error_api_not_configured">貢献者APIが設定されていません。</string>
-    <string name="contributors_error_api_http">貢献者APIエラー: %1$d</string>
-    <string name="supporters_error_api_http">寄付APIエラー: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">翻訳者</string>
-    <string name="contributor_role_maintainer">メンテナー</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">空の応答本文</string>

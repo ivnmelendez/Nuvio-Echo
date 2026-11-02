@@ -406,27 +406,6 @@
     <string name="action_none">Нічого</string>
     <string name="action_close">Закрити</string>
 
-    <string name="supporters_contributors_back_button">Назад до деталей</string>
-    <string name="supporters_tab">Спонсори</string>
-    <string name="sponsors_tab">Спонсори</string>
-    <string name="contributors_tab">Учасники</string>
-    <string name="supporters_loading">Завантаження спонсорів…</string>
-    <string name="supporters_empty">Поки що немає спонсорів.</string>
-    <string name="supporters_error_title">Не вдалося завантажити спонсорів</string>
-    <string name="supporters_open_donations">Відкрити сторінку пожертв</string>
-    <string name="sponsors_loading">Завантаження спонсорів…</string>
-    <string name="sponsors_empty">Поки що немає спонсорів.</string>
-    <string name="sponsors_error_title">Не вдалося завантажити спонсорів</string>
-    <string name="sponsors_detail_copy">Спонсори допомагають розвивати Tivistream через підтримку різних аспектів розробки.</string>
-    <string name="sponsors_channel_unavailable">Канал спонсора недоступний.</string>
-    <string name="sponsors_open_channel">Відкрити канал спонсора</string>
-    <string name="contributors_loading">Завантаження учасників GitHub…</string>
-    <string name="contributors_empty">Поки що немає учасників.</string>
-    <string name="contributors_error_title">Не вдалося завантажити учасників</string>
-    <string name="contributors_open_github">Відкрити профіль GitHub</string>
-    <string name="contributors_show_kofi_qr">Показати Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Приховати Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Посилання на профіль GitHub недоступне.</string>
 
     <string name="playback_loading_overlay">Екран завантаження</string>
     <string name="playback_loading_overlay_sub">Показувати екран завантаження до появи першого кадру відео.</string>
@@ -1343,7 +1322,6 @@
     <string name="cd_trakt_logo">Логотип Trakt</string>
     <string name="cd_trakt_qr">QR-код активації Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR-код підтримки учасника</string>
     <string name="cd_expand">Розгорнути %1$s</string>
     <string name="cd_collapse">Згорнути %1$s</string>
 
@@ -1741,16 +1719,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Не вдалося завантажити спонсорів.</string>
-    <string name="contributors_error_load">Не вдалося завантажити учасників.</string>
-    <string name="sponsors_error_load">Не вдалося завантажити спонсорів.</string>
-    <string name="contributors_error_api_not_configured">API учасників не налаштовано.</string>
-    <string name="contributors_error_api_http">Помилка API учасників: %1$d</string>
-    <string name="supporters_error_api_http">Помилка API пожертв: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Перекладач</string>
-    <string name="contributor_role_maintainer">Мейнтейнер</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Порожнє тіло відповіді</string>

@@ -19,7 +19,6 @@ object AppFeaturePolicy {
     /** Metadata-only addon (no streams) installed once at first launch so catalogs, search and details work. */
     val defaultAddonUrls: List<String> = listOf("https://v3-cinemeta.strem.io")
     val lightModeSwitchAvailable: Boolean = false
-    val supportNuvioEnabled: Boolean = false
     val trailerPlaybackMode: TrailerPlaybackMode = TrailerPlaybackMode.EXTERNAL
     val imdbRatingLogoEnabled: Boolean = false
 }

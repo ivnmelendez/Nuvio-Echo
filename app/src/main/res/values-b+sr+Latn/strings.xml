@@ -519,51 +519,6 @@
     <string name="action_back">Nazad</string>
     <string name="action_close">Zatvori</string>
 
-    <string name="supporters_contributors_back_button">Nazad na detalje</string>
-    <string name="supporter_membership_title">Tivistream Supporter članstvo</string>
-    <string name="supporter_membership_description">Podrška Nuvio-u pomaže u pokrivanju troškova infrastrukture i tekućeg razvoja, dok osnovno iskustvo ostaje besplatno za sve.</string>
-    <string name="supporter_membership_view">Pogledaj članstvo</string>
-    <string name="supporter_membership_manage">Upravljaj članstvom</string>
-    <string name="supporter_membership_refresh">Osveži</string>
-    <string name="supporter_membership_refreshing">Osvežavanje</string>
-    <string name="supporter_membership_loading">Učitavanje članstva…</string>
-    <string name="supporter_membership_unable_load">Nije moguće učitati status članstva. Pokušajte ponovo.</string>
-    <string name="supporter_membership_you_are">Vi ste</string>
-    <string name="supporter_membership_thank_you">Hvala vam.</string>
-    <string name="supporter_membership_supporter_since">Podržavalac od %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Supporter</string>
-    <string name="supporter_membership_tier_supporter_plus">Supporter Plus</string>
-    <string name="supporter_membership_connected_title">Patreon je povezan</string>
-    <string name="supporter_membership_connected_description">Na ovom Patreon nalogu nije pronađen aktivan Tivistream nivo. Pogledajte dostupne opcije ili osvežite nakon promene Patreon članstva.</string>
-    <string name="supporter_membership_scan_support">Skenirajte da vidite članstvo</string>
-    <string name="supporter_membership_scan_support_description">Otvorite stranicu Supporter članstva na vašem telefonu.</string>
-    <string name="supporter_membership_scan_manage">Skenirajte da upravljate članstvom</string>
-    <string name="supporter_membership_scan_manage_description">Otvorite podešavanja Patreon članstva na vašem telefonu.</string>
-    <string name="cd_membership_qr">QR kod stranice članstva</string>
-    <string name="supporters_tab">Podržavaoci</string>
-    <string name="sponsors_tab">Sponzori</string>
-    <string name="contributors_tab">Saradnici</string>
-    <string name="supporters_loading">Učitavanje podržavalaca…</string>
-    <string name="supporters_empty">Još nema pronađenih podržavalaca.</string>
-    <string name="supporters_error_title">Učitavanje podržavalaca nije uspelo</string>
-    <string name="supporters_level_supporter">Supporter</string>
-    <string name="supporters_level_supporter_plus">Supporter+</string>
-    <string name="supporters_since">Podržava Tivistream od %1$s</string>
-    <string name="supporters_since_unknown">Ponosno podržava Tivistream</string>
-    <string name="supporters_open_donations">Otvori stranicu za podršku</string>
-    <string name="sponsors_loading">Učitavanje sponzora…</string>
-    <string name="sponsors_empty">Još nema pronađenih sponzora.</string>
-    <string name="sponsors_error_title">Učitavanje sponzora nije uspelo</string>
-    <string name="sponsors_detail_copy">Sponzori pomažu u napretku Nuvio-a kroz podršku u različitim delovima razvoja.</string>
-    <string name="sponsors_channel_unavailable">Kanal sponzora je nedostupan.</string>
-    <string name="sponsors_open_channel">Otvori kanal sponzora</string>
-    <string name="contributors_loading">Učitavanje GitHub saradnika…</string>
-    <string name="contributors_empty">Još nema pronađenih saradnika.</string>
-    <string name="contributors_error_title">Učitavanje saradnika nije uspelo</string>
-    <string name="contributors_open_github">Otvori GitHub profil</string>
-    <string name="contributors_show_kofi_qr">Prikaži Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Sakrij Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Veza za GitHub profil je nedostupna.</string>
 
     <string name="playback_loading_overlay">Preklop učitavanja</string>
     <string name="playback_loading_overlay_sub">Prikazuj ekran za učitavanje dok se ne pojavi prvi kadar videa.</string>
@@ -1608,7 +1563,6 @@
     <string name="cd_trakt_logo">Trakt logotip</string>
     <string name="cd_trakt_qr">QR kod za Trakt aktivaciju</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR kod za podršku saradnicima</string>
     <string name="cd_expand">Proširi %1$s</string>
     <string name="cd_collapse">Skupi %1$s</string>
 
@@ -2049,16 +2003,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Učitavanje podržavalaca nije uspelo.</string>
-    <string name="contributors_error_load">Učitavanje saradnika nije uspelo.</string>
-    <string name="sponsors_error_load">Učitavanje sponzora nije uspelo.</string>
-    <string name="contributors_error_api_not_configured">API za saradnike nije podešen.</string>
-    <string name="contributors_error_api_http">Greška API-ja za saradnike: %1$d</string>
-    <string name="supporters_error_api_http">Greška API-ja za donacije: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Prevodilac</string>
-    <string name="contributor_role_maintainer">Održavalac</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Prazno telo odgovora</string>

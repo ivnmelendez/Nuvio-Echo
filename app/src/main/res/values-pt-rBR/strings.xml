@@ -516,51 +516,6 @@
     <string name="action_none">Nenhum</string>
     <string name="action_close">Fechar</string>
 
-    <string name="supporters_contributors_back_button">Voltar para detalhes</string>
-    <string name="supporter_membership_title">Assinatura de Apoio do Tivistream</string>
-    <string name="supporter_membership_description">Apoiar o Tivistream ajuda a cobrir custos de infraestrutura e o desenvolvimento contínuo, mantendo a experiência principal gratuita para todos.</string>
-    <string name="supporter_membership_view">Ver assinatura</string>
-    <string name="supporter_membership_manage">Gerenciar assinatura</string>
-    <string name="supporter_membership_refresh">Atualizar</string>
-    <string name="supporter_membership_refreshing">Atualizando</string>
-    <string name="supporter_membership_loading">Carregando assinatura…</string>
-    <string name="supporter_membership_unable_load">Não foi possível carregar o status da assinatura. Tente novamente.</string>
-    <string name="supporter_membership_you_are">Você é um(a)</string>
-    <string name="supporter_membership_thank_you">Muito obrigado.</string>
-    <string name="supporter_membership_supporter_since">Apoiador(a) desde %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Apoiador</string>
-    <string name="supporter_membership_tier_supporter_plus">Apoiador Plus</string>
-    <string name="supporter_membership_connected_title">Patreon conectado</string>
-    <string name="supporter_membership_connected_description">Nenhum nível ativo do Tivistream foi encontrado nesta conta do Patreon. Veja as opções disponíveis ou atualize após alterar sua assinatura no Patreon.</string>
-    <string name="supporter_membership_scan_support">Escaneie para ver a assinatura</string>
-    <string name="supporter_membership_scan_support_description">Abra a página de Assinatura de Apoio no seu celular.</string>
-    <string name="supporter_membership_scan_manage">Escaneie para gerenciar a assinatura</string>
-    <string name="supporter_membership_scan_manage_description">Abra as configurações de assinatura do Patreon no seu celular.</string>
-    <string name="cd_membership_qr">QR Code da página de assinatura</string>
-    <string name="supporters_tab">Apoiadores</string>
-    <string name="sponsors_tab">Patrocinadores</string>
-    <string name="contributors_tab">Colaboradores</string>
-    <string name="supporters_loading">Carregando apoiadores…</string>
-    <string name="supporters_empty">Nenhum apoiador encontrado ainda.</string>
-    <string name="supporters_error_title">Não foi possível carregar os apoiadores</string>
-    <string name="supporters_level_supporter">Apoiador</string>
-    <string name="supporters_level_supporter_plus">Apoiador+</string>
-    <string name="supporters_since">Apoiando o Tivistream desde %1$s</string>
-    <string name="supporters_since_unknown">Apoiando o Tivistream com orgulho</string>
-    <string name="supporters_open_donations">Abrir página de apoio</string>
-    <string name="sponsors_loading">Carregando patrocinadores…</string>
-    <string name="sponsors_empty">Nenhum patrocinador encontrado ainda.</string>
-    <string name="sponsors_error_title">Não foi possível carregar patrocinadores</string>
-    <string name="sponsors_detail_copy">Patrocinadores ajudam o Tivistream a avançar no desenvolvimento.</string>
-    <string name="sponsors_channel_unavailable">Canal de patrocinadores indisponível.</string>
-    <string name="sponsors_open_channel">Abrir canal de patrocinadores</string>
-    <string name="contributors_loading">Carregando colaboradores do GitHub…</string>
-    <string name="contributors_empty">Nenhum colaborador encontrado ainda.</string>
-    <string name="contributors_error_title">Não foi possível carregar os colaboradores</string>
-    <string name="contributors_open_github">Abrir Perfil no GitHub</string>
-    <string name="contributors_show_kofi_qr">Mostrar QR do Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Ocultar QR do Ko-fi</string>
-    <string name="contributors_profile_unavailable">Link do perfil no GitHub indisponível.</string>
     
     <string name="playback_loading_overlay">Tela de carregamento</string>
     <string name="playback_loading_overlay_sub">Exibir até o vídeo iniciar</string>
@@ -1610,7 +1565,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">QR de ativação Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR de apoio ao colaborador</string>
     <string name="cd_expand">Expandir %1$s</string>
     <string name="cd_collapse">Recolher %1$s</string>
 
@@ -2051,16 +2005,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Não foi possível carregar apoiadores.</string>
-    <string name="contributors_error_load">Não foi possível carregar contribuidores.</string>
-    <string name="sponsors_error_load">Não foi possível carregar patrocinadores.</string>
-    <string name="contributors_error_api_not_configured">API de contribuidores não configurada.</string>
-    <string name="contributors_error_api_http">Erro na API de contribuidores: %1$d</string>
-    <string name="supporters_error_api_http">Erro na API de doações: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Tradutor</string>
-    <string name="contributor_role_maintainer">Mantenedor</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Corpo de resposta vazio</string>

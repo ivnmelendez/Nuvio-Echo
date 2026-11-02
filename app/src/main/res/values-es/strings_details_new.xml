@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="nd_rate_like">Me gusta</string>
-    <string name="nd_rate_love">¡Me encanta!</string>
-    <string name="nd_rate_dislike">No es para mí</string>
-    <string name="nd_rate_saved">%1$s ✓</string>
-    <string name="nd_watchlist_add">Agregar a mi lista</string>
-    <string name="nd_watchlist_on">En tu lista</string>
     <string name="nd_mark_watched">Marcar como visto</string>
     <string name="nd_watched">Visto</string>
 
     <string name="nd_play">Reproducir</string>
     <string name="nd_menu_episodes">Episodios</string>
-    <string name="nd_menu_cast">Reparto y equipo</string>
     <string name="nd_menu_trailer">Ver tráiler</string>
-    <string name="nd_menu_random">Episodio aleatorio</string>
     <plurals name="nd_seasons_count">
         <item quantity="one">%d temporada</item>
         <item quantity="other">%d temporadas</item>
@@ -48,7 +40,6 @@
     <string name="nd_reviews_loading">Cargando reseñas…</string>
     <string name="nd_reviews_empty">Aún no hay reseñas.</string>
     <string name="nd_review_score">%1$d/10</string>
-    <string name="nd_review_source_tmdb">TMDB</string>
 
     <string name="nd_panel_seasons_episodes">%1$s · %2$d episodios</string>
     <string name="nd_panel_season">Temporada %1$d</string>
@@ -89,9 +80,4 @@
     </plurals>
     <string name="nd_trailer_untitled">Tráiler</string>
 
-    <string name="nd_bin_add">Agregar a una lista</string>
-    <string name="nd_bin_in">En %1$s</string>
-    <string name="nd_bin_in_many">En %1$d listas</string>
-    <string name="nd_bin_picker_title">Agregar a una lista</string>
-    <string name="nd_bin_new">Nueva lista</string>
 </resources>

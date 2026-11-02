@@ -419,27 +419,6 @@
     <string name="action_close">Zavrieť</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Späť na detaily</string>
-    <string name="supporters_tab">Podporovatelia</string>
-    <string name="sponsors_tab">Sponzori</string>
-    <string name="contributors_tab">Prispievatelia</string>
-    <string name="supporters_loading">Načítavajú sa podporovatelia…</string>
-    <string name="supporters_empty">Zatiaľ neboli nájdení žiadni podporovatelia.</string>
-    <string name="supporters_error_title">Nepodarilo sa načítať podporovateľov</string>
-    <string name="supporters_open_donations">Otvoriť stránku darov</string>
-    <string name="sponsors_loading">Načítavajú sa sponzori…</string>
-    <string name="sponsors_empty">Zatiaľ neboli nájdení žiadni sponzori.</string>
-    <string name="sponsors_error_title">Nepodarilo sa načítať sponzorov</string>
-    <string name="sponsors_detail_copy">Sponzori pomáhajú posúvať Tivistream vpred prostredníctvom podpory v rôznych častiach vývoja.</string>
-    <string name="sponsors_channel_unavailable">Kanál sponzora nie je dostupný.</string>
-    <string name="sponsors_open_channel">Otvoriť kanál sponzora</string>
-    <string name="contributors_loading">Načítavajú sa GitHub prispievatelia…</string>
-    <string name="contributors_empty">Zatiaľ neboli nájdení žiadni prispievatelia.</string>
-    <string name="contributors_error_title">Nepodarilo sa načítať prispievateľov</string>
-    <string name="contributors_open_github">Otvoriť GitHub profil</string>
-    <string name="contributors_show_kofi_qr">Zobraziť Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Skryť Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Odkaz na GitHub profil nie je dostupný.</string>
    
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Načítavacia obrazovka</string>
@@ -1321,7 +1300,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">Trakt aktivačné QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR kód podpory prispievateľa</string>
     <string name="cd_expand">Rozbaliť %1$s</string>
     <string name="cd_collapse">Zbaliť %1$s</string>
 
@@ -1720,16 +1698,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Nepodarilo sa načítať podporovateľov.</string>
-    <string name="contributors_error_load">Nepodarilo sa načítať prispievateľov.</string>
-    <string name="sponsors_error_load">Nepodarilo sa načítať sponzorov.</string>
-    <string name="contributors_error_api_not_configured">API prispievateľov nie je nakonfigurované.</string>
-    <string name="contributors_error_api_http">Chyba API prispievateľov: %1$d</string>
-    <string name="supporters_error_api_http">Chyba API darov: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Prekladateľ</string>
-    <string name="contributor_role_maintainer">Správca</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Prázdne telo odpovede</string>
@@ -2133,30 +2103,6 @@
     <string name="theme_color_rose_gold">Ružové zlato</string>
     <string name="theme_color_arctic_blue">Arktická</string>
     <string name="theme_color_graphite">Grafitová</string>
-    <string name="supporter_membership_title">Členstvo podporovateľa Tivistream</string>
-    <string name="supporter_membership_description">Podpora aplikácie Tivistream pomáha pokrývať náklady na infraštruktúru a nepretržitý vývoj, pričom základné funkcie ostávajú pre všetkých zadarmo.</string>
-    <string name="supporter_membership_view">Zobraziť členstvo</string>
-    <string name="supporter_membership_manage">Spravovať členstvo</string>
-    <string name="supporter_membership_refresh">Obnoviť</string>
-    <string name="supporter_membership_refreshing">Obnovuje sa</string>
-    <string name="supporter_membership_loading">Načítava sa členstvo…</string>
-    <string name="supporter_membership_unable_load">Nepodarilo sa načítať stav členstva. Skúste to znova.</string>
-    <string name="supporter_membership_you_are">Ste</string>
-    <string name="supporter_membership_thank_you">Ďakujeme.</string>
-    <string name="supporter_membership_supporter_since">Podporovateľom od %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Podporovateľ</string>
-    <string name="supporter_membership_tier_supporter_plus">Podporovateľ+</string>
-    <string name="supporter_membership_connected_title">Patreon je pripojený</string>
-    <string name="supporter_membership_connected_description">Na tomto účte Patreon sa nenašla žiadna aktívna úroveň Tivistream. Pozrite si dostupné možnosti alebo obnovte stav po zmene členstva na Patreone.</string>
-    <string name="supporter_membership_scan_support">Naskenujte pre zobrazenie členstva</string>
-    <string name="supporter_membership_scan_support_description">Otvorte stránku Členstvo podporovateľa na svojom telefóne.</string>
-    <string name="supporter_membership_scan_manage">Naskenujte pre správu členstva</string>
-    <string name="supporter_membership_scan_manage_description">Otvorte nastavenia členstva Patreon na svojom telefóne.</string>
-    <string name="cd_membership_qr">QR kód stránky členstva</string>
-    <string name="supporters_level_supporter">Podporovateľ</string>
-    <string name="supporters_level_supporter_plus">Podporovateľ+</string>
-    <string name="supporters_since">Podporuje Tivistream od %1$s</string>
-    <string name="supporters_since_unknown">Hrdý podporovateľ Tivistream</string>
     <string name="audio_enable_downmix_subtitle">Používa trasu downmixu cez FFmpeg. Vyžaduje Uprednostniť dekodéry aplikácie (FFmpeg). Keď je funkcia vypnutá, zvuk sa riadi pôvodnou trasou zariadenia/Androidu.</string>
     <string name="sub_strip_sdh">Odstrániť SDH titulky</string>
     <string name="sub_strip_sdh_desc">Skryť opisy zvukov a označenia rečníkov z textových titulkov</string>

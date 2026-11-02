@@ -380,27 +380,6 @@
     <string name="action_close">Fermer</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Retour aux détails</string>
-    <string name="supporters_tab">Soutiens</string>
-    <string name="sponsors_tab">Sponsors</string>
-    <string name="contributors_tab">Contributeurs</string>
-    <string name="supporters_loading">Chargement des soutiens…</string>
-    <string name="supporters_empty">Aucun soutien trouvé pour le moment.</string>
-    <string name="supporters_error_title">Impossible de charger les soutiens</string>
-    <string name="supporters_open_donations">Ouvrir la page des dons</string>
-    <string name="sponsors_loading">Chargement des sponsors…</string>
-    <string name="sponsors_empty">Aucun sponsor trouvé pour le moment.</string>
-    <string name="sponsors_error_title">Impossible de charger les sponsors</string>
-    <string name="sponsors_detail_copy">Les sponsors soutiennent Tivistream en finançant divers aspects du développement.</string>
-    <string name="sponsors_channel_unavailable">Canal sponsor indisponible.</string>
-    <string name="sponsors_open_channel">Ouvrir le canal sponsor</string>
-    <string name="contributors_loading">Chargement des contributeurs GitHub…</string>
-    <string name="contributors_empty">Aucun contributeur trouvé pour le moment.</string>
-    <string name="contributors_error_title">Impossible de charger les contributeurs</string>
-    <string name="contributors_open_github">Ouvrir le profil GitHub</string>
-    <string name="contributors_show_kofi_qr">Afficher le code QR Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Masquer le code QR Ko-fi</string>
-    <string name="contributors_profile_unavailable">Lien du profil GitHub indisponible.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Écran de chargement</string>
@@ -1291,7 +1270,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">Code QR d’activation Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Code QR de soutien au contributeur</string>
     <string name="cd_expand">Développer %1$s</string>
     <string name="cd_collapse">Réduire %1$s</string>
 
@@ -1736,16 +1714,8 @@
     <!-- Repli langue préférée des sous-titres -->
 
     <!-- Erreurs supporters / contributeurs / sponsors -->
-    <string name="supporters_error_load">Impossible de charger les supporters.</string>
-    <string name="contributors_error_load">Impossible de charger les contributeurs.</string>
-    <string name="sponsors_error_load">Impossible de charger les sponsors.</string>
-    <string name="contributors_error_api_not_configured">L’API contributeurs n’est pas configurée.</string>
-    <string name="contributors_error_api_http">Erreur API contributeurs&#160;: %1$d</string>
-    <string name="supporters_error_api_http">Erreur API dons&#160;: %1$d</string>
 
     <!-- Badges de rôle des contributeurs -->
-    <string name="contributor_role_translator">Traducteur</string>
-    <string name="contributor_role_maintainer">Mainteneur</string>
 
     <!-- Erreurs réseau / safe API -->
     <string name="network_error_empty_response_body">Réponse vide</string>

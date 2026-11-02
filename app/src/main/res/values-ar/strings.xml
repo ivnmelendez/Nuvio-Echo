@@ -415,27 +415,6 @@
     <string name="action_none">بدون</string>
     <string name="action_close">إغلاق</string>
 
-    <string name="supporters_contributors_back_button">العودة للتفاصيل</string>
-    <string name="supporters_tab">الداعمون</string>
-    <string name="sponsors_tab">المموّلون</string>
-    <string name="contributors_tab">المساهمون</string>
-    <string name="supporters_loading">جاري تحميل الداعمين…</string>
-    <string name="supporters_empty">لم يتم العثور على داعمين بعد.</string>
-    <string name="supporters_error_title">تعذر تحميل قائمة الداعمين</string>
-    <string name="supporters_open_donations">فتح صفحة التبرعات</string>
-    <string name="sponsors_loading">جاري تحميل المموّلون…</string>
-    <string name="sponsors_empty">لم يتم العثور على ممولين بعد.</string>
-    <string name="sponsors_error_title">تعذر تحميل قائمة المموّلون</string>
-    <string name="sponsors_detail_copy">يساعد المموّلون في دفع Tivistream إلى الأمام من خلال الدعم عبر مختلف أجزاء التطوير.</string>
-    <string name="sponsors_channel_unavailable">قناة المموّلون غير متاحة.</string>
-    <string name="sponsors_open_channel">فتح قناة المموّلون</string>
-    <string name="contributors_loading">جاري تحميل مساهمي GitHub…</string>
-    <string name="contributors_empty">لم يتم العثور على مساهمين بعد.</string>
-    <string name="contributors_error_title">تعذر تحميل قائمة المساهمين</string>
-    <string name="contributors_open_github">فتح الملف الشخصي على GitHub</string>
-    <string name="contributors_show_kofi_qr">إظهار رمز QR لـ Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">إخفاء رمز QR لـ Ko-fi</string>
-    <string name="contributors_profile_unavailable">رابط ملف GitHub غير متاح.</string>
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">واجهة التحميل</string>
     <string name="playback_loading_overlay_sub">إظهار شاشة التحميل حتى يظهر أول إطار للفيديو.</string>
@@ -1363,7 +1342,6 @@
     <string name="cd_trakt_logo">شعار Trakt</string>
     <string name="cd_trakt_qr">رمز QR لتفعيل Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">رمز QR لدعم المساهمين</string>
     <string name="cd_expand">توسيع %1$s</string>
     <string name="cd_collapse">طي %1$s</string>
 
@@ -1762,16 +1740,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">تعذر تحميل قائمة الداعمين.</string>
-    <string name="contributors_error_load">تعذر تحميل قائمة المساهمين.</string>
-    <string name="sponsors_error_load">تعذر تحميل قائمة الرعاة.</string>
-    <string name="contributors_error_api_not_configured">واجهة المساهمين (Contributors API) غير مهيأة.</string>
-    <string name="contributors_error_api_http">خطأ في واجهة المساهمين البرمجية: %1$d</string>
-    <string name="supporters_error_api_http">خطأ في واجهة التبرعات البرمجية: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">مترجم</string>
-    <string name="contributor_role_maintainer">قائم على المشروع</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">استجابة الشبكة فارغة</string>
@@ -2111,10 +2081,6 @@
     <string name="sub_strip_sdh">إزالة ترجمات SDH</string>
     <string name="sub_strip_sdh_desc">إخفاء أوصاف الأصوات وأسماء المتحدثين من الترجمات النصية</string>
     <string name="subtitle_delay_reset">تصفير</string>
-    <string name="supporters_level_supporter">داعم</string>
-    <string name="supporters_level_supporter_plus">داعم+</string>
-    <string name="supporters_since">يدعم Tivistream منذ %1$s</string>
-    <string name="supporters_since_unknown">يدعم Tivistream بكل فخر</string>
     <string name="theme_color_arctic_blue">أزرق قطبي</string>
     <string name="theme_color_gold">ذهبي</string>
     <string name="theme_color_graphite">جرافيت</string>

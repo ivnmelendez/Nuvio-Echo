@@ -525,51 +525,6 @@
     <string name="action_back">חזרה</string>
     <string name="action_close">סגירה</string>
 
-    <string name="supporters_contributors_back_button">חזרה לפרטים</string>
-    <string name="supporter_membership_title">מנויים תומכי Tivistream</string>
-    <string name="supporter_membership_description">תמיכה ב-Nuvio מסייעת לכסות תשתית ופיתוח מתמשך, תוך שמירה על החוויה המרכזית חינמית לכולם.</string>
-    <string name="supporter_membership_view">צפייה במנויים</string>
-    <string name="supporter_membership_manage">ניהול מנויים</string>
-    <string name="supporter_membership_refresh">ריענון</string>
-    <string name="supporter_membership_refreshing">מרענן</string>
-    <string name="supporter_membership_loading">טוען מנויים…</string>
-    <string name="supporter_membership_unable_load">לא ניתן לטעון את סטטוס המנויים. כדאי לנסות שוב.</string>
-    <string name="supporter_membership_you_are">הדרגה שלך:</string>
-    <string name="supporter_membership_thank_you">תודה.</string>
-    <string name="supporter_membership_supporter_since">תומך מאז %1$s.</string>
-    <string name="supporter_membership_tier_supporter">תומך</string>
-    <string name="supporter_membership_tier_supporter_plus">תומך פלוס</string>
-    <string name="supporter_membership_connected_title">Patreon מחובר</string>
-    <string name="supporter_membership_connected_description">לא נמצאה דרגת Tivistream פעילה בחשבון ה-Patreon הזה. אפשר לצפות באפשרויות הזמינות או לרענן לאחר שינוי מנוי ה-Patreon.</string>
-    <string name="supporter_membership_scan_support">סריקה כדי לצפות במנויים</string>
-    <string name="supporter_membership_scan_support_description">יש לפתוח את עמוד המנויים התומכים בטלפון.</string>
-    <string name="supporter_membership_scan_manage">סריקה כדי לנהל את המנוי</string>
-    <string name="supporter_membership_scan_manage_description">יש לפתוח את הגדרות מנוי ה-Patreon בטלפון.</string>
-    <string name="cd_membership_qr">קוד QR לעמוד המנוי</string>
-    <string name="supporters_tab">תומכים</string>
-    <string name="sponsors_tab">נותני חסות</string>
-    <string name="contributors_tab">תורמים</string>
-    <string name="supporters_loading">טוען תומכים…</string>
-    <string name="supporters_empty">עדיין לא נמצאו תומכים.</string>
-    <string name="supporters_error_title">לא ניתן לטעון תומכים</string>
-    <string name="supporters_level_supporter">תומך</string>
-    <string name="supporters_level_supporter_plus">תומך+</string>
-    <string name="supporters_since">תומך ב-Nuvio מאז %1$s</string>
-    <string name="supporters_since_unknown">תומך ב-Nuvio בגאווה</string>
-    <string name="supporters_open_donations">פתיחת דף תרומות</string>
-    <string name="sponsors_loading">טוען נותני חסות…</string>
-    <string name="sponsors_empty">עדיין לא נמצאו נותני חסות.</string>
-    <string name="sponsors_error_title">לא ניתן לטעון נותני חסות</string>
-    <string name="sponsors_detail_copy">נותני החסות עוזרים לקדם את Tivistream קדימה דרך תמיכה בחלקים השונים של הפיתוח.</string>
-    <string name="sponsors_channel_unavailable">ערוץ נותני החסות אינו זמין.</string>
-    <string name="sponsors_open_channel">פתיחת ערוץ נותני החסות</string>
-    <string name="contributors_loading">טוען תורמי GitHub…</string>
-    <string name="contributors_empty">עדיין לא נמצאו תורמים.</string>
-    <string name="contributors_error_title">לא ניתן לטעון תורמים</string>
-    <string name="contributors_open_github">פתיחת פרופיל GitHub</string>
-    <string name="contributors_show_kofi_qr">הצגת QR של Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">הסתרת QR Ko-fi</string>
-    <string name="contributors_profile_unavailable">קישור לפרופיל GitHub אינו זמין.</string>
 
     <string name="playback_section_player_title">נגן</string>
     <string name="playback_section_player_title_desc">נגן ברירת מחדל, מנוע פנימי וחלופה במקרה שגיאה.</string>
@@ -1710,7 +1665,6 @@
     <string name="cd_trakt_logo">Trakt לוגו</string>
     <string name="cd_trakt_qr">קוד QR להפעלת Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">קוד QR לתמיכה בתורם</string>
     <string name="cd_expand">הרחבת %1$s</string>
     <string name="cd_collapse">כיווץ %1$s</string>
 
@@ -2152,16 +2106,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">לא ניתן לטעון תומכים.</string>
-    <string name="contributors_error_load">לא ניתן לטעון תורמים.</string>
-    <string name="sponsors_error_load">לא ניתן לטעון נותני חסות.</string>
-    <string name="contributors_error_api_not_configured">ה-API של התורמים אינו מוגדר.</string>
-    <string name="contributors_error_api_http">שגיאת API של תורמים: %1$d</string>
-    <string name="supporters_error_api_http">שגיאת API של תרומות: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">מתרגם/ת</string>
-    <string name="contributor_role_maintainer">מתחזק/ת</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">גוף תגובה ריק</string>

@@ -455,31 +455,6 @@
     <string name="action_none">Asnjë</string>
     <string name="action_back">Kthehu</string>
     <string name="action_close">Mbyll</string>
-    <string name="supporters_contributors_back_button">Kthehu te detajet</string>
-    <string name="supporters_tab">Mbështetësit</string>
-    <string name="sponsors_tab">Sponsorët</string>
-    <string name="contributors_tab">Kontribuesit</string>
-    <string name="supporters_loading">Duke ngarkuar mbështetësit…</string>
-    <string name="supporters_empty">Ende nuk u gjetën mbështetës.</string>
-    <string name="supporters_error_title">Nuk mund të ngarkohen mbështetësit</string>
-    <string name="supporters_level_supporter">Mbështetës</string>
-    <string name="supporters_level_supporter_plus">Mbështetës+</string>
-    <string name="supporters_since">Mbështet Tivistream që nga %1$s</string>
-    <string name="supporters_since_unknown">Duke mbështetur me krenari Tivistream</string>
-    <string name="supporters_open_donations">Hap faqen e mbështetjes</string>
-    <string name="sponsors_loading">Duke ngarkuar sponsorët…</string>
-    <string name="sponsors_empty">Ende nuk u gjetën sponsorë.</string>
-    <string name="sponsors_error_title">Nuk mund të ngarkohen sponsorët</string>
-    <string name="sponsors_detail_copy">Sponsorët ndihmojnë Tivistream të ecë përpara duke mbështetur pjesë të ndryshme të zhvillimit.</string>
-    <string name="sponsors_channel_unavailable">Kanali i sponsorit nuk është i disponueshëm.</string>
-    <string name="sponsors_open_channel">Hap kanalin e sponsorit</string>
-    <string name="contributors_loading">Duke ngarkuar kontribuesit e GitHub…</string>
-    <string name="contributors_empty">Ende nuk u gjetën kontribues.</string>
-    <string name="contributors_error_title">Nuk mund të ngarkohen kontribuesit</string>
-    <string name="contributors_open_github">Hap profilin në GitHub</string>
-    <string name="contributors_show_kofi_qr">Shfaq QR-në e Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Fshih QR-në e Ko-fi</string>
-    <string name="contributors_profile_unavailable">Lidhja e profilit GitHub nuk është e disponueshme.</string>
     <string name="playback_loading_overlay">Mbivendosja e ngarkimit</string>
     <string name="playback_loading_overlay_sub">Shfaq ekranin e ngarkimit derisa të shfaqet kuadri i parë i videos.</string>
     <string name="playback_pause_overlay">Mbivendosja e pauzës</string>
@@ -1416,7 +1391,6 @@
     <string name="cd_trakt_logo">Logoja e Trakt</string>
     <string name="cd_trakt_qr">QR-ja e aktivizimit Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Kodi QR për mbështetjen e kontribuesit</string>
     <string name="cd_expand">Zgjero %1$s</string>
     <string name="cd_collapse">Palos %1$s</string>
     <string name="debug_generate_description">Artikulli %1$s #%2$d i gjeneruar për debug</string>
@@ -1841,15 +1815,7 @@
     <string name="web_error_invalid_request_body">Trup kërkese i pavlefshëm</string>
     <!-- Subtitle preferred language fallback -->
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Nuk mund të ngarkohen mbështetësit.</string>
-    <string name="contributors_error_load">Nuk mund të ngarkohen kontribuesit.</string>
-    <string name="sponsors_error_load">Nuk mund të ngarkohen sponsorët.</string>
-    <string name="contributors_error_api_not_configured">API-ja e kontribuesve nuk është konfiguruar.</string>
-    <string name="contributors_error_api_http">Gabim i API-së së kontribuesve: %1$d</string>
-    <string name="supporters_error_api_http">Gabim i API-së së donacioneve: %1$d</string>
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Përkthyes</string>
-    <string name="contributor_role_maintainer">Mirëmbajtës</string>
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Trup përgjigjeje bosh</string>
     <string name="network_error_unknown">Ndodhi një gabim i panjohur</string>

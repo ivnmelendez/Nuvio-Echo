@@ -470,31 +470,6 @@
     <string name="action_back">Vissza</string>
     <string name="action_close">Bezárás</string>
 
-    <string name="supporters_contributors_back_button">Vissza a részletekhez</string>
-    <string name="supporters_tab">Támogatók</string>
-    <string name="sponsors_tab">Szponzorok</string>
-    <string name="contributors_tab">Közreműködők</string>
-    <string name="supporters_loading">Támogatók betöltése\u2026</string>
-    <string name="supporters_empty">Még nincsenek támogatók.</string>
-    <string name="supporters_error_title">A támogatók betöltése sikertelen</string>
-    <string name="supporters_level_supporter">Támogató</string>
-    <string name="supporters_level_supporter_plus">Támogató+</string>
-    <string name="supporters_since">A Tivistream támogatója %1$s óta</string>
-    <string name="supporters_since_unknown">A Tivistream büszke támogatója</string>
-    <string name="supporters_open_donations">Támogatási oldal megnyitása</string>
-    <string name="sponsors_loading">Szponzorok betöltése…</string>
-    <string name="sponsors_empty">Még nincsenek szponzorok.</string>
-    <string name="sponsors_error_title">A szponzorok betöltése sikertelen</string>
-    <string name="sponsors_detail_copy">A szponzorok segítenek előrevinni a Nuvio-t a fejlesztés különböző részeinek támogatásával.</string>
-    <string name="sponsors_channel_unavailable">A szponzorációs csatorna nem érhető el.</string>
-    <string name="sponsors_open_channel">Szponzorációs csatorna megnyitása</string>
-    <string name="contributors_loading">GitHub közreműködők betöltése\u2026</string>
-    <string name="contributors_empty">Még nincsenek közreműködők.</string>
-    <string name="contributors_error_title">A közreműködők betöltése sikertelen</string>
-    <string name="contributors_open_github">GitHub profil megnyitása</string>
-    <string name="contributors_show_kofi_qr">Ko-fi QR-kód megjelenítése</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi QR-kód elrejtése</string>
-    <string name="contributors_profile_unavailable">A GitHub profil linkje nem érhető el.</string>
 
     <string name="playback_loading_overlay">Betöltési réteg</string>
     <string name="playback_loading_overlay_sub">Betöltőképernyő megjelenítése az első képkocka megjelenéséig.</string>
@@ -1499,7 +1474,6 @@
     <string name="cd_trakt_logo">Trakt logó</string>
     <string name="cd_trakt_qr">Trakt aktivációs QR-kód</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Közreműködői támogatási QR-kód</string>
     <string name="cd_expand">Kibontás: %1$s</string>
     <string name="cd_collapse">Összecsukás: %1$s</string>
 
@@ -1952,16 +1926,8 @@ Próbálj meg egy másik forrást. [%1$s]</string>
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">A támogatók betöltése sikertelen.</string>
-    <string name="contributors_error_load">A közreműködők betöltése sikertelen.</string>
-    <string name="sponsors_error_load">A szponzorok betöltése sikertelen.</string>
-    <string name="contributors_error_api_not_configured">A közreműködők API nincs konfigurálva.</string>
-    <string name="contributors_error_api_http">Közreműködők API hiba: %1$d</string>
-    <string name="supporters_error_api_http">Adományok API hiba: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Fordító</string>
-    <string name="contributor_role_maintainer">Karbantartó</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Üres választörzs</string>

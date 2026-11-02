@@ -407,27 +407,6 @@
     <string name="action_none">Ingen</string>
     <string name="action_close">Luk</string>
 
-    <string name="supporters_contributors_back_button">Tilbage til detaljer</string>
-    <string name="supporters_tab">Støtter</string>
-    <string name="sponsors_tab">Sponsorer</string>
-    <string name="contributors_tab">Bidragydere</string>
-    <string name="supporters_loading">Indlæser støtter…</string>
-    <string name="supporters_empty">Ingen støtter fundet endnu.</string>
-    <string name="supporters_error_title">Kunne ikke indlæse støtter</string>
-    <string name="supporters_open_donations">Åbn donationsside</string>
-    <string name="sponsors_loading">Indlæser sponsorer…</string>
-    <string name="sponsors_empty">Ingen sponsorer fundet endnu.</string>
-    <string name="sponsors_error_title">Kunne ikke indlæse sponsorer</string>
-    <string name="sponsors_detail_copy">Sponsorer hjælper med at drive Tivistream fremad gennem støtte på tværs af de forskellige dele af udviklingen.</string>
-    <string name="sponsors_channel_unavailable">Sponsorkanal utilgængelig.</string>
-    <string name="sponsors_open_channel">Åbn sponsorkanal</string>
-    <string name="contributors_loading">Indlæser GitHub-bidragydere…</string>
-    <string name="contributors_empty">Ingen bidragydere fundet endnu.</string>
-    <string name="contributors_error_title">Kunne ikke indlæse bidragydere</string>
-    <string name="contributors_open_github">Åbn GitHub-profil</string>
-    <string name="contributors_show_kofi_qr">Vis Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Skjul Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">GitHub-profillink utilgængeligt.</string>
 
     <string name="playback_loading_overlay">Indlæsningsoverlay</string>
     <string name="playback_loading_overlay_sub">Vis indlæsningsskærm indtil første videobillede vises.</string>
@@ -1351,7 +1330,6 @@
     <string name="cd_trakt_logo">Trakt-logo</string>
     <string name="cd_trakt_qr">Trakt-aktiverings-QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Bidragsyder-support-QR-kode</string>
     <string name="cd_expand">Udvid %1$s</string>
     <string name="cd_collapse">Skjul %1$s</string>
 
@@ -1749,16 +1727,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Kunne ikke indlæse støtter.</string>
-    <string name="contributors_error_load">Kunne ikke indlæse bidragsydere.</string>
-    <string name="sponsors_error_load">Kunne ikke indlæse sponsorer.</string>
-    <string name="contributors_error_api_not_configured">Bidragsyder-API er ikke konfigureret.</string>
-    <string name="contributors_error_api_http">Bidragsyder-API-fejl: %1$d</string>
-    <string name="supporters_error_api_http">Donationer-API-fejl: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Oversætter</string>
-    <string name="contributor_role_maintainer">Vedligeholder</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Tom svartekst</string>

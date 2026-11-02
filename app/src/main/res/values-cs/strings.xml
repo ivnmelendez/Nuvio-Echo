@@ -436,27 +436,6 @@
     <string name="action_none">Žádné</string>
     <string name="action_close">Zavřít</string>
 
-    <string name="supporters_contributors_back_button">Zpět na podrobnosti</string>
-    <string name="supporters_tab">Podporovatelé</string>
-    <string name="sponsors_tab">Sponzoři</string>
-    <string name="contributors_tab">Přispěvatelé</string>
-    <string name="supporters_loading">Načítání podporovatelů…</string>
-    <string name="supporters_empty">Zatím žádní podporovatelé nenalezeni.</string>
-    <string name="supporters_error_title">Nepodařilo se načíst podporovatele</string>
-    <string name="supporters_open_donations">Otevřít stránku darů</string>
-    <string name="sponsors_loading">Načítání sponzorů…</string>
-    <string name="sponsors_empty">Zatím žádní sponzoři nenalezeni.</string>
-    <string name="sponsors_error_title">Nepodařilo se načíst sponzory</string>
-    <string name="sponsors_detail_copy">Sponzoři pomáhají posunout Tivistream vpřed podporou napříč různými částmi vývoje.</string>
-    <string name="sponsors_channel_unavailable">Kanál sponzora nedostupný.</string>
-    <string name="sponsors_open_channel">Otevřít kanál sponzora</string>
-    <string name="contributors_loading">Načítání GitHub přispěvatelů…</string>
-    <string name="contributors_empty">Zatím žádní přispěvatelé nenalezeni.</string>
-    <string name="contributors_error_title">Nepodařilo se načíst přispěvatele</string>
-    <string name="contributors_open_github">Otevřít GitHub profil</string>
-    <string name="contributors_show_kofi_qr">Zobrazit Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Skrýt Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Odkaz na GitHub profil nedostupný.</string>
 
     <string name="playback_loading_overlay">Překryv načítání</string>
     <string name="playback_loading_overlay_sub">Zobrazit obrazovku načítání, dokud se neobjeví první snímek videa.</string>
@@ -1429,7 +1408,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">QR kód aktivace Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR kód pro podporu přispěvatele</string>
     <string name="cd_expand">Rozbalit %1$s</string>
     <string name="cd_collapse">Sbalit %1$s</string>
 
@@ -1827,16 +1805,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Podporovatele se nepodařilo načíst.</string>
-    <string name="contributors_error_load">Přispěvatele se nepodařilo načíst.</string>
-    <string name="sponsors_error_load">Sponzory se nepodařilo načíst.</string>
-    <string name="contributors_error_api_not_configured">API přispěvatelů není nastaveno.</string>
-    <string name="contributors_error_api_http">Chyba API přispěvatelů: %1$d</string>
-    <string name="supporters_error_api_http">Chyba API darů: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Překladatel</string>
-    <string name="contributor_role_maintainer">Správce</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Prázdné tělo odpovědi</string>

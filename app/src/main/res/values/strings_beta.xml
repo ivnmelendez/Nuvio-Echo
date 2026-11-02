@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="beta_settings_title">Beta speed-ups</string>
-    <string name="beta_settings_subtitle">Features still being tested.</string>
     <string name="beta_settings_group_sources">Fetching sources early</string>
-    <string name="beta_settings_group_playback">Playback</string>
 
     <string name="beta_prefetch_on_open_title">Fetch sources when a title opens</string>
     <string name="beta_prefetch_on_open_subtitle">Searches sources when a title opens.</string>
@@ -25,14 +22,11 @@
     <string name="beta_auto_quality_confirm_subtitle">Countdown until quality changes.</string>
     <string name="beta_auto_quality_confirm_instant">Instant</string>
     <string name="beta_auto_quality_loyal_title">Stay loyal to language</string>
-    <string name="beta_auto_quality_loyal_subtitle">Auto only moves to qualities offered in the language you\'re listening to.</string>
     <string name="beta_auto_quality_hot_swap_title">Hot swap</string>
-    <string name="beta_auto_quality_hot_swap_subtitle">Exchanges sources on the same decoder for an instant quality upgrade.</string>
     <string name="settings_badge_experimental">Experimental</string>
     <string name="quality_cancel_hint">Press OK to cancel</string>
     <string name="beta_source_switch_timeout_title">Quality and audio switch timeout</string>
     <string name="beta_source_switch_timeout_subtitle">How long a quality or audio picked in the player has to start.</string>
-    <string name="beta_playback_intro_length_title">Intro length</string>
     <string name="beta_playback_intro_length_value">%1$d s</string>
     <string name="beta_playback_intro_preview">Preview intro</string>
     <string name="beta_seek_thumbnails_title">Seek thumbnails</string>
@@ -61,10 +55,7 @@
     <string name="parental_note_animal_harm">Animal harm</string>
     <string name="parental_note_body_horror">Body horror</string>
 
-    <string name="beta_settings_group_player_buttons">Player buttons</string>
-    <string name="beta_player_buttons_subtitle">Buttons on the main row.</string>
 
-    <string name="beta_settings_group_diagnostics">Diagnostics</string>
     <string name="beta_speed_test_subtitle">Tests your addons and how smoothly the app runs.</string>
     <string name="speed_test_title">Speed test</string>
     <string name="speed_test_intro">Takes about a minute. The app will move between screens on its own; don\'t touch the remote until it comes back here. Nothing is played. %1$s</string>
@@ -103,7 +94,6 @@
     </plurals>
     <string name="player_source_fallback_searching">That source didn\'t play. Trying the next one…</string>
 
-    <string name="beta_settings_group_images">Images</string>
     <string name="beta_hardware_bitmaps_title">GPU image decoding</string>
     <string name="beta_hardware_bitmaps_subtitle">Uses less memory. Needs a restart.</string>
 
@@ -117,12 +107,8 @@
     <string name="audio_menu_original">Original</string>
     <string name="audio_menu_original_named">Original · %1$s</string>
     <string name="audio_menu_unknown">Unknown</string>
-    <string name="audio_menu_in_file">In this file</string>
-    <string name="audio_menu_hint">Hold OK on a language to pick its source</string>
-    <string name="audio_menu_loading">Looking for other sources…</string>
     <string name="audio_menu_no_sources">No sources</string>
     <string name="sources_audio_filter">%1$s audio only</string>
-    <string name="audio_menu_no_match">Couldn\'t find a working source with %1$s audio for this video, so it\'s back on the original.</string>
     <string name="settings_api_keys">API keys</string>
     <string name="settings_api_keys_subtitle">Stored on this device.</string>
     <string name="settings_api_key_placeholder">Type or paste the key</string>
@@ -169,7 +155,6 @@
     <string name="beta_seek_preview_quality_subtitle">Previews from the smallest copy of the title at this quality or above. Off uses what\'s playing.</string>
     <string name="beta_seek_preview_quality_off">Off</string>
     <!-- Next episode card: its source, found before the card showed -->
-    <string name="next_episode_ready_via">Ready via %1$s</string>
     <!-- Skip intro: what the playing file is asked about its own skip times -->
     <string name="skip_file_checks_title">Check the file</string>
     <string name="skip_file_checks_subtitle">Chapters: the file\'s named chapters set the times. Fit to file: times line up with its chapters and cuts. Credits in picture: credits on black are found in the seek thumbnails (needs Seek thumbnails). The last two are experimental.</string>

@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="nd_rate_like">I like this</string>
-    <string name="nd_rate_love">I love this!</string>
-    <string name="nd_rate_dislike">Not for me</string>
-    <string name="nd_rate_saved">%1$s ✓</string>
-    <string name="nd_watchlist_add">Add to watchlist</string>
-    <string name="nd_watchlist_on">On your watchlist</string>
     <string name="nd_mark_watched">Mark watched</string>
     <string name="nd_watched">Watched</string>
 
     <string name="nd_play">Play</string>
     <string name="nd_menu_episodes">Episodes</string>
-    <string name="nd_menu_cast">Cast &amp; Crew</string>
     <string name="nd_menu_trailer">Play trailer</string>
-    <string name="nd_menu_random">Random episode</string>
     <plurals name="nd_seasons_count">
         <item quantity="one">%d season</item>
         <item quantity="other">%d seasons</item>
@@ -48,7 +40,6 @@
     <string name="nd_reviews_loading">Loading reviews…</string>
     <string name="nd_reviews_empty">No reviews yet.</string>
     <string name="nd_review_score">%1$d/10</string>
-    <string name="nd_review_source_tmdb">TMDB</string>
 
     <string name="nd_panel_seasons_episodes">%1$s · %2$d Episodes</string>
     <string name="nd_panel_season">Season %1$d</string>

@@ -409,27 +409,6 @@
     <string name="action_close">மூடு</string>
 
         <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">விவரங்களுக்கு திரும்பு</string>
-    <string name="supporters_tab">ஆதரவாளர்கள்</string>
-    <string name="sponsors_tab">ஆதரிப்பாளர்கள்</string>
-    <string name="contributors_tab">பங்களிப்பாளர்கள்</string>
-    <string name="supporters_loading">ஆதரவாளர்கள் ஏற்றப்படுகிறது…</string>
-    <string name="supporters_empty">இன்னும் ஆதரவாளர்கள் இல்லை.</string>
-    <string name="supporters_error_title">ஆதரவாளர்களை ஏற்ற முடியவில்லை</string>
-    <string name="supporters_open_donations">நன்கொடை பக்கத்தை திற</string>
-    <string name="sponsors_loading">ஆதரிப்பாளர்கள் ஏற்றப்படுகிறது…</string>
-    <string name="sponsors_empty">இன்னும் ஆதரிப்பாளர்கள் இல்லை.</string>
-    <string name="sponsors_error_title">ஆதரிப்பாளர்களை ஏற்ற முடியவில்லை</string>
-    <string name="sponsors_detail_copy">வளர்ச்சியின் பல பகுதிகளில் ஆதரவு வழங்கி Tivistream முன்னேற உதவுகின்றனர்.</string>
-    <string name="sponsors_channel_unavailable">ஆதரிப்பாளர் சேனல் கிடைக்கவில்லை.</string>
-    <string name="sponsors_open_channel">ஆதரிப்பாளர் சேனலை திற</string>
-    <string name="contributors_loading">GitHub பங்களிப்பாளர்கள் ஏற்றப்படுகிறது…</string>
-    <string name="contributors_empty">இன்னும் பங்களிப்பாளர்கள் இல்லை.</string>
-    <string name="contributors_error_title">பங்களிப்பாளர்களை ஏற்ற முடியவில்லை</string>
-    <string name="contributors_open_github">GitHub சுயவிவரத்தை திற</string>
-    <string name="contributors_show_kofi_qr">Ko-fi QR-ஐ காட்டு</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi QR-ஐ மறை</string>
-    <string name="contributors_profile_unavailable">GitHub சுயவிவர இணைப்பு கிடைக்கவில்லை.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">ஏற்றும் மேலடுக்கு</string>
@@ -1295,7 +1274,6 @@
     <string name="cd_trakt_logo">ட்ராக்ட் லோகோ</string>
     <string name="cd_trakt_qr">ட்ராக்ட் செயல்படுத்தும் க்யூஆர்</string>
     <string name="cd_imdb">ஐஎம்டிபி</string>
-    <string name="cd_contributor_qr">பங்களிப்பாளர் ஆதரவு க்யூஆர் குறியீடு</string>
     <string name="cd_expand">விரிவு செய் %1$s</string>
     <string name="cd_collapse">சுருக்கு %1$s</string>
 
@@ -1694,16 +1672,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">ஆதரவாளர்களை ஏற்ற முடியவில்லை.</string>
-    <string name="contributors_error_load">பங்களிப்பாளர்களை ஏற்ற முடியவில்லை.</string>
-    <string name="sponsors_error_load">ஆதரவுநிதியாளர்களை ஏற்ற முடியவில்லை.</string>
-    <string name="contributors_error_api_not_configured">பங்களிப்பாளர்கள் ஏபிஐ அமைக்கப்படவில்லை.</string>
-    <string name="contributors_error_api_http">பங்களிப்பாளர்கள் ஏபிஐ பிழை: %1$d</string>
-    <string name="supporters_error_api_http">நன்கொடை ஏபிஐ பிழை: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">மொழிபெயர்ப்பாளர்</string>
-    <string name="contributor_role_maintainer">பராமரிப்பாளர்</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">காலியான பதில் உட்பொருள்</string>

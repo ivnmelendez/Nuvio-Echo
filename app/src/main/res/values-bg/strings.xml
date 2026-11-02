@@ -403,27 +403,6 @@
     <string name="action_none">Няма</string>
     <string name="action_close">Затвори</string>
 
-    <string name="supporters_contributors_back_button">Обратно към детайлите</string>
-    <string name="supporters_tab">Поддръжници</string>
-    <string name="sponsors_tab">Спонсори</string>
-    <string name="contributors_tab">Сътрудници</string>
-    <string name="supporters_loading">Зареждане на поддръжници…</string>
-    <string name="supporters_empty">Все още няма намерени поддръжници.</string>
-    <string name="supporters_error_title">Не можахме да заредим поддръжниците</string>
-    <string name="supporters_open_donations">Отвори страницата за дарения</string>
-    <string name="sponsors_loading">Зареждане на спонсори…</string>
-    <string name="sponsors_empty">Все още няма намерени спонсори.</string>
-    <string name="sponsors_error_title">Не можахме да заредим спонсорите</string>
-    <string name="sponsors_detail_copy">Спонсорите помагат Tivistream да се движи напред чрез подкрепа в различните части на разработката.</string>
-    <string name="sponsors_channel_unavailable">Каналът на спонсора е недостъпен.</string>
-    <string name="sponsors_open_channel">Отвори канала на спонсора</string>
-    <string name="contributors_loading">Зареждане на GitHub сътрудници…</string>
-    <string name="contributors_empty">Все още няма намерени сътрудници.</string>
-    <string name="contributors_error_title">Не можахме да заредим сътрудниците</string>
-    <string name="contributors_open_github">Отвори GitHub профил</string>
-    <string name="contributors_show_kofi_qr">Покажи Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Скрий Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Връзката към GitHub профила е недостъпна.</string>
 
     <string name="playback_loading_overlay">Екран за зареждане</string>
     <string name="playback_loading_overlay_sub">Показвай екран за зареждане докато се появи първият видео кадър.</string>
@@ -1343,7 +1322,6 @@
     <string name="cd_trakt_logo">Trakt лого</string>
     <string name="cd_trakt_qr">Trakt activation QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR код за подкрепа на сътрудници</string>
     <string name="cd_expand">Разшири %1$s</string>
     <string name="cd_collapse">Свий %1$s</string>
 
@@ -1741,16 +1719,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Не можахме да заредим поддръжниците.</string>
-    <string name="contributors_error_load">Не можахме да заредим сътрудниците.</string>
-    <string name="sponsors_error_load">Не можахме да заредим спонсорите.</string>
-    <string name="contributors_error_api_not_configured">Contributors API не е конфигуриран.</string>
-    <string name="contributors_error_api_http">Contributors API грешка: %1$d</string>
-    <string name="supporters_error_api_http">Donations API грешка: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Преводач</string>
-    <string name="contributor_role_maintainer">Поддръжник</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Празно тяло на отговора</string>

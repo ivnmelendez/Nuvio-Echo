@@ -395,28 +395,7 @@
     <string name="action_none">Brez</string>
 	<string name="action_close">Zapri</string>										  
 	<!-- SupportersContributorsScreen -->										 
-                         <string name="supporters_contributors_back_button">Nazaj na podrobnosti</string>
-    <string name="supporters_tab">Podporniki</string>
-	<string name="sponsors_tab">Sponzorji</string>											 
-    <string name="contributors_tab">Soustvarjalci</string>
-    <string name="supporters_loading">Nalaganje podpornikov…</string>
-    <string name="supporters_empty">Ni še najdenih podpornikov.</string>
-    <string name="supporters_error_title">Ni bilo mogoče naložiti podpornikov</string>
-       <string name="supporters_open_donations">Odpri stran za donacije</string>
-	<string name="sponsors_loading">Nalaganje sponzorjev…</string>
-    <string name="sponsors_empty">Ni še najdenih sponzorjev.</string>
-    <string name="sponsors_error_title">Sponzorjev ni bilo mogoče naložiti</string>
-    <string name="sponsors_detail_copy">Sponzorji pomagajo pri napredku Nuvia s podporo pri različnih delih razvoja.</string>
-    <string name="sponsors_channel_unavailable">Sponzorski kanal ni na voljo.</string>
-    <string name="sponsors_open_channel">Odpri sponzorski kanal</string>															
-	<string name="contributors_loading">Nalaganje GitHub soustvarjalcev…</string>
-    <string name="contributors_empty">Ni še najdenih soustvarjalcev.</string>
-    <string name="contributors_error_title">Ni bilo mogoče naložiti soustvarjalcev</string>
-       <string name="contributors_open_github">Odpri GitHub profil</string>
-    <string name="contributors_show_kofi_qr">Prikaži Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Skrij Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">Povezava do GitHub profila ni na voljo.</string>																				   
-    <!-- PlaybackSettingsSections -->
+                                                                                     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Prekrivanje ob nalaganju</string>
     <string name="playback_loading_overlay_sub">Prikaži zaslon za nalaganje, dokler se ne prikaže prvi video okvir.</string>
     <string name="playback_pause_overlay">Prekrivanje ob pavzi</string>
@@ -1213,7 +1192,6 @@
     <string name="cd_trakt_logo">Logotip Trakt</string>
     <string name="cd_trakt_qr">QR za aktivacijo Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR koda za podporo sodelavcem</string>
     <string name="cd_expand">Razširi %1$s</string>
     <string name="cd_collapse">Strni %1$s</string>
 	<!-- Debug -->			  
@@ -1614,17 +1592,9 @@
     <!-- Subtitle preferred language fallback -->    
 
     <!-- Supporters / contributors / sponsors errors -->    
-    <string name="supporters_error_load">Podpornikov ni bilo mogoče naložiti.</string>
-    <string name="contributors_error_load">Sodelavcev ni bilo mogoče naložiti.</string>
-    <string name="sponsors_error_load">Sponzorjev ni bilo mogoče naložiti.</string>
-    <string name="contributors_error_api_not_configured">API za sodelavce ni konfiguriran.</string>
-    <string name="contributors_error_api_http">Napaka API-ja za sodelavce: %1$d</string>
-    <string name="supporters_error_api_http">Napaka API-ja za donacije: %1$d</string>
-   
+                  
     <!-- Contributor role badges -->    
-    <string name="contributor_role_translator">Prevajalec</string>
-    <string name="contributor_role_maintainer">Vzdrževalec</string>
-
+   
     <!-- Network / safe API errors -->    
     <string name="network_error_empty_response_body">Prazno telo odgovora</string>
     <string name="network_error_unknown">Prišlo je do neznane napake</string>

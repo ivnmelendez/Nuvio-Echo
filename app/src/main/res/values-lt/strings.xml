@@ -170,20 +170,6 @@
     <string name="action_close">Uždaryti</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Grįžti į informaciją</string>
-    <string name="supporters_tab">Rėmėjai</string>
-    <string name="contributors_tab">Pagalbininkai</string>
-    <string name="supporters_loading">Įkeliami rėmėjai…</string>
-    <string name="supporters_empty">Rėmėjų dar nerasta.</string>
-    <string name="supporters_error_title">Nepavyko įkelti rėmėjų</string>
-    <string name="supporters_open_donations">Atidaryti aukojimo puslapį</string>
-    <string name="contributors_loading">Įkeliami „GitHub“ pagalbininkai…</string>
-    <string name="contributors_empty">Pagalbininkų dar nerasta.</string>
-    <string name="contributors_error_title">Nepavyko įkelti pagalbininkų</string>
-    <string name="contributors_open_github">Atidaryti „GitHub“ profilį</string>
-    <string name="contributors_show_kofi_qr">Rodyti „Ko-fi“ QR</string>
-    <string name="contributors_hide_kofi_qr">Slėpti „Ko-fi“ QR</string>
-    <string name="contributors_profile_unavailable">„GitHub“ profilio nuoroda nepasiekiama.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Įkėlimo perdanga</string>

@@ -525,51 +525,6 @@
     <string name="action_back">Quay lại</string>
     <string name="action_close">Đóng</string>
 
-    <string name="supporters_contributors_back_button">Quay lại chi tiết</string>
-    <string name="supporter_membership_title">Gói thành viên của người tài trợ Tivistream</string>
-    <string name="supporter_membership_description">Việc tài trợ Tivistream giúp chi trả cho cơ sở hạ tầng và hoạt động phát triển liên tục, đồng thời duy trì trải nghiệm cốt lõi miễn phí cho mọi người.</string>
-    <string name="supporter_membership_view">Xem gói thành viên</string>
-    <string name="supporter_membership_manage">Quản lý gói thành viên</string>
-    <string name="supporter_membership_refresh">Làm mới</string>
-    <string name="supporter_membership_refreshing">Đang làm mới</string>
-    <string name="supporter_membership_loading">Đang tải thông tin gói thành viên…</string>
-    <string name="supporter_membership_unable_load">Không thể tải trạng thái gói thành viên. Vui lòng thử lại.</string>
-    <string name="supporter_membership_you_are">Bạn là một</string>
-    <string name="supporter_membership_thank_you">Cảm ơn.</string>
-    <string name="supporter_membership_supporter_since">Người tài trợ từ %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Người tài trợ</string>
-    <string name="supporter_membership_tier_supporter_plus">Người tài trợ cao cấp</string>
-    <string name="supporter_membership_connected_title">Patreon đã được kết nối</string>
-    <string name="supporter_membership_connected_description">Không tìm thấy gói Tivistream đang hoạt động nào trên tài khoản Patreon này. Vui lòng xem các tùy chọn hiện có hoặc làm mới sau khi thay đổi gói thành viên Patreon.</string>
-    <string name="supporter_membership_scan_support">Quét để xem gói thành viên</string>
-    <string name="supporter_membership_scan_support_description">Mở trang Gói thành viên của người tài trợ trên điện thoại của bạn.</string>
-    <string name="supporter_membership_scan_manage">Quét để quản lý gói thành viên</string>
-    <string name="supporter_membership_scan_manage_description">Mở phần cài đặt gói thành viên Patreon trên điện thoại của bạn.</string>
-    <string name="cd_membership_qr">Mã QR của trang gói thành viên</string>
-    <string name="supporters_tab">Người tài trợ</string>
-    <string name="sponsors_tab">Nhà tài trợ</string>
-    <string name="contributors_tab">Người đóng góp</string>
-    <string name="supporters_loading">Đang tải danh sách người tài trợ…</string>
-    <string name="supporters_empty">Không tìm thấy người tài trợ nào.</string>
-    <string name="supporters_error_title">Không thể tải danh sách người tài trợ</string>
-    <string name="supporters_level_supporter">Người tài trợ</string>
-    <string name="supporters_level_supporter_plus">Người tài trợ cao cấp</string>
-    <string name="supporters_since">Đã tài trợ Tivistream từ %1$s</string>
-    <string name="supporters_since_unknown">Tự hào tài trợ Tivistream</string>
-    <string name="supporters_open_donations">Mở trang quyên góp</string>
-    <string name="sponsors_loading">Đang tải danh sách nhà tài trợ…</string>
-    <string name="sponsors_empty">Không tìm thấy nhà tài trợ nào.</string>
-    <string name="sponsors_error_title">Không thể tải danh sách nhà tài trợ</string>
-    <string name="sponsors_detail_copy">Nhà tài trợ giúp Tivistream phát triển thông qua sự hỗ trợ nhiều khía cạnh khác nhau trong quá trình phát triển.</string>
-    <string name="sponsors_channel_unavailable">Kênh nhà tài trợ không có sẵn.</string>
-    <string name="sponsors_open_channel">Mở kênh nhà tài trợ</string>
-    <string name="contributors_loading">Đang tải danh sách người đóng góp trên GitHub…</string>
-    <string name="contributors_empty">Không tìm thấy người đóng góp nào.</string>
-    <string name="contributors_error_title">Không thể tải danh sách người đóng góp</string>
-    <string name="contributors_open_github">Mở hồ sơ GitHub</string>
-    <string name="contributors_show_kofi_qr">Hiển thị mã QR Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Ẩn mã QR Ko-fi</string>
-    <string name="contributors_profile_unavailable">Liên kết hồ sơ GitHub không có sẵn.</string>
 
     <string name="playback_section_player_title">Trình phát</string>
     <string name="playback_section_player_title_desc">Trình phát mặc định, lõi bên trong và xử lý khi có lỗi.</string>
@@ -1717,7 +1672,6 @@
     <string name="cd_trakt_logo">Logo Trakt</string>
     <string name="cd_trakt_qr">Mã QR kích hoạt Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Mã QR ủng hộ người đóng góp</string>
     <string name="cd_expand">Mở rộng %1$s</string>
     <string name="cd_collapse">Thu gọn %1$s</string>
 
@@ -2159,16 +2113,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Không thể tải danh sách người tài trợ</string>
-    <string name="contributors_error_load">Không thể tải danh sách người đóng góp</string>
-    <string name="sponsors_error_load">Không thể tải danh sách nhà tài trợ.</string>
-    <string name="contributors_error_api_not_configured">API người đóng góp chưa được cấu hình.</string>
-    <string name="contributors_error_api_http">Lỗi API người đóng góp: %1$d</string>
-    <string name="supporters_error_api_http">Lỗi API quyên góp: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Người dịch</string>
-    <string name="contributor_role_maintainer">Người bảo trì</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Nội dung phản hồi trống</string>

@@ -172,20 +172,6 @@
     <string name="action_close">Stäng</string>
 
     <!-- SupportersContributorsScreen -->
-    <string name="supporters_contributors_back_button">Tillbaka till detaljer</string>
-    <string name="supporters_tab">Supportrar</string>
-    <string name="contributors_tab">Bidragsgivare</string>
-    <string name="supporters_loading">Laddar supportrar…</string>
-    <string name="supporters_empty">Inga supportrar hittade ännu.</string>
-    <string name="supporters_error_title">Kunde inte ladda supportrar</string>
-    <string name="supporters_open_donations">Öppna donationssidan</string>
-    <string name="contributors_loading">Laddar GitHub-bidragsgivare…</string>
-    <string name="contributors_empty">Inga bidragsgivare hittade ännu.</string>
-    <string name="contributors_error_title">Kunde inte ladda bidragsgivare</string>
-    <string name="contributors_open_github">Öppna GitHub-profil</string>
-    <string name="contributors_show_kofi_qr">Visa Ko-fi QR</string>
-    <string name="contributors_hide_kofi_qr">Dölj Ko-fi QR</string>
-    <string name="contributors_profile_unavailable">GitHub-profillänk ej tillgänglig.</string>
 
     <!-- PlaybackSettingsSections -->
     <string name="playback_loading_overlay">Laddningsöverlägg</string>
@@ -1096,7 +1082,6 @@
     <string name="cd_trakt_logo">Trakt-logotyp</string>
     <string name="cd_trakt_qr">Trakt-aktiverings-QR</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR-kod för bidragsgivarstöd</string>
     <string name="cd_expand">Expandera %1$s</string>
     <string name="cd_collapse">Fäll ihop %1$s</string>
 

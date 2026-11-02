@@ -18,7 +18,6 @@ object AppFeaturePolicy {
     val defaultAppLocaleTag: String = "es-419"
     val defaultAddonUrls: List<String> = emptyList()
     val lightModeSwitchAvailable: Boolean = true
-    val supportNuvioEnabled: Boolean = false
     val trailerPlaybackMode: TrailerPlaybackMode = TrailerPlaybackMode.IN_APP
     val imdbRatingLogoEnabled: Boolean = true
 }

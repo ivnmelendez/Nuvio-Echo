@@ -509,51 +509,6 @@
     <string name="action_back">Terug</string>
     <string name="action_close">Sluiten</string>
 
-    <string name="supporters_contributors_back_button">Terug naar details</string>
-    <string name="supporter_membership_title">Nuvio-ondersteunerslidmaatschap</string>
-    <string name="supporter_membership_description">Tivistream steunen helpt de infrastructuur en doorlopende ontwikkeling te dekken, terwijl de kernervaring gratis blijft voor iedereen.</string>
-    <string name="supporter_membership_view">Lidmaatschap bekijken</string>
-    <string name="supporter_membership_manage">Lidmaatschap beheren</string>
-    <string name="supporter_membership_refresh">Vernieuwen</string>
-    <string name="supporter_membership_refreshing">Vernieuwen</string>
-    <string name="supporter_membership_loading">Lidmaatschap laden…</string>
-    <string name="supporter_membership_unable_load">Kan de lidmaatschapsstatus niet laden. Probeer het opnieuw.</string>
-    <string name="supporter_membership_you_are">Je bent een</string>
-    <string name="supporter_membership_thank_you">Bedankt.</string>
-    <string name="supporter_membership_supporter_since">Ondersteuner sinds %1$s.</string>
-    <string name="supporter_membership_tier_supporter">Ondersteuner</string>
-    <string name="supporter_membership_tier_supporter_plus">Ondersteuner Plus</string>
-    <string name="supporter_membership_connected_title">Patreon is verbonden</string>
-    <string name="supporter_membership_connected_description">Er is geen actieve Nuvio-tier gevonden op dit Patreon-account. Bekijk de beschikbare opties of vernieuw nadat je je Patreon-lidmaatschap hebt gewijzigd.</string>
-    <string name="supporter_membership_scan_support">Scan om lidmaatschap te bekijken</string>
-    <string name="supporter_membership_scan_support_description">Open de pagina Ondersteunerslidmaatschap op je telefoon.</string>
-    <string name="supporter_membership_scan_manage">Scan om lidmaatschap te beheren</string>
-    <string name="supporter_membership_scan_manage_description">Open de Patreon-lidmaatschapsinstellingen op je telefoon.</string>
-    <string name="cd_membership_qr">QR-code van de lidmaatschapspagina</string>
-    <string name="supporters_tab">Ondersteuners</string>
-    <string name="sponsors_tab">Sponsors</string>
-    <string name="contributors_tab">Bijdragers</string>
-    <string name="supporters_loading">Ondersteuners laden…</string>
-    <string name="supporters_empty">Nog geen ondersteuners gevonden.</string>
-    <string name="supporters_error_title">Kon ondersteuners niet laden</string>
-    <string name="supporters_level_supporter">Ondersteuner</string>
-    <string name="supporters_level_supporter_plus">Ondersteuner+</string>
-    <string name="supporters_since">Steunt Tivistream sinds %1$s</string>
-    <string name="supporters_since_unknown">Steunt Tivistream met trots</string>
-    <string name="supporters_open_donations">Steunpagina openen</string>
-    <string name="sponsors_loading">Sponsors laden…</string>
-    <string name="sponsors_empty">Nog geen sponsors gevonden.</string>
-    <string name="sponsors_error_title">Kon sponsors niet laden</string>
-    <string name="sponsors_detail_copy">Sponsors helpen Tivistream vooruit door steun aan de verschillende onderdelen van de ontwikkeling.</string>
-    <string name="sponsors_channel_unavailable">Sponsorkanaal niet beschikbaar.</string>
-    <string name="sponsors_open_channel">Sponsorkanaal openen</string>
-    <string name="contributors_loading">GitHub-bijdragers laden…</string>
-    <string name="contributors_empty">Nog geen bijdragers gevonden.</string>
-    <string name="contributors_error_title">Kon bijdragers niet laden</string>
-    <string name="contributors_open_github">GitHub-profiel openen</string>
-    <string name="contributors_show_kofi_qr">Ko-fi-QR tonen</string>
-    <string name="contributors_hide_kofi_qr">Ko-fi-QR verbergen</string>
-    <string name="contributors_profile_unavailable">Link naar GitHub-profiel niet beschikbaar.</string>
 
     <string name="playback_loading_overlay">Laadoverlay</string>
     <string name="playback_loading_overlay_sub">Toon het laadscherm tot het eerste videoframe verschijnt.</string>
@@ -1582,7 +1537,6 @@
     <string name="cd_trakt_logo">Trakt-logo</string>
     <string name="cd_trakt_qr">QR-code voor Trakt-activering</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">QR-code om bijdragers te steunen</string>
     <string name="cd_expand">%1$s uitvouwen</string>
     <string name="cd_collapse">%1$s samenvouwen</string>
 
@@ -2023,16 +1977,8 @@
     <!-- Subtitle preferred language fallback -->
 
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Kan de ondersteuners niet laden.</string>
-    <string name="contributors_error_load">Kan de bijdragers niet laden.</string>
-    <string name="sponsors_error_load">Kan de sponsors niet laden.</string>
-    <string name="contributors_error_api_not_configured">De bijdragers-API is niet geconfigureerd.</string>
-    <string name="contributors_error_api_http">Fout in de bijdragers-API: %1$d</string>
-    <string name="supporters_error_api_http">Fout in de donatie-API: %1$d</string>
 
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Vertaler</string>
-    <string name="contributor_role_maintainer">Beheerder</string>
 
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Lege antwoordinhoud</string>

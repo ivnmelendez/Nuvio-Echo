@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Ajustes -->
-    <string name="beta_settings_group_new_look">Nuevo diseño</string>
     <string name="beta_poster_delay_title">Retraso al expandir el póster</string>
     <string name="beta_poster_delay_subtitle">Espera antes de que se abra un póster.</string>
     <string name="beta_trailer_delay_title">Retraso del tráiler</string>
@@ -56,15 +55,6 @@
         <item quantity="one">%d título</item>
         <item quantity="other">%d títulos</item>
     </plurals>
-    <string name="home_tag_award_winner">Ganadora de premios</string>
-    <string name="home_tag_airing_now">En emisión</string>
-    <string name="home_tag_new_episodes">Nuevos episodios</string>
-    <string name="home_tag_new_release">Estreno</string>
-    <string name="home_tag_coming_soon">Temporada %d próximamente</string>
-    <string name="home_tag_top_10">Top 10 de hoy</string>
-    <string name="home_tag_trending">Tendencia</string>
-    <string name="home_tag_popular">Popular</string>
-    <string name="home_tag_highly_rated">Muy bien valorada</string>
 
     <!-- Notificaciones -->
     <string name="notif_new_episode_title">Nuevo episodio hoy</string>

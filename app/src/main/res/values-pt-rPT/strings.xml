@@ -391,27 +391,6 @@
     <string name="sub_opacity">Opacidade</string>
     <string name="action_none">Nenhum</string>
     <string name="action_close">Fechar</string>
-    <string name="supporters_contributors_back_button">Voltar aos detalhes</string>
-    <string name="supporters_tab">Apoiantes</string>
-    <string name="sponsors_tab">Patrocinadores</string>
-    <string name="contributors_tab">Colaboradores</string>
-    <string name="supporters_loading">A carregar apoiantes…</string>
-    <string name="supporters_empty">Ainda não foram encontrados apoiantes.</string>
-    <string name="supporters_error_title">Não foi possível carregar os apoiantes</string>
-    <string name="supporters_open_donations">Abrir página de doações</string>
-    <string name="sponsors_loading">A carregar patrocinadores…</string>
-    <string name="sponsors_empty">Ainda não foram encontrados patrocinadores.</string>
-    <string name="sponsors_error_title">Não foi possível carregar os patrocinadores</string>
-    <string name="sponsors_detail_copy">Os patrocinadores ajudam a levar o Tivistream para a frente através do apoio nas diferentes vertentes do desenvolvimento.</string>
-    <string name="sponsors_channel_unavailable">Canal de patrocinador indisponível.</string>
-    <string name="sponsors_open_channel">Abrir canal de patrocinador</string>
-    <string name="contributors_loading">A carregar colaboradores do GitHub…</string>
-    <string name="contributors_empty">Ainda não foram encontrados colaboradores.</string>
-    <string name="contributors_error_title">Não foi possível carregar os colaboradores</string>
-    <string name="contributors_open_github">Abrir perfil do GitHub</string>
-    <string name="contributors_show_kofi_qr">Mostrar QR do Ko-fi</string>
-    <string name="contributors_hide_kofi_qr">Ocultar QR do Ko-fi</string>
-    <string name="contributors_profile_unavailable">Ligação do perfil do GitHub indisponível.</string>
     <string name="playback_loading_overlay">Sobreposição de carregamento</string>
     <string name="playback_loading_overlay_sub">Mostrar ecrã de carregamento até aparecer o primeiro fotograma do vídeo.</string>
     <string name="playback_pause_overlay">Sobreposição ao pausar</string>
@@ -1265,7 +1244,6 @@
     <string name="cd_trakt_logo">Logótipo do Trakt</string>
     <string name="cd_trakt_qr">QR de ativação do Trakt</string>
     <string name="cd_imdb">IMDb</string>
-    <string name="cd_contributor_qr">Código QR de apoio ao contribuidor</string>
     <string name="cd_expand">Expandir %1$s</string>
     <string name="cd_collapse">Recolher %1$s</string>
     <string name="debug_generate_description">Item %1$s nº %2$d gerado por debug</string>
@@ -1647,15 +1625,7 @@
     <string name="web_error_invalid_request_body">Corpo do pedido inválido</string>
     <!-- Subtitle preferred language fallback -->
     <!-- Supporters / contributors / sponsors errors -->
-    <string name="supporters_error_load">Não foi possível carregar os apoiantes.</string>
-    <string name="contributors_error_load">Não foi possível carregar os contribuidores.</string>
-    <string name="sponsors_error_load">Não foi possível carregar os patrocinadores.</string>
-    <string name="contributors_error_api_not_configured">A API de Contribuidores não está configurada.</string>
-    <string name="contributors_error_api_http">Erro da API de Contribuidores: %1$d</string>
-    <string name="supporters_error_api_http">Erro da API de Doações: %1$d</string>
     <!-- Contributor role badges -->
-    <string name="contributor_role_translator">Tradutor</string>
-    <string name="contributor_role_maintainer">Mantenedor</string>
     <!-- Network / safe API errors -->
     <string name="network_error_empty_response_body">Corpo da resposta vazio</string>
     <string name="network_error_unknown">Ocorreu um erro desconhecido</string>

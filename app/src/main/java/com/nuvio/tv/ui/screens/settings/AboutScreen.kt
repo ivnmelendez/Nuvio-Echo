@@ -52,7 +52,6 @@ import com.nuvio.tv.core.build.AppFeaturePolicy
 
 @Composable
 fun AboutScreen(
-    onNavigateToSupportersContributors: () -> Unit = {},
     onNavigateToLicensesAttributions: () -> Unit = {},
     onBackPress: () -> Unit = {}
 ) {
@@ -63,7 +62,6 @@ fun AboutScreen(
         subtitle = stringResource(R.string.about_subtitle)
     ) {
         AboutSettingsContent(
-            onNavigateToSupportersContributors = onNavigateToSupportersContributors,
             onNavigateToLicensesAttributions = onNavigateToLicensesAttributions
         )
     }
@@ -71,7 +69,6 @@ fun AboutScreen(
 
 @Composable
 fun AboutSettingsContent(
-    onNavigateToSupportersContributors: () -> Unit = {},
     onNavigateToLicensesAttributions: () -> Unit = {},
     initialFocusRequester: FocusRequester? = null
 ) {
