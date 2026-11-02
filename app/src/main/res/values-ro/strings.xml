@@ -18,7 +18,6 @@
     <string name="cw_resume">Reia</string>
     <string name="cw_hours_min_left">%1$dh %2$dm rămase</string>
     <string name="cw_min_left">%1$dm rămase</string>
-    <string name="cw_almost_done">Aproape gata</string>
     <string name="cw_airs_date">Difuzat %1$s</string>
     <string name="cw_airs_today">Difuzat astăzi</string>
     <string name="cw_airs_tomorrow">Difuzat mâine</string>
@@ -34,22 +33,18 @@
     <string name="home_poster_dialog_subtitle">Acțiuni titlu</string>
 
     <!-- CatalogRowSection -->
-    <string name="catalog_from_addon">de la %1$s</string>
-    <string name="action_see_all">Vezi tot</string>
 
     <!-- HeroSection -->
     <string name="hero_creator">Creator: %1$s</string>
     <string name="hero_director">Director: %1$s</string>
     <string name="hero_writer">Scriitor: %1$s</string>
     <string name="hero_play">Redă</string>
-    <string name="hero_play_episode">Redă S%1$d E%2$d</string>
     <string name="hero_add_to_library">Adaugă în bibliotecă</string>
     <string name="hero_remove_from_library">Elimină din bibliotecă</string>
     <string name="hero_mark_watched">Marchează ca vizionat</string>
     <string name="hero_mark_unwatched">Marchează ca nevizionat</string>
     <string name="hero_play_trailer">Redă trailerul</string>
     <string name="hero_press_back_trailer">Apăsați înapoi pentru a ieși din trailer</string>
-    <string name="cd_rating">Evaluare</string>
 
     <!-- EpisodesSection -->
     <string name="episodes_season">Sezon %1$d</string>
@@ -95,30 +90,15 @@
     <!-- AboutScreen -->
     <string name="about_title">Despre</string>
     <string name="about_subtitle">Informații despre aplicație, actualizări și legături legale</string>
-    <string name="about_made_with_love">Făcut cu ❤️ de Tapframe și prieteni</string>
     <string name="about_version">Versiunea %1$s</string>
     <string name="about_check_updates">Verifică actualizările</string>
     <string name="about_check_updates_subtitle">Descarcă cea mai recentă versiune</string>
-    <string name="about_privacy_policy">Politica de confidențialitate</string>
-    <string name="about_privacy_policy_subtitle">Vizualizează politica noastră de confidențialitate</string>
 
     <!-- SettingsScreen categories -->
-    <string name="settings_account">Cont</string>
-    <string name="settings_profiles">Profile</string>
     <string name="settings_layout">Aranjament</string>
-    <string name="settings_plugins">Plugin-uri</string>
-    <string name="settings_plugins_subtitle">Depozite și furnizori</string>
     <string name="settings_integration">Integrări</string>
     <string name="settings_playback">Redare</string>
-    <string name="settings_trakt_subtitle">Deschide ecranul de conectare Trakt</string>
     <string name="settings_debug">Depanare</string>
-    <string name="settings_plugins_section_subtitle">Gestionează depozitele, furnizorii și stările pluginurilor</string>
-    <string name="settings_account_section_subtitle">Statutul contului și sincronizării</string>
-    <string name="account_stat_addons">add-on-uri</string>
-    <string name="account_stat_plugins">pluginuri</string>
-    <string name="account_stat_library">bibliotecă</string>
-    <string name="account_stat_progress">progres</string>
-    <string name="account_stat_watched">vizionate</string>
     <string name="settings_integrations_section">Integrări</string>
     <string name="settings_integrations_section_subtitle">Gestionați integrările disponibile</string>
     <string name="settings_tmdb_subtitle">Controale de îmbogățire a metadatelor</string>
@@ -157,7 +137,6 @@
     <string name="playback_afr_on_start_stop_sub">Comută la pornire și restaurează la oprire.</string>
     <string name="playback_player_external_desc">Deschide întotdeauna fluxurile într-o aplicație externă</string>
     <string name="playback_player_ask_desc">Alege playerul de fiecare dată</string>
-    <string name="audio_trailer_section">Trailer</string>
     <string name="audio_autoplay_trailers">Redare automată trailere</string>
     <string name="audio_autoplay_trailers_sub">Redă automat trailerele pe ecranul de detalii după o perioadă de inactivitate</string>
     <string name="audio_trailer_delay">Întârziere trailer</string>
@@ -181,7 +160,6 @@
     <string name="audio_decoder_controls">Controlează dacă decodoarele hardware sau software (FFmpeg) sunt utilizate pentru audio și video</string>
 
     <!-- PlaybackSubtitleSettings -->
-    <string name="sub_section">Subtitrări</string>
     <string name="sub_not_set">Nesetat</string>
     <string name="sub_forced_lang">Forțat</string>
     <string name="sub_preferred_lang">Limba preferată</string>
@@ -190,7 +168,6 @@
     <string name="sub_use_forced_subtitles_desc">Preferă subtitrările forțate când sunetul corespunde limbii subtitrării; dacă nu sunt disponibile, nu selecta nimic</string>
     <string name="sub_show_only_preferred_languages">Afișează doar limbile preferate</string>
     <string name="sub_show_only_preferred_languages_desc">Ascunde toate celelalte limbi de subtitrare din lista de selecție</string>
-    <string name="sub_organization">Organizarea subtitrărilor</string>
     <string name="sub_size">Dimensiune</string>
     <string name="sub_vertical_offset">Offset vertical</string>
     <string name="sub_bold">Îngroșat</string>
@@ -213,12 +190,6 @@
     <string name="sub_mode_effects_canvas_sub">Suport pentru animație utilizând efectele Media3 cu redare Canvas.</string>
     <string name="sub_mode_standard">Indicii standard</string>
     <string name="sub_mode_standard_sub">Redare de subtitrări de bază fără suport pentru animație. Cel mai compatibil.</string>
-    <string name="sub_org_none">Niciuna (ordine implicită)</string>
-    <string name="sub_org_by_lang">După limbă</string>
-    <string name="sub_org_by_addon">După supliment</string>
-    <string name="sub_org_none_desc">Arată subtitrările în ordinea implicită a rezultatelor suplimentului.</string>
-    <string name="sub_org_by_lang_desc">Grupează subtitrările după limbă.</string>
-    <string name="sub_org_by_addon_desc">Grupează subtitrările după sursa suplimentului.</string>
 
     <!-- PlaybackAutoPlaySettings -->
     <string name="autoplay_reuse_last_link">Reutilizează ultimul link</string>
@@ -236,7 +207,6 @@
     <string name="autoplay_threshold_pct_title">Procentaj prag</string>
     <string name="autoplay_threshold_pct_sub">Alternativă când nu există marcaj de final.</string>
     <string name="autoplay_threshold_min_title">Minute prag</string>
-    <string name="autoplay_threshold_min_sub">Alternativă când nu există marcaj de final.</string>
     <string name="autoplay_scope_all">Toate sursele</string>
     <string name="autoplay_scope_addons">Doar suplimentele instalate</string>
     <string name="autoplay_scope_plugins">Doar pluginurile activate</string>
@@ -264,10 +234,6 @@
     <string name="layout_subtitle">Ajustați aranjamentul paginii principale, vizibilitatea conținutului și comportamentul posterelor</string>
     <string name="layout_section_home">Aranjament acasă</string>
     <string name="layout_section_home_desc">Alegeți structura și sursa hero.</string>
-    <string name="layout_landscape_posters">Postere peisaj</string>
-    <string name="layout_landscape_posters_sub">Comutați între carduri portret și peisaj pentru vizualizarea Modernă.</string>
-    <string name="layout_preview_row">Afișează rândul de previzualizare</string>
-    <string name="layout_preview_row_sub">Afișează o previzualizare parțială a rândului de dedesubt în aranjamentul Modern al paginii principale.</string>
     <string name="layout_hero_catalogs">Cataloage Hero</string>
     <string name="layout_hero_catalogs_sub">Selectați unul sau mai multe cataloage pentru conținutul hero.</string>
     <string name="layout_section_content">Conținut acasă</string>
@@ -319,23 +285,7 @@
     <string name="mdblist_enable_title">Activează ratingurile MDBList</string>
     <string name="mdblist_enable_subtitle">Obține ratinguri de la furnizori externi în ecranul de detalii ale metadatelor</string>
     <string name="mdblist_api_key_title">Cheie API</string>
-    <string name="mdblist_api_key_subtitle">Necesară pentru a obține ratinguri de la MDBList</string>
-    <string name="mdblist_trakt_title">Trakt</string>
-    <string name="mdblist_trakt_subtitle">Afișează scorul Trakt</string>
-    <string name="mdblist_imdb_title">IMDb</string>
-    <string name="mdblist_imdb_subtitle">Afișează scorul IMDb (și ascunde linia implicită IMDb când este disponibilă)</string>
-    <string name="mdblist_tmdb_title">TMDB</string>
-    <string name="mdblist_tmdb_subtitle">Afișează scorul TMDB</string>
-    <string name="mdblist_letterboxd_title">Letterboxd</string>
-    <string name="mdblist_letterboxd_subtitle">Afișează scorul Letterboxd</string>
-    <string name="mdblist_tomatoes_title">Rotten Tomatoes</string>
-    <string name="mdblist_tomatoes_subtitle">Afișează scorul criticilor</string>
-    <string name="mdblist_audience_title">Scorul publicului</string>
-    <string name="mdblist_audience_subtitle">Afișează scorul publicului</string>
-    <string name="mdblist_metacritic_title">Metacritic</string>
-    <string name="mdblist_metacritic_subtitle">Afișează scorul Metacritic</string>
     <string name="mdblist_dialog_title">Cheie API MDBList</string>
-    <string name="mdblist_dialog_subtitle">Introduceți cheia API pentru a prelua ratinguri externe</string>
     <string name="mdblist_dialog_placeholder">Introduceți cheia API MDBList</string>
     <string name="mdblist_not_set">Nesetat</string>
     <string name="action_clear">Șterge</string>
@@ -345,8 +295,6 @@
     <string name="tmdb_subtitle">Alegeți ce câmpuri de metadate să provină de la TMDB</string>
     <string name="tmdb_enable_title">Activează îmbogățirea TMDB</string>
     <string name="tmdb_enable_subtitle">Folosiți TMDB ca sursă de metadate pentru a îmbunătăți datele addon-ului</string>
-    <string name="tmdb_language_title">Limba</string>
-    <string name="tmdb_language_subtitle">Limba metadatelor TMDB pentru titlu, logo și câmpurile activate</string>
     <string name="tmdb_artwork_title">Ilustrații</string>
     <string name="tmdb_artwork_subtitle">Logo și imagini de fundal de la TMDB</string>
     <string name="tmdb_basic_info_title">Informații de bază</string>
@@ -368,22 +316,13 @@
     <!-- TraktScreen -->
     <string name="trakt_description">Sincronizați lista de vizionare, progresul de vizionare, continuarea vizionării, scrobbles și listele personale cu Trakt.</string>
     <string name="trakt_connected_as">Connected as %1$s</string>
-    <string name="trakt_account_login">Autentificare cont</string>
     <string name="trakt_awaiting_instruction">Accesați trakt.tv/activate și introduceți acest cod:</string>
     <string name="trakt_waiting_approval">Aștept aprobare…</string>
-    <string name="qr_login_approved">Autentificare aprobată. Se finalizează conectarea…</string>
-    <string name="qr_login_pending">Aștept aprobare pe telefonul dvs.…</string>
-    <string name="qr_login_expired">Autentificarea QR a expirat. Generați un cod nou.</string>
     <string name="trakt_code_expires">Codul expiră în %1$s</string>
     <string name="trakt_token_refreshes">Tokenul de acces Trakt se reînnoiește în %1$s</string>
-    <string name="trakt_login_instruction">Apăsați Autentificare pentru a începe autentificarea dispozitivului Trakt. Un cod QR va apărea aici.</string>
     <string name="trakt_missing_credentials">Lipsă TRAKT_CLIENT_ID / TRAKT_CLIENT_SECRET în local.properties.</string>
     <string name="trakt_continue_watching_window">Fereastră de continuare a vizionării</string>
     <string name="trakt_continue_watching_subtitle">Istoricul Trakt este luat în considerare pentru continuarea vizionării</string>
-    <string name="trakt_unaired_next_up">Episoade următoare neemise</string>
-    <string name="trakt_unaired_next_up_subtitle">Afișează episoadele viitoare înainte de difuzare</string>
-    <string name="trakt_unaired_shown">Afișat</string>
-    <string name="trakt_unaired_hidden">Ascuns</string>
     <string name="trakt_cached_label">Cacheat</string>
     <string name="trakt_stat_movies">Filme</string>
     <string name="trakt_stat_shows">Seriale</string>
@@ -391,16 +330,9 @@
     <string name="trakt_stat_watched_hours">Ore vizionate</string>
     <string name="trakt_disconnect">Deconectare</string>
     <string name="trakt_disconnect_title">Deconectare Trakt?</string>
-    <string name="trakt_disconnect_subtitle">Aceasta va deconecta contul tău Trakt de Nuvio.</string>
-    <string name="trakt_login">Autentificare</string>
-    <string name="trakt_retry">Reîncercare</string>
-    <string name="trakt_back">Înapoi</string>
+    <string name="trakt_disconnect_subtitle">Aceasta va deconecta contul tău Trakt de Tivistream.</string>
     <string name="trakt_cw_window_title">Fereastră Continuă vizionarea</string>
     <string name="trakt_cw_window_subtitle">Alege câtă activitate Trakt ar trebui să apară în continuarea vizionării.</string>
-    <string name="trakt_unaired_dialog_title">Episoade următoare neemise în difuzare</string>
-    <string name="trakt_unaired_dialog_subtitle">Alege dacă Continuă vizionarea ar trebui să includă episoadele viitoare înainte de lansare.</string>
-    <string name="trakt_show_unaired">Arată episoade neemise în difuzare</string>
-    <string name="trakt_hide_unaired">Ascunde episoade neemise în difuzare</string>
     <string name="trakt_all_history">Tot istoricul</string>
     <string name="trakt_days_format">%1$d zile</string>
 
@@ -416,35 +348,11 @@
     <string name="debug_sync_code_title">Funcționalități Cod de sincronizare</string>
     <string name="debug_sync_code_subtitle">Afișează butoanele Generare/Introducere Cod de sincronizare în setările contului</string>
     <string name="debug_section_account">Cont</string>
-    <string name="debug_manual_signin_title">Autentificare manuală</string>
-    <string name="debug_manual_signin_subtitle">Autentifică-te cu email și parolă (autentificare Supabase)</string>
-    <string name="debug_email_placeholder">E-mail</string>
-    <string name="debug_password_placeholder">Parolă</string>
-    <string name="debug_signing_in">Se autentifică\u2026</string>
-    <string name="debug_sign_in">Autentificare</string>
     <string name="debug_error_dialog_title">Eroare de redare</string>
     <string name="debug_error_dialog_subtitle">A apărut o eroare în timpul redării.\n\nEroare: Eroare simulată de test - aceasta nu este o defecțiune reală. Sursa a returnat HTTP 503 (Serviciu indisponibil).</string>
     <string name="debug_dismiss">Închide</string>
 
     <!-- ProfileSettingsContent -->
-    <string name="profile_title">Profiluri</string>
-    <string name="profile_subtitle">Gestionează profilurile utilizatorului pentru acest cont</string>
-    <string name="profile_primary_label">Principal</string>
-    <string name="profile_shares_primary">Împărtășește %1$s al profilului principal</string>
-    <string name="profile_edit_label">Editează</string>
-    <string name="profile_add">Adaugă profil</string>
-    <string name="profile_create_title">Creează profil</string>
-    <string name="profile_edit_title">Editează profilul %1$s</string>
-    <string name="profile_name_placeholder">Nume profil</string>
-    <string name="profile_avatar_color">Culoare avatar</string>
-    <string name="profile_use_primary_addons">Folosește suplimentele profilului principal</string>
-    <string name="profile_use_primary_plugins">Folosește plugin-urile profilului principal</string>
-    <string name="profile_creating">Se creează\u2026</string>
-    <string name="profile_create_btn">Creează</string>
-    <string name="profile_confirm">Confirmă</string>
-    <string name="profile_delete">Șterge</string>
-    <string name="profile_addons">complementuri</string>
-    <string name="profile_plugins">pluginuri</string>
 
 
     <!-- AddonManagerScreen -->
@@ -488,16 +396,12 @@
     <string name="stream_no_streams">Nu s-au găsit fluxuri</string>
     <string name="stream_no_streams_hint">Încearcă să instalezi mai multe suplimente pentru a găsi fluxuri</string>
     <string name="stream_finding_source">Se caută sursa fluxului</string>
-    <string name="stream_type_torrent">Torrent</string>
-    <string name="stream_type_youtube">YouTube</string>
-    <string name="stream_type_external">Extern</string>
     <string name="stream_player_picker_title">Ce player ar trebui folosit?</string>
     <string name="stream_player_internal">Intern</string>
     <string name="stream_player_external">Extern</string>
 
     <!-- PlayerScreen -->
     <string name="player_ends_at">Se termină la %1$s</string>
-    <string name="player_via">prin %1$s</string>
     <string name="player_subtitle_delay">Întârziere subtitrări</string>
     <string name="player_error_title">Eroare de redare</string>
     <string name="player_go_back">Înapoi</string>
@@ -509,7 +413,6 @@
 
     <!-- StreamSourcesSidePanel -->
     <string name="sources_title">Surse</string>
-    <string name="sources_reload">Reîncarcă</string>
     <string name="sources_close">Închide</string>
     <string name="sources_playing">Redare</string>
     <string name="sources_no_streams">Nu s-au găsit fluxuri</string>
@@ -517,7 +420,6 @@
     !-- EpisodesSidePanel -->
     <string name="episodes_panel_close">Închide</string>
     <string name="episodes_panel_back">Înapoi</string>
-    <string name="episodes_panel_reload">Reîncarcă</string>
     <string name="episodes_panel_no_streams">Nu s-au găsit fluxuri</string>
     <string name="episodes_panel_no_episodes">Nu există episoade disponibile</string>
     <string name="episodes_panel_title">Episoade</string>
@@ -534,27 +436,12 @@
 
     <!-- SubtitleDialog / SubtitleStyleSidePanel -->
     <string name="subtitle_dialog_title">Subtitrări</string>
-    <string name="subtitle_no_builtin">Nu există subtitrări încorporate disponibile</string>
     <string name="subtitle_loading_addon">Se încarcă subtitrările din addon-uri\u2026</string>
     <string name="subtitle_no_addon">Nu există subtitrări din addon-uri disponibile</string>
-    <string name="subtitle_text_color">Culoare text</string>
-    <string name="subtitle_outline_color">Culoare contur</string>
     <string name="subtitle_reset_defaults">Resetează valorile implicite</string>
-    <string name="subtitle_tab_builtin">Încorporat</string>
-    <string name="subtitle_tab_addons">Add-onuri</string>
     <string name="subtitle_tab_languages">Limbi</string>
-    <string name="subtitle_tab_style">Stil</string>
     <string name="subtitle_tab_delay">Întârziere</string>
     <string name="subtitle_none">Nimic</string>
-    <string name="subtitle_all">Toate</string>
-    <string name="subtitle_section_core">Nucleu</string>
-    <string name="subtitle_section_advanced">Avansat</string>
-    <string name="subtitle_font_size">Dimensiune font</string>
-    <string name="subtitle_bold">Îngroșat</string>
-    <string name="subtitle_outline">Contur</string>
-    <string name="subtitle_bottom_offset">Decalaj jos</string>
-    <string name="subtitle_on">Activat</string>
-    <string name="subtitle_off">Dezactivat</string>
     <string name="subtitle_style_title">Stil subtitrare</string>
     <string name="subtitle_style_color">Culoare</string>
     <string name="subtitle_style_reset">Resetează</string>
@@ -566,15 +453,12 @@
     <string name="subtitle_style_defaults">Implicite</string>
     <string name="subtitle_style_on">Activ</string>
     <string name="subtitle_style_off">Dezactiv</string>
-    <string name="panel_failed_load_streams">Încărcarea fluxurilor a eșuat</string>
-    <string name="panel_failed_load_episodes">Încărcarea episoadelor a eșuat</string>
 
     <!-- PauseOverlay -->
 
     <!-- PostPlayOverlay -->
     <string name="next_episode_label">Următorul episod</string>
     <string name="next_episode_finding_source">Se caută sursa…</string>
-    <string name="next_episode_playing_via">Se redă prin %1$s în %2$ds</string>
     <string name="next_episode_play">Redare</string>
     <string name="next_episode_unaired">Nedifuzat</string>
     <string name="skip_intro">Omite intro</string>
@@ -586,19 +470,12 @@
 
 
     <!-- SearchScreen -->
-    <string name="search_keyboard_hint">Apăsați Gata pe tastatură pentru a căuta</string>
-    <string name="search_placeholder">Caută filme &amp; seriale</string>
-    <string name="search_start_title">Începe căutarea</string>
-    <string name="search_start_subtitle">Introdu cel puțin 2 caractere</string>
-    <string name="search_start_subtitle_no_discover">Descoperirea este dezactivată. Introdu cel puțin 2 caractere</string>
 
     !-- LibraryScreen -->
-    <string name="library_syncing">Se sincronizează biblioteca Trakt\u2026</string>
     <string name="library_title">Bibliotecă</string>
     <string name="library_filter_type">Tip</string>
     <string name="library_filter_sort">Sortare</string>
     <string name="library_manage_lists">Administrează listele</string>
-    <string name="library_manage_trakt_lists">Administrează listele Trakt</string>
     <string name="library_list_create">Creează</string>
     <string name="library_list_edit">Editează</string>
     <string name="library_list_move_up">Mută sus</string>
@@ -606,65 +483,22 @@
     <string name="library_list_delete">Șterge</string>
     <string name="library_list_name_label">Nume</string>
     <string name="library_list_description_label">Descriere</string>
-    <string name="library_delete_confirm">Șterge</string>
 
     <!-- AccountSettingsContent -->
-    <string name="account_loading">Încărcare\u2026</string>
-    <string name="account_sync_description">Sincronizați biblioteca, progresul vizionărilor, suplimentele și plugin-urile pe toate dispozitivele.</string>
-    <string name="account_signin_qr_title">Autentificare cu QR</string>
-    <string name="account_signin_qr_subtitle">Scanați un cod QR și finalizați autentificarea prin e‑mail pe telefon</string>
-    <string name="account_signed_in_label">Autentificat</string>
-    <string name="account_total_label">Total</string>
-    <string name="account_loading_sync">Încărcare date de sincronizare\u2026</string>
-    <string name="account_sign_out">Deconectare</string>
 
     <!-- AuthSignInScreen -->
-    <string name="auth_signin_title">Autentificare</string>
-    <string name="auth_signin_tv_disabled">Introducerea de e‑mail/parolă pe TV este dezactivată. Continuați cu autentificarea prin QR.</string>
-    <string name="auth_signin_qr_btn">Continuați cu QR</string>
 
     <!-- AuthQrSignInScreen -->
-    <string name="auth_qr_title">Autentificare cu QR</string>
-    <string name="auth_qr_finishing">Se finalizează autentificarea\u2026</string>
-    <string name="auth_qr_code_label">Cod: %1$s</string>
-    <string name="auth_qr_expires">Expiră în %1$s</string>
-    <string name="auth_qr_scan_instruction">Scanați QR, aprobați în browser, apoi reveniți aici.</string>
-    <string name="auth_qr_code_display">Cod: %1$s</string>
-    <string name="auth_qr_refresh">Reîmprospătează QR</string>
-    <string name="auth_qr_continue_without_account">Continuă fără cont</string>
-    <string name="auth_qr_connected">Contul tău este conectat pe acest TV.</string>
-    <string name="auth_qr_synced_data">Datele tale sincronizate</string>
-    <string name="auth_qr_generating">Se generează QR\u2026</string>
-    <string name="auth_qr_unavailable">QR indisponibil. Reîncarcă pentru a reîncerca.</string>
-    <string name="auth_qr_please_wait">Vă rugăm așteptați\u2026</string>
-    <string name="auth_qr_continue">Continuă</string>
-    <string name="auth_qr_back">Înapoi</string>
 
     <!-- SyncCodeGenerateScreen -->
-    <string name="sync_generate_title">Generează cod de sincronizare</string>
-    <string name="sync_generate_subtitle">Creează un PIN pentru a proteja codul de sincronizare. Partajează codul cu celelalte dispozitive.</string>
-    <string name="sync_generate_code_label">Codul tău de sincronizare</string>
-    <string name="sync_generate_instruction">Introdu acest cod și PIN-ul tău pe celălalt dispozitiv pentru a le conecta.</string>
-    <string name="sync_generate_done">Gata</string>
-    <string name="sync_generate_pin_label">Alege un PIN (4-8 caractere)</string>
-    <string name="sync_generate_pin_placeholder">Introdu PIN-ul</string>
 
     <!-- SyncCodeClaimScreen -->
-    <string name="sync_claim_title">Conectează dispozitivul</string>
-    <string name="sync_claim_subtitle">Introdu codul de sincronizare și PIN-ul de pe celălalt dispozitiv pentru a conecta acest dispozitiv.</string>
-    <string name="sync_claim_success">Dispozitivul a fost conectat cu succes! Addon-urile și plugin-urile tale se vor sincroniza acum.</string>
-    <string name="sync_claim_done">Gata</string>
-    <string name="sync_claim_code_label">Cod de sincronizare</string>
-    <string name="sync_claim_code_placeholder">XXXX-XXXX-XXXX-XXXX-XXXX</string>
-    <string name="sync_claim_pin_label">PIN</string>
-    <string name="sync_claim_pin_placeholder">Introdu PIN-ul</string>
 
     <!-- PluginScreen -->
     <string name="plugin_readonly_notice">Se folosesc plugin-urile profilului principal și nu pot fi schimbate</string>
     <string name="plugin_repositories_section">Depozite (%1$d)</string>
     <string name="plugin_providers_section">Furnizori (%1$d)</string>
     <string name="plugin_title">Pluginuri</string>
-    <string name="plugin_subtitle">Gestionează colectoarele și furnizorii locali</string>
     <string name="plugin_add_repository">Adaugă depozit</string>
     <string name="plugin_add_btn">Adaugă</string>
     <string name="plugin_manage_from_phone_title">Gestionează de pe telefon</string>
@@ -684,11 +518,6 @@
     <string name="plugin_test_results">Rezultate test (%1$d fluxuri)</string>
 
     <!-- ProfileSelectionScreen -->
-    <string name="profile_selection_title">Cine vizionează?</string>
-    <string name="profile_selection_subtitle">Selectează un profil pentru a continua</string>
-    <string name="profile_selection_hint">Folosește D-pad pentru a alege un profil</string>
-    <string name="profile_selection_empty">Nu s-au găsit profiluri</string>
-    <string name="profile_selection_primary_badge">PRIMAR</string>
 
     <!-- CastDetailScreen -->
     <string name="cast_detail_error">Ceva a mers greșit</string>
@@ -704,16 +533,8 @@
 
     <!-- UpdatePromptDialog -->
     <string name="update_title">Actualizare aplicație</string>
-    <string name="update_downloading">Se descarcă actualizarea</string>
     <string name="update_unknown_sources">Permite instalarea din surse necunoscute pentru a continua.</string>
     <!-- AccountScreen -->
-    <string name="account_title">Cont</string>
-    <string name="account_sign_in_description">Conectează-te pentru a sincroniza biblioteca, progresul de vizionare, suplimentele și plugin-urile pe toate dispozitivele. Biblioteca și progresul de vizionare se sincronizează doar când Trakt nu este conectat.</string>
-    <string name="account_sync_code_title">Cod de sincronizare</string>
-    <string name="account_sync_code_description">Sincronizează pe dispozitive fără a crea un cont.</string>
-    <string name="account_linked_devices">Dispozitive conectate (%1$d)</string>
-    <string name="account_no_linked_devices">Niciun dispozitiv conectat</string>
-    <string name="account_unlink">Deconectează</string>
 
     <!-- EpisodeRatingsSection -->
     <string name="ratings_loading">Se încarcă evaluările episodului...</string>
@@ -742,12 +563,9 @@
     <!-- PluginScreen -->
     <string name="plugin_and_more">... și %1$d în plus</string>
     <string name="plugin_providers_count">%1$d furnizori</string>
-    <string name="plugin_enabled">Activat</string>
-    <string name="plugin_disabled">Dezactivat</string>
     <string name="plugin_no_repos">Nu au fost adăugate încă depozite.\nAdăugați un depozit pentru a începe.</string>
 
     <!-- ProfileSettingsContent -->
-    <string name="profile_edit_title_id">Editați profilul %1$d</string>
 
     <!-- PlaybackAudioSettings -->
     <string name="audio_passthrough_info">Passthrough audio (TrueHD, DTS, AC-3, etc.) este automat. Când este conectat la un receptor AV compatibil sau soundbar prin HDMI, audio lossless este trimis așa cum este, fără decodare.</string>
@@ -760,11 +578,9 @@
     <string name="nav_addons">Add-onuri</string>
     <string name="nav_settings">Setări</string>
     <string name="settings_rounded_ui">Interfață rotunjită</string>
-    <string name="cd_expand_sidebar">Extinde bara laterală</string>
     <string name="update_close">Închide</string>
     <string name="update_open_settings">Deschide Setările</string>
     <string name="update_install">Instalează</string>
-    <string name="update_ignore">Ignoră</string>
       <string name="playback_player_auto">Automat (Cel mai bun pentru conținut)</string>
     <string name="playback_player_auto_desc">ExoPlayer pentru Filme și Seriale · MPV pentru Anime</string>
 </resources>

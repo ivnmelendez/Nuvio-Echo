@@ -192,7 +192,7 @@ android {
         }
         create("playstore") {
             dimension = "distribution"
-            applicationId = "com.nuvio.app"
+            applicationId = "com.tivistream.tv"
             // No rows of the owner's own: Home shows the installed addons' catalogs, unless an addon names a rows file.
             buildConfigField("String", "REMOTE_CONFIG_URL", "\"\"")
             buildConfigField("boolean", "FEATURE_PLUGINS_ENABLED", "false")
@@ -380,7 +380,7 @@ android {
 androidComponents {
     onVariants(selector().withBuildType("debug")) { variant ->
         val isPlaystore = variant.productFlavors.any { it.second == "playstore" }
-        variant.applicationId.set(if (isPlaystore) "com.nuvio.appdebug" else "com.nuviobeta.tv")
+        variant.applicationId.set(if (isPlaystore) "com.tivistream.tv.debug" else "com.nuviobeta.tv")
     }
     onVariants(selector().withBuildType("beta")) { variant ->
         variant.applicationId.set("com.nuviobeta.tv")
