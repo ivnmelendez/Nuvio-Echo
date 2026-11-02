@@ -94,7 +94,8 @@ class NewLookChrome internal constructor(
     private val menuFocusedState: State,
     private val focusTopBarAction: () -> Unit,
     private val topBarContent: @Composable (onDown: () -> Unit, modifier: Modifier) -> Unit,
-    private val pageScroll: androidx.compose.runtime.MutableFloatState
+    private val pageScroll: androidx.compose.runtime.MutableFloatState,
+    private val homeReady: androidx.compose.runtime.MutableIntState
 ) {
     internal class State {
         var pill by mutableStateOf(false)
@@ -115,6 +116,14 @@ class NewLookChrome internal constructor(
     fun reportPageScroll(px: Float) {
         pageScroll.floatValue = px
     }
+
+    /**
+     * Home has its rows on screen. The pinned bar and its black band wait for it: shown as soon as the route changed
+     * back to Home, they sat over the details page still leaving, before any of Home was there. Counted, as two Homes
+     * (two tabs) are composed together for a moment while the screen changes.
+     */
+    fun homeReadyUp() { homeReady.intValue += 1 }
+    fun homeReadyDown() { homeReady.intValue = (homeReady.intValue - 1).coerceAtLeast(0) }
 
     /** Menu on top: moves focus to the current screen's tab (Up from Home's window). */
     fun focusTopBar() = focusTopBarAction()
@@ -185,7 +194,9 @@ internal fun NewLookScaffold(
 
     val barItems = remember(drawerItems) { topBarOrder(drawerItems) }
     val leftGate = remember { SidebarLeftGate() }
-    val pageScroll = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    // Without a hero the page is always past it: the pinned bar and its black band are there from the first frame,
+    // not once Home has laid out and said so.
+    val pageScroll = remember { androidx.compose.runtime.mutableFloatStateOf(if (com.nuvio.tv.ui.newlook.home.HERO_ENABLED) 0f else 100_000f) }
 
     fun focusAfterLayout(requester: FocusRequester) {
         scope.launch {
@@ -257,6 +268,7 @@ internal fun NewLookScaffold(
     // Root screens make room for the sidebar only while it stays on screen; hidden or on top, they use the full
     // width (Genres and Search had a wasted column on the left).
     val sidebarInset = if (!menuOnTop && !hideMenu) NuvioLayout.tokens.sidebarContentOffset else 0.dp
+    val homeReady = remember { androidx.compose.runtime.mutableIntStateOf(0) }
     val chrome = remember(menuOnTop, hideMenu, barItems, selectedDrawerRoute, onHome) {
         NewLookChrome(
             menuOnTop = menuOnTop,
@@ -265,16 +277,27 @@ internal fun NewLookScaffold(
             menuFocusedState = focusState,
             focusTopBarAction = { latestOpenMenu() },
             topBarContent = { onDown, modifier -> latestTopBar(onDown, modifier) },
-            pageScroll = pageScroll
+            pageScroll = pageScroll,
+            homeReady = homeReady
         )
     }
 
     // Menu on top, Home scrolled past its hero: the bar and avatar left with it, so they come back pinned to the top.
     val pastHero by remember { androidx.compose.runtime.derivedStateOf { pageScroll.floatValue >= 100_000f } }
-    val pinnedBar = menuOnTop && !hideMenu && showMenu && onHome && pastHero
+    val pinnedBar = menuOnTop && !hideMenu && showMenu && onHome && pastHero && homeReady.intValue > 0
     val pinReveal by animateFloatAsState(
         targetValue = if (pinnedBar) 1f else 0f,
-        animationSpec = tween(200, easing = FastOutSlowInEasing),
+        // Coming in, the bar fades with Home's own entrance (the screen before it fades out first, then Home fades in),
+        // so it arrives as part of Home and not ahead of it. Going out it leaves at once.
+        animationSpec = if (pinnedBar) {
+            androidx.compose.animation.core.tween(
+                com.nuvio.tv.ui.navigation.FADE_IN_MS,
+                delayMillis = com.nuvio.tv.ui.navigation.FADE_OUT_MS,
+                easing = androidx.compose.animation.core.LinearEasing
+            )
+        } else {
+            androidx.compose.animation.core.snap()
+        },
         label = "pinnedBarReveal"
     )
 
@@ -354,7 +377,7 @@ internal fun NewLookScaffold(
             val shown = !hideMenu || focusState.any
             val reveal by animateFloatAsState(
                 targetValue = if (shown) 1f else 0f,
-                animationSpec = tween(240, easing = FastOutSlowInEasing),
+                animationSpec = androidx.compose.animation.core.snap(),
                 label = "menuReveal"
             )
             if (hideMenu && reveal > 0f) {
@@ -417,12 +440,8 @@ internal fun NewLookScaffold(
         if (pinnedBar || pinReveal > 0f) {
             // Home on a row with the menu on top: the bar stays at the top, over a scrim.
             Box(modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = pinReveal }) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .background(Brush.verticalGradient(listOf(Color(0xE0060606), Color.Transparent)))
-                )
+                // The black band under the bar lives in Home (it comes and goes with the rows). Here it went as soon as the
+                // route left Home, while Home was still fading out, and the row hidden behind it showed for a moment.
                 Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop), contentAlignment = Alignment.TopCenter) {
                     topBar({ closeMenu() }, Modifier)
                 }
@@ -452,14 +471,14 @@ internal fun NewLookScaffold(
             val avatarShown = (showMenu && onHome && (!hideMenu || focusState.any)) || avatarNotify.visible
             val avatarReveal by animateFloatAsState(
                 targetValue = if (avatarShown) 1f else 0f,
-                animationSpec = tween(280, easing = FastOutSlowInEasing),
+                animationSpec = androidx.compose.animation.core.snap(),
                 label = "avatarReveal"
             )
             // Menu on top and showing: the avatar scrolls away with the page and its tab bar.
             val scrollsWithPage = menuOnTop && !hideMenu && showMenu && onHome
             val lift by animateFloatAsState(
                 targetValue = if (avatarNotify.lifted) 1f else 0f,
-                animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
+                animationSpec = androidx.compose.animation.core.snap(),
                 label = "avatarLift"
             )
             ProfileBubble(
@@ -579,7 +598,7 @@ internal fun GlassPill(
                             selected -> Color(0xFFE6E6E6)
                             else -> Color(0xFF9E9E9E)
                         },
-                        animationSpec = tween(200),
+                        animationSpec = androidx.compose.animation.core.snap(),
                         label = "pillIconTint"
                     )
                     Box(
@@ -612,8 +631,8 @@ internal fun GlassPill(
 private fun PillLens(at: Int, focused: Boolean) {
     val density = LocalDensity.current
     val step = with(density) { (IconSlot + IconGap).toPx() }
-    val y by animateFloatAsState(targetValue = at * step, animationSpec = tween(140), label = "lensY")
-    val alpha by animateFloatAsState(if (focused) 1f else 0.55f, tween(200), label = "lensAlpha")
+    val y by animateFloatAsState(targetValue = at * step, animationSpec = androidx.compose.animation.core.snap(), label = "lensY")
+    val alpha by animateFloatAsState(if (focused) 1f else 0.55f, androidx.compose.animation.core.snap(), label = "lensAlpha")
     Box(
         modifier = Modifier
             // 48 wide in the pill's 40-wide content: requiredSize keeps it a full circle, centred on the icon (size
@@ -718,9 +737,9 @@ internal fun GlassTabBar(
         val target = bounds[at]
         if (target != null) {
             // A short straight slide: no spring, no swell.
-            val x by animateFloatAsState(target.first, tween(140), label = "barLensX")
-            val w by animateFloatAsState(target.second, tween(140), label = "barLensW")
-            val alpha by animateFloatAsState(if (hasFocus && lit) 1f else 0.55f, tween(200), label = "barLensAlpha")
+            val x by animateFloatAsState(target.first, androidx.compose.animation.core.snap(), label = "barLensX")
+            val w by animateFloatAsState(target.second, androidx.compose.animation.core.snap(), label = "barLensW")
+            val alpha by animateFloatAsState(if (hasFocus && lit) 1f else 0.55f, androidx.compose.animation.core.snap(), label = "barLensAlpha")
             val density = LocalDensity.current
             Box(
                 modifier = Modifier
@@ -794,7 +813,7 @@ internal fun ProfileBubble(
     modifier: Modifier = Modifier
 ) {
     var focused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (focused) 1.06f else 1f, tween(200), label = "avatarScale")
+    val scale by animateFloatAsState(if (focused) 1.06f else 1f, androidx.compose.animation.core.snap(), label = "avatarScale")
     val ring = focusRingColor
     Box(
         modifier = modifier

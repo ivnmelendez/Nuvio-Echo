@@ -99,8 +99,8 @@ fun NuvioNavHost(
  * Screens change through black, one after the other: the old one fades out, then the new one fades in. Crossfading
  * them at once drew both on top of each other for a moment (titles over titles), which read as a flash.
  */
-private const val FADE_OUT_MS = 110
-private const val FADE_IN_MS = 170
+internal const val FADE_OUT_MS = 110
+internal const val FADE_IN_MS = 170
 
 /** Opens the Speed Test screen; a no-op outside the nav host. */
 val LocalOpenSpeedTest = staticCompositionLocalOf<() -> Unit> { {} }
