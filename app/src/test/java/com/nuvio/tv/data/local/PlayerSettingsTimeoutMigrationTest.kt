@@ -6,8 +6,8 @@ import org.junit.Test
 class PlayerSettingsTimeoutMigrationTest {
 
     @Test
-    fun `null stored value returns default of 3 seconds`() {
-        assertEquals(3, PlayerSettings.applyLegacyTimeoutSentinelMigration(null))
+    fun `null stored value returns the default of 0 seconds`() {
+        assertEquals(0, PlayerSettings.applyLegacyTimeoutSentinelMigration(null))
     }
 
     @Test
