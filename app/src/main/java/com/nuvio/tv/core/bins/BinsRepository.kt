@@ -9,7 +9,9 @@ import com.nuvio.tv.core.profile.ProfileManager
 import com.nuvio.tv.core.tracking.LOCAL_LIBRARY_LIST_KEY
 import com.nuvio.tv.data.local.LibraryPreferences
 import com.nuvio.tv.data.local.ProfileDataStoreFactory
+import com.nuvio.tv.data.mdblist.MDBLIST_WATCHLIST_KEY
 import com.nuvio.tv.domain.model.LibraryEntryInput
+import com.nuvio.tv.domain.model.LibrarySourceMode
 import com.nuvio.tv.domain.model.ListMembershipChanges
 import com.nuvio.tv.domain.model.SavedLibraryItem
 import com.nuvio.tv.domain.repository.LibraryRepository
@@ -237,9 +239,12 @@ class BinsRepositoryImpl @Inject constructor(
     }
 
     private suspend fun setInLibrary(item: LibraryEntryInput, inLibrary: Boolean) {
+        // With MDBList as the library, Watch later is that account's watchlist.
+        val key = if (libraryRepository.sourceMode.first() == LibrarySourceMode.MDBLIST) MDBLIST_WATCHLIST_KEY
+        else LOCAL_LIBRARY_LIST_KEY
         libraryRepository.applyMembershipChanges(
             item = item,
-            changes = ListMembershipChanges(mapOf(LOCAL_LIBRARY_LIST_KEY to inLibrary))
+            changes = ListMembershipChanges(mapOf(key to inLibrary))
         )
     }
 

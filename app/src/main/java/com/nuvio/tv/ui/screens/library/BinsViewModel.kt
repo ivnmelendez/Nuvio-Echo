@@ -11,6 +11,11 @@ import com.nuvio.tv.core.bins.BinNameResult
 import com.nuvio.tv.core.bins.BinSort
 import com.nuvio.tv.core.bins.BinsReducer
 import com.nuvio.tv.core.bins.BinsRepository
+import com.nuvio.tv.core.bins.toInput
+import com.nuvio.tv.data.mdblist.MDBLIST_WATCHLIST_KEY
+import com.nuvio.tv.domain.model.LibrarySourceMode
+import com.nuvio.tv.domain.model.ListMembershipChanges
+import com.nuvio.tv.domain.repository.LibraryRepository
 import com.nuvio.tv.core.poster.CustomPosterScreen
 import com.nuvio.tv.core.poster.patternForScreen
 import com.nuvio.tv.core.poster.withCustomPosterUrls
@@ -29,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -57,6 +63,7 @@ data class BinsUiState(
 class BinsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: BinsRepository,
+    private val libraryRepository: LibraryRepository,
     private val layoutPreferences: LayoutPreferenceDataStore,
     private val watchProgressRepository: WatchProgressRepository,
     private val watchedSeriesStateHolder: com.nuvio.tv.data.local.WatchedSeriesStateHolder,
@@ -81,9 +88,21 @@ class BinsViewModel @Inject constructor(
         watchedSeriesStateHolder.fullyWatchedSeriesIds
     ) { movies, series -> movies to series }
 
-    val uiState: StateFlow<BinsUiState> = combine(repository.state, posterLayout, watched) { state, layout, watched ->
+    /** With MDBList as the library, Watch later is that account's watchlist rather than the bins kept on the device. */
+    private val remoteWatchlist = combine(libraryRepository.sourceMode, libraryRepository.libraryItems) { mode, items ->
+        if (mode != LibrarySourceMode.MDBLIST) null
+        else items.filter { MDBLIST_WATCHLIST_KEY in it.listKeys }.map {
+            BinEntry(
+                id = it.id, type = it.type, name = it.name, poster = it.poster, background = it.background,
+                logo = it.logo, description = it.description, releaseInfo = it.releaseInfo,
+                imdbRating = it.imdbRating, genres = it.genres, addonBaseUrl = it.addonBaseUrl, addedAt = it.listedAt
+            )
+        }
+    }
+
+    val uiState: StateFlow<BinsUiState> = combine(repository.state, posterLayout, watched, remoteWatchlist) { state, layout, watched, remote ->
         val (width, corner, pattern) = layout
-        val entries = state.bins.flatMap { it.entries }.distinctBy { it.key }.sortedByDescending { it.addedAt }
+        val entries = (remote ?: state.bins.flatMap { it.entries }).distinctBy { it.key }.sortedByDescending { it.addedAt }
         val previews = entries.map { it.toPreview() }.withCustomPosterUrls(pattern)
         BinsUiState(
             loaded = true,
@@ -97,7 +116,16 @@ class BinsViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), BinsUiState())
 
     fun removeTitle(title: BinTitle) {
-        viewModelScope.launch { repository.removeFromWatchLater(title.entry.id, title.entry.type) }
+        viewModelScope.launch {
+            if (libraryRepository.sourceMode.first() == LibrarySourceMode.MDBLIST) {
+                libraryRepository.applyMembershipChanges(
+                    item = title.entry.toInput(),
+                    changes = ListMembershipChanges(mapOf(MDBLIST_WATCHLIST_KEY to false))
+                )
+            } else {
+                repository.removeFromWatchLater(title.entry.id, title.entry.type)
+            }
+        }
         showMessage(context.getString(R.string.watch_later_removed))
     }
 
