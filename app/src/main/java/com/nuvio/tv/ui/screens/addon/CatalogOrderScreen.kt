@@ -184,7 +184,9 @@ private fun CatalogOrderCard(
     onToggleGrand: () -> Unit = {}
 ) {
     // Null hides the button (classic look).
-    val highlighted = item.highlighted
+    // Wide and grand rows are not made in builds without them, so the buttons would do nothing.
+    val carousels = com.nuvio.tv.core.build.AppFeaturePolicy.carouselRowsEnabled
+    val highlighted = item.highlighted.takeIf { carousels }
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = NuvioTheme.colors.BackgroundCard),
@@ -295,7 +297,7 @@ private fun CatalogOrderCard(
                     }
                 }
 
-                val grand = item.grand
+                val grand = item.grand.takeIf { carousels }
                 if (grand != null) {
                     Button(
                         onClick = onToggleGrand,
