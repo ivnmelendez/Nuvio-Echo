@@ -204,9 +204,10 @@ private fun AutoPlayBody(
             val statusText = when {
                 !isPlayable && !nextEpisode.unairedMessage.isNullOrBlank() -> nextEpisode.unairedMessage
                 mode.searching -> stringResource(R.string.next_episode_finding_source)
+                // The addon's name isn't shown: it means nothing to the person watching.
                 !mode.sourceName.isNullOrBlank() && mode.countdownSec != null ->
-                    stringResource(R.string.next_episode_playing_via, mode.sourceName, mode.countdownSec)
-                !mode.sourceName.isNullOrBlank() -> stringResource(R.string.next_episode_ready_via, mode.sourceName)
+                    stringResource(R.string.next_episode_playing_in, mode.countdownSec)
+                !mode.sourceName.isNullOrBlank() -> stringResource(R.string.next_episode_ready)
                 else -> null
             }
             if (statusText != null) {
