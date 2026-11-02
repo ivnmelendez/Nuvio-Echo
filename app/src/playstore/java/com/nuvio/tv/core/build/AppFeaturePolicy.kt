@@ -9,6 +9,8 @@ object AppFeaturePolicy {
     val codeActivationEnabled: Boolean = false
     /** Wide auto-advancing rows (highlights, grand rows, smart highlights); off means plain poster rows only. */
     val carouselRowsEnabled: Boolean = false
+    /** The collections screen in addon settings (folders of catalogs on Home). */
+    val collectionsEnabled: Boolean = false
     val essentialSettingsOnly: Boolean = true
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = ""

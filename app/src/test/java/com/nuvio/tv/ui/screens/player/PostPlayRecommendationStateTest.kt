@@ -198,8 +198,8 @@ class PostPlayRecommendationStateTest {
     }
 
     @Test
-    fun `post play recommendations default on and respect the setting`() {
-        assertTrue(PlayerSettings().postPlayRecommendationsEnabled)
+    fun `post play recommendations default off and respect the setting`() {
+        assertFalse(PlayerSettings().postPlayRecommendationsEnabled)
         assertFalse(
             shouldUsePostPlayRecommendation(
                 contentType = "movie",

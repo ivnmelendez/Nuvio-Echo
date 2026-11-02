@@ -423,7 +423,7 @@ fun AddonManagerScreen(
                 }
             }
 
-            if (!isEssential) {
+            if (!isEssential && com.nuvio.tv.core.build.AppFeaturePolicy.collectionsEnabled) {
                 item {
                     CollectionsEntryCard(onClick = onNavigateToCollections)
                 }

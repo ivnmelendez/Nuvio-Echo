@@ -270,7 +270,7 @@ data class PlayerSettings(
     val streamAutoPlayRegex: String = "",
     /** Auto-play's preferred sources, as pill keys (see AutoPlayPreferences); they replace the regex once any is picked. */
     val streamAutoPlayPreferences: Set<String> = emptySet(),
-    val postPlayRecommendationsEnabled: Boolean = true,
+    val postPlayRecommendationsEnabled: Boolean = false,
     val postPlayMovieThresholdPercent: Int = DEFAULT_POST_PLAY_MOVIE_THRESHOLD_PERCENT,
     val streamAutoPlayNextEpisodeEnabled: Boolean = false,
     val streamAutoPlayNextEpisodeFallbackEnabled: Boolean = true,
@@ -953,7 +953,7 @@ class PlayerSettingsDataStore @Inject constructor(
                 streamAutoPlaySelectedPlugins = prefs[streamAutoPlaySelectedPluginsKey] ?: emptySet(),
                 streamAutoPlayRegex = prefs[streamAutoPlayRegexKey] ?: "",
                 streamAutoPlayPreferences = prefs[streamAutoPlayPreferencesKey] ?: emptySet(),
-                postPlayRecommendationsEnabled = prefs[postPlayRecommendationsEnabledKey] ?: true,
+                postPlayRecommendationsEnabled = prefs[postPlayRecommendationsEnabledKey] ?: false,
                 postPlayMovieThresholdPercent = (prefs[postPlayMovieThresholdPercentKey]
                     ?: PlayerSettings.DEFAULT_POST_PLAY_MOVIE_THRESHOLD_PERCENT).coerceIn(
                     PlayerSettings.MIN_POST_PLAY_MOVIE_THRESHOLD_PERCENT,
