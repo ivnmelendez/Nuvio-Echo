@@ -2373,4 +2373,6 @@
     <string name="detail_watch_rent">Renta</string>
     <string name="detail_watch_buy">Compra</string>
     <string name="detail_watch_justwatch">Datos de JustWatch</string>
+    <string name="nd_hold_mark_watched">Marcar como visto</string>
+    <string name="nd_hold_mark_unwatched">Marcar como no visto</string>
 </resources>

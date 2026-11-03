@@ -786,6 +786,7 @@ fun MetaDetailsScreen(
                     onTrailerProgressChanged = onTrailerProgressChanged,
                     onTrailerEnded = { viewModel.onEvent(MetaDetailsEvent.OnTrailerEnded) },
                     onPlayEpisode = playEpisode,
+                    onToggleEpisodeWatched = { video -> viewModel.onEvent(MetaDetailsEvent.OnToggleEpisodeWatched(video)) },
                     // The classic page's episode focus does the same: the ViewModel warms the episode's sources
                     // once focus has rested on it.
                     onEpisodeFocused = { video ->

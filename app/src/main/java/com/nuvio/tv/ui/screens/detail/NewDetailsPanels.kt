@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsNone
@@ -145,6 +146,7 @@ internal fun EpisodesPanel(
     episodeRatings: Map<Pair<Int, Int>, TitleRating>,
     episodeReviews: Map<Pair<Int, Int>, ReviewsState>,
     onPlayEpisode: (Video) -> Unit,
+    onToggleEpisodeWatched: (Video) -> Unit,
     onRateEpisode: (Video, TitleRating) -> Unit,
     onLoadEpisodeReviews: (Video) -> Unit,
     onOpenReview: (List<TraktCommentReview>, Int) -> Unit,
@@ -380,6 +382,10 @@ internal fun EpisodesPanel(
                 video = video,
                 anchor = menuAnchor,
                 current = episodeRatings[(video.season ?: 0) to (video.episode ?: 0)],
+                watched = ((video.season ?: 0) to (video.episode ?: 0)).let { key ->
+                    key in state.watchedEpisodes || state.episodeProgressMap[key]?.isCompleted() == true
+                },
+                onToggleWatched = { onToggleEpisodeWatched(video); refocusEpisode = video.id; menuFor = null },
                 upcoming = upcoming != null,
                 reminderOn = upcoming != null && upcoming.key in reminders,
                 onPlay = {
@@ -749,6 +755,8 @@ private fun EpisodeHoldMenu(
     video: Video,
     anchor: Rect,
     current: TitleRating?,
+    watched: Boolean,
+    onToggleWatched: () -> Unit,
     upcoming: Boolean,
     reminderOn: Boolean,
     onPlay: () -> Unit,
@@ -763,7 +771,7 @@ private fun EpisodeHoldMenu(
             delay(40)
         }
     }
-    val menuHeight = with(density) { 262.dp.toPx() }
+    val menuHeight = with(density) { 130.dp.toPx() }
     val screenHeight = with(density) { androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp.dp.toPx() }
     val x = anchor.left + with(density) { 214.dp.toPx() }
     val y = (anchor.top - with(density) { 4.dp.toPx() })
@@ -797,18 +805,14 @@ private fun EpisodeHoldMenu(
                 Icon(Icons.Filled.PlayArrow, null, tint = c, modifier = Modifier.size(18.dp))
             }
         }
-        HoldItem(stringResource(R.string.nd_hold_liked), current == TitleRating.LIKE, null, { onRate(TitleRating.LIKE) }) { c ->
-            DetailGlyphIcon(DetailGlyph.THUMB_UP, current == TitleRating.LIKE, c, 17.dp)
-        }
-        HoldItem(stringResource(R.string.nd_hold_loved), current == TitleRating.LOVE, null, { onRate(TitleRating.LOVE) }) { c ->
-            DetailGlyphIcon(DetailGlyph.THUMBS_UP_DOUBLE, current == TitleRating.LOVE, c, 18.dp)
-        }
-        HoldItem(stringResource(R.string.nd_hold_not_for_me), current == TitleRating.DISLIKE, null, { onRate(TitleRating.DISLIKE) }) { c ->
-            DetailGlyphIcon(DetailGlyph.THUMB_DOWN, current == TitleRating.DISLIKE, c, 17.dp)
-        }
-        Box(Modifier.padding(horizontal = 10.dp, vertical = 4.dp).fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = 0.12f)))
-        HoldItem(stringResource(R.string.nd_hold_reviews), false, null, onReviews) { c ->
-            Icon(Icons.Outlined.ChatBubbleOutline, null, tint = c, modifier = Modifier.size(17.dp))
+        // Not out yet: nothing to mark. Otherwise one switch, which reaches MDBList or this device, whichever keeps the history.
+        if (!upcoming) {
+            HoldItem(
+                stringResource(if (watched) R.string.nd_hold_mark_unwatched else R.string.nd_hold_mark_watched),
+                false, null, onToggleWatched
+            ) { c ->
+                Icon(if (watched) Icons.Outlined.VisibilityOff else Icons.Filled.Check, null, tint = c, modifier = Modifier.size(18.dp))
+            }
         }
     }
 }

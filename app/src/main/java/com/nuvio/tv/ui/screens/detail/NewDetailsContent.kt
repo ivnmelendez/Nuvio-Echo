@@ -271,6 +271,7 @@ internal fun NewDetailsContent(
     onTrailerProgressChanged: (Long, Long) -> Unit,
     onTrailerEnded: () -> Unit,
     onPlayEpisode: (Video) -> Unit,
+    onToggleEpisodeWatched: (Video) -> Unit,
     /** An episode in the Episodes panel has focus. */
     onEpisodeFocused: (Video) -> Unit,
     onPlayTitle: (String) -> Unit,
@@ -605,6 +606,7 @@ internal fun NewDetailsContent(
                 episodeRatings = episodeRatings,
                 episodeReviews = episodeReviews,
                 onPlayEpisode = { video -> panel = null; onPlayEpisode(video) },
+                onToggleEpisodeWatched = onToggleEpisodeWatched,
                 onRateEpisode = { video, rating -> extras.toggleEpisodeRating(meta, video, rating) },
                 onLoadEpisodeReviews = { video -> extras.loadEpisodeReviews(meta, video) },
                 onOpenReview = { list, index -> reviewDirection = 0; openReview = list to index },

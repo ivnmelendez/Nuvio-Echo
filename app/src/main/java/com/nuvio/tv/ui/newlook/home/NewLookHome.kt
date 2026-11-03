@@ -1923,7 +1923,7 @@ private fun RowCard(
                 when (cw) {
                     is ContinueWatchingItem.InProgress -> cw.progress.poster
                     is ContinueWatchingItem.NextUp -> cw.info.poster
-                }
+                }?.sharperPoster()
             } ?: preview.poster ?: item.imageUrl,
             progress = ((item.payload as? ModernPayload.ContinueWatching)?.item as? ContinueWatchingItem.InProgress)
                 ?.progress?.progressPercentage,

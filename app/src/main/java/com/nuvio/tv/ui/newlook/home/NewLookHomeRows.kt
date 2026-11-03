@@ -428,3 +428,13 @@ internal fun List<NewLookRow>.forTab(tab: String?): List<NewLookRow> = when (tab
     }
     else -> this
 }
+
+/**
+ * A Continue Watching poster comes from the watch history, often as a small thumbnail; the other rows' posters are
+ * w500. TMDB and metahub pictures are asked for at that size here; any other address is left as it is.
+ */
+internal fun String.sharperPoster(): String = when {
+    "image.tmdb.org/t/p/" in this -> replace(Regex("/t/p/(w\\d+|original)/"), "/t/p/w500/")
+    "images.metahub.space/poster/" in this -> replace(Regex("/poster/(small|medium)/"), "/poster/medium/")
+    else -> this
+}
