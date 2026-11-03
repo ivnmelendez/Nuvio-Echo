@@ -31,6 +31,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.outlined.NotificationsNone
@@ -1325,98 +1327,86 @@ internal fun shortReleaseDate(date: java.time.LocalDate): String {
 
 /**
  * The page Play opens while no addon serves streams: where the title is offered in the region, with TMDB's logo and
- * name for each provider (JustWatch's data). A provider opens TMDB's page for the title, which links to it.
+ * name for each provider (JustWatch's data). Only Back can be selected; the tiles are information.
  */
 @Composable
 private fun NdWhereToWatchScreen(title: String, providers: WatchProviders?, onClose: () -> Unit) {
-    val context = LocalContext.current
     BackHandler(onBack = onClose)
-    val first = remember { FocusRequester() }
+    val backFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) {
         repeat(5) {
-            if (runCatching { first.requestFocus() }.getOrDefault(false)) return@LaunchedEffect
+            if (runCatching { backFocus.requestFocus() }.getOrDefault(false)) return@LaunchedEffect
             delay(60)
-        }
-    }
-    val openLink: () -> Unit = {
-        providers?.link?.let { link ->
-            runCatching {
-                context.startActivity(
-                    android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(link))
-                        .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            }
         }
     }
     Column(
         Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(horizontal = 56.dp, vertical = 36.dp)
+            .padding(start = 34.dp, top = 30.dp, end = 34.dp)
             .focusGroup(),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         var backFocused by remember { mutableStateOf(false) }
         Row(
             Modifier
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .background(if (backFocused) Color.White.copy(alpha = 0.16f) else Color.Transparent)
-                .ndClickable(onFocusChanged = { backFocused = it }, onClick = onClose)
-                .padding(horizontal = 14.dp, vertical = 8.dp),
+                .ndClickable(focusRequester = backFocus, onFocusChanged = { backFocused = it }, onClick = onClose)
+                .padding(horizontal = 4.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(22.dp))
-            Text(stringResource(R.string.nd_where_back), color = Color.White, fontSize = 18.sp)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(18.dp))
+            Text(stringResource(R.string.nd_where_back), color = Color.White, fontSize = 14.sp)
         }
-        Column(Modifier.padding(start = 100.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 13.sp)
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Icon(Icons.Filled.PlayArrow, null, tint = Color.White, modifier = Modifier.size(34.dp))
+        Column(Modifier.padding(start = 56.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 9.sp)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Icon(Icons.Filled.PlayArrow, null, tint = Color.White, modifier = Modifier.size(22.dp))
                 Column {
-                    Text(stringResource(R.string.detail_where_to_watch), color = NdText2, fontSize = 22.sp)
-                    Text(title, color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+                    Text(stringResource(R.string.detail_where_to_watch), color = NdText2, fontSize = 15.sp)
+                    Text(title, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Medium, maxLines = 1)
                 }
             }
             val groups = listOf(
-                R.string.detail_watch_stream to providers?.stream.orEmpty(),
-                R.string.detail_watch_rent to providers?.rent.orEmpty(),
-                R.string.detail_watch_buy to providers?.buy.orEmpty()
+                Triple(R.string.detail_watch_stream, providers?.stream.orEmpty(), Icons.Filled.PlayArrow to Color(0xFF3DDC84)),
+                Triple(R.string.detail_watch_rent, providers?.rent.orEmpty(), Icons.Filled.CreditCard to Color(0xFFFFA000)),
+                Triple(R.string.detail_watch_buy, providers?.buy.orEmpty(), Icons.Filled.ShoppingCart to Color(0xFFFFA000))
             ).filter { it.second.isNotEmpty() }
             if (groups.isEmpty()) {
-                Text(stringResource(R.string.nd_where_none), color = NdText2, fontSize = 16.sp)
+                Text(stringResource(R.string.nd_where_none), color = NdText2, fontSize = 13.sp)
             }
-            var firstTile = true
-            groups.forEach { (label, shown) ->
-                Spacer(Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Icon(Icons.Filled.PlayArrow, null, tint = Color(0xFF3DDC84), modifier = Modifier.size(20.dp))
-                    Text(stringResource(label), color = Color.White, fontSize = 22.sp)
+            groups.forEach { (label, shown, mark) ->
+                Spacer(Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(mark.first, null, tint = mark.second, modifier = Modifier.size(16.dp))
+                    Text(stringResource(label), color = Color.White, fontSize = 16.sp)
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     shown.take(8).forEach { provider ->
-                        var focused by remember { mutableStateOf(false) }
-                        val requester = if (firstTile) first else null
-                        firstTile = false
                         Column(
                             Modifier
-                                .width(150.dp)
-                                .clip(RoundedCornerShape(14.dp))
+                                .width(100.dp)
+                                .clip(RoundedCornerShape(10.dp))
                                 .background(Color(0xFF1C1C1C))
-                                .border(if (focused) 3.dp else 1.dp, if (focused) Color.White else Color(0xFF333333), RoundedCornerShape(14.dp))
-                                .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = openLink)
-                                .padding(14.dp),
+                                .border(1.dp, Color(0xFF333333), RoundedCornerShape(10.dp))
+                                .padding(horizontal = 8.dp, vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             if (provider.logoUrl != null) {
                                 AsyncImage(
                                     model = provider.logoUrl.replace("/w45/", "/w154/"),
                                     contentDescription = provider.name,
-                                    modifier = Modifier.size(72.dp).clip(RoundedCornerShape(8.dp))
+                                    modifier = Modifier.size(52.dp).clip(RoundedCornerShape(6.dp))
                                 )
                             }
-                            Text(provider.name, color = Color.White, fontSize = 14.sp, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                            Text(
+                                provider.name, color = Color.White, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
                         }
                     }
                 }
