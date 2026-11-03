@@ -2300,4 +2300,10 @@
     <string name="nd_where_back">Atrás</string>
     <string name="nd_where_none">No hay datos de disponibilidad para tu región.</string>
     <string name="player_btn_links">Enlaces</string>
+    <string name="player_panel_audio">Audio</string>
+    <string name="player_panel_subtitles">Subtítulos</string>
+    <string name="player_panel_subtitles_none">Ninguno</string>
+    <string name="player_panel_links">Enlaces</string>
+    <string name="player_panel_links_loading">Cargando enlaces…</string>
+    <string name="player_panel_links_none">No hay enlaces disponibles</string>
 </resources>

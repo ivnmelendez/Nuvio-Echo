@@ -1684,20 +1684,19 @@ private fun PlayerScreenContent(
             )
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                StreamSourcesSidePanel(
-                    uiState = uiState,
-                    streamsFocusRequester = sourceStreamsFocusRequester,
-                    onClose = {
+                ReferenceLinksPanel(
+                    streams = uiState.sourceFilteredStreams,
+                    currentUrl = uiState.currentStreamUrl,
+                    loading = uiState.isLoadingSourceStreams,
+                    error = uiState.sourceStreamsError,
+                    onSelected = { viewModel.onEvent(PlayerEvent.OnSourceStreamSelected(it)) },
+                    onDismiss = {
                         if (uiState.currentStreamUrl.isNullOrBlank()) {
                             exitPlayer()
                         } else {
                             viewModel.onEvent(PlayerEvent.OnDismissSourcesPanel)
                         }
                     },
-                    onReload = { viewModel.onEvent(PlayerEvent.OnReloadSourceStreams) },
-                    onAddonFilterSelected = { viewModel.onEvent(PlayerEvent.OnSourceAddonFilterSelected(it)) },
-                    onStreamSelected = { viewModel.onEvent(PlayerEvent.OnSourceStreamSelected(it)) },
-                    onExpandStreams = { viewModel.controller.expandSourceFilteredStreamsIfNeeded() },
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
             }
@@ -1775,36 +1774,17 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Audio track dialog
-        AudioSelectionOverlay(
+        // Audio: the reference's side panel (language and channels, a check on the one playing).
+        ReferenceAudioPanel(
             visible = uiState.showAudioOverlay,
             tracks = uiState.audioTracks,
             selectedIndex = uiState.selectedAudioTrackIndex,
-            audioDelayMs = uiState.audioDelayMs,
-            audioAmplificationDb = uiState.audioAmplificationDb,
-            isAmplificationAvailable = uiState.isAudioAmplificationAvailable,
-            persistAmplification = uiState.persistAudioAmplification,
-            centerMixLevelDb = uiState.centerMixLevelDb,
-            isCenterMixAvailable = uiState.isCenterMixAvailable,
-            onTrackSelected = { viewModel.onEvent(PlayerEvent.OnSelectAudioTrack(it)) },
-            onAudioDelayChange = { viewModel.onEvent(PlayerEvent.OnSetAudioDelayMs(it)) },
-            onAmplificationChange = { viewModel.onEvent(PlayerEvent.OnSetAudioAmplificationDb(it)) },
-            onPersistAmplificationChange = {
-                viewModel.onEvent(PlayerEvent.OnSetPersistAudioAmplification(it))
-            },
-            onCenterMixLevelChange = {
-                viewModel.onEvent(PlayerEvent.OnSetCenterMixLevelDb(it))
+            onTrackSelected = {
+                viewModel.onEvent(PlayerEvent.OnSelectAudioTrack(it))
+                viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay)
             },
             onDismiss = { viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay) },
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(2.6f),
-            languageOptions = if (betaSettings.audioLanguageMenu) uiState.audioMenuOptions.orEmpty() else null,
-            isLoadingSources = uiState.isLoadingSourceStreams,
-            onLanguageSelected = { viewModel.onEvent(PlayerEvent.OnAudioMenuLanguageSelected(it)) },
-            onLanguageSourcesRequested = { viewModel.onEvent(PlayerEvent.OnAudioMenuSourcesRequested(it)) },
-            // No Quality tab: the panel is the audio selection only.
-            sectionTabs = null
+            modifier = Modifier.zIndex(2.6f)
         )
 
         // Quality menu (Beta speed-ups)
@@ -1825,26 +1805,26 @@ private fun PlayerScreenContent(
             onAutoSelected = { viewModel.onEvent(PlayerEvent.OnAutoQualitySelected) }
         )
 
-        SubtitleSelectionOverlay(
+        ReferenceSubtitlePanel(
             visible = uiState.showSubtitleOverlay,
             internalTracks = uiState.subtitleTracks,
             selectedInternalIndex = uiState.selectedSubtitleTrackIndex,
             addonSubtitles = uiState.addonSubtitles,
             selectedAddonSubtitle = uiState.selectedAddonSubtitle,
-            subtitleStyle = uiState.subtitleStyle,
-            subtitleDelayMs = uiState.subtitleDelayMs,
-            installedSubtitleAddonOrder = uiState.installedSubtitleAddonOrder,
-            isLoadingAddons = uiState.isLoadingAddonSubtitles,
-            useLibass = uiState.useLibass,
-            isUsingMpv = uiState.internalPlayerEngine == InternalPlayerEngine.MVP_PLAYER,
-            onInternalTrackSelected = { viewModel.onEvent(PlayerEvent.OnSelectSubtitleTrack(it)) },
-            onAddonSubtitleSelected = { viewModel.onEvent(PlayerEvent.OnSelectAddonSubtitle(it)) },
-            onDisableSubtitles = { viewModel.onEvent(PlayerEvent.OnDisableSubtitles) },
-            onEvent = { viewModel.onEvent(it) },
+            onInternalSelected = {
+                viewModel.onEvent(PlayerEvent.OnSelectSubtitleTrack(it))
+                viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay)
+            },
+            onAddonSelected = {
+                viewModel.onEvent(PlayerEvent.OnSelectAddonSubtitle(it))
+                viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay)
+            },
+            onDisable = {
+                viewModel.onEvent(PlayerEvent.OnDisableSubtitles)
+                viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay)
+            },
             onDismiss = { viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay) },
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(2.6f)
+            modifier = Modifier.zIndex(2.6f)
         )
 
         PlayerOverlayScaffold(
@@ -2631,7 +2611,7 @@ private fun PlayerControlsOverlay(
 }
 
 /** "English (5.1)": the language and the channel layout of the playing track, nothing else. */
-private fun shortAudioLabel(track: TrackInfo?, fallback: String): String {
+internal fun shortAudioLabel(track: TrackInfo?, fallback: String): String {
     track ?: return fallback
     val language = track.language?.takeIf { it.isNotBlank() && !it.equals("und", true) }
         ?.let { com.nuvio.tv.domain.model.Subtitle.languageCodeToName(it) }
@@ -2960,7 +2940,7 @@ private fun NamedControlButton(
                 indication = null,
                 onClick = onClick
             )
-            .animateContentSize(animationSpec = tween(240))
+            .then(if (compact) Modifier else Modifier.animateContentSize(animationSpec = tween(240)))
             .padding(horizontal = if (compact) 9.dp else 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -2969,7 +2949,7 @@ private fun NamedControlButton(
         } else {
             Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) 14.dp else 24.dp))
         }
-        if (isFocused || alwaysLabel) {
+        if (if (compact) alwaysLabel else (isFocused || alwaysLabel)) {
             Spacer(modifier = Modifier.width(if (compact) 6.dp else 8.dp))
             Text(
                 text = label,
