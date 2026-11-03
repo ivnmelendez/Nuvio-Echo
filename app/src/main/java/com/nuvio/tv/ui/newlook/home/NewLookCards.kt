@@ -105,6 +105,8 @@ internal fun NewLookCard(
     /** The focus ring's thickness; the highlighted (wide) card draws a thicker, pure white one. */
     ringWidth: Dp = 1.dp,
     ringColor: Color? = null,
+    /** A frame drawn while the card is not focused (a row's resting card), or null for none. */
+    idleRingColor: Color? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(radius)
@@ -130,7 +132,7 @@ internal fun NewLookCard(
         // Focus is the white hairline alone: no growth and no shadow, which cost frames on weak boxes.
         scale = CardDefaults.scale(focusedScale = if (quiet && lift && !light) QUIET_FOCUS_LIFT else 1f, pressedScale = 1f),
         border = CardDefaults.border(
-            border = Border.None,
+            border = if (idleRingColor != null) Border(BorderStroke(ringWidth, idleRingColor), shape = shape) else Border.None,
             focusedBorder = Border(BorderStroke(ringWidth, ring), shape = shape),
             pressedBorder = Border(BorderStroke(ringWidth, ring), shape = shape)
         ),
@@ -386,11 +388,8 @@ internal fun PosterCard(
         // The opened (wide) card wears a white frame; the closed poster keeps the thin one.
         // A row's resting card keeps its frame when the row has no focus: the same width, in a dim gray.
         ringWidth = if (isOpen) 2.dp else 1.dp,
-        ringColor = when {
-            activeOpen -> Color.White
-            restingOpen -> Color.White.copy(alpha = 0.28f)
-            else -> null
-        }
+        ringColor = if (activeOpen) Color.White else null,
+        idleRingColor = if (restingOpen && !activeOpen) Color.White.copy(alpha = 0.28f) else null
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
