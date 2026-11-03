@@ -109,7 +109,7 @@ class NewLookHomeRowsTest {
     @Test
     fun `row kinds - wide, poster, collection and highlighted built-ins`() {
         val rows = build().associateBy { it.title }
-        assertEquals(RowKind.WIDE, rows.getValue(MODERN_CONTINUE_WATCHING_ROW_KEY).kind)
+        assertEquals(RowKind.POSTER, rows.getValue(MODERN_CONTINUE_WATCHING_ROW_KEY).kind)
         assertEquals(RowKind.POSTER, rows.getValue("cinemeta movie top").kind)
         assertEquals(RowKind.COLLECTION, rows.getValue("Collection marvel").kind)
         assertEquals(PosterShape.LANDSCAPE, rows.getValue("Collection marvel").folderShape)
@@ -191,7 +191,7 @@ class NewLookHomeRowsTest {
             ),
             out.map { it.key }
         )
-        assertEquals(RowKind.WIDE, out.single { it.key == MODERN_UPCOMING_ROW_KEY }.kind)
+        assertEquals(RowKind.POSTER, out.single { it.key == MODERN_UPCOMING_ROW_KEY }.kind)
     }
 
     @Test

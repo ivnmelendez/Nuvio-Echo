@@ -586,7 +586,7 @@ internal fun NewLookHomeContent(
         } else if (remoteTab != null && !remote.isNullOrEmpty()) {
             // Published rows: just the title in first place of the tab's first row (Trending on Home, the Top 10 on
             // Movies and Series), so the carousel doesn't keep changing under the person.
-            val first = rows.firstOrNull { it.kind != RowKind.WIDE && !it.isPlaceholder }
+            val first = rows.firstOrNull { it.kind != RowKind.WIDE && !it.isContinueWatching && !it.isPlaceholder }
             listOfNotNull(first?.items?.firstNotNullOfOrNull { item -> item.metaPreview?.takeIf { !it.backdropUrl.isNullOrBlank() } })
         } else if (uiState.heroSectionEnabled && uiState.heroItems.size >= 3) {
             uiState.heroItems
@@ -1918,7 +1918,15 @@ private fun RowCard(
             )
         }
         row.kind == RowKind.POSTER -> PosterCard(
-            poster = preview.poster ?: item.imageUrl,
+            // A Continue Watching card is a poster like the rest, with a bar for how far in.
+            poster = (item.payload as? ModernPayload.ContinueWatching)?.item?.let { cw ->
+                when (cw) {
+                    is ContinueWatchingItem.InProgress -> cw.progress.poster
+                    is ContinueWatchingItem.NextUp -> cw.info.poster
+                }
+            } ?: preview.poster ?: item.imageUrl,
+            progress = ((item.payload as? ModernPayload.ContinueWatching)?.item as? ContinueWatchingItem.InProgress)
+                ?.progress?.progressPercentage,
             posterFallback = item.metaPreview?.rawPosterUrl,
             // Never the poster: an opened card is wide, so until a real backdrop is known it stays black.
             backdrop = preview.backdrop ?: details?.backdrop,

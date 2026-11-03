@@ -61,6 +61,10 @@ internal data class NewLookRow(
     val isPlaceholder: Boolean
         get() = source?.isLoading == true && onlyPlaceholders
 
+    /** Continue Watching and the upcoming episodes: drawn as a poster row, but their cards resume or open a title. */
+    val isContinueWatching: Boolean
+        get() = key == MODERN_CONTINUE_WATCHING_ROW_KEY || key == MODERN_UPCOMING_ROW_KEY
+
     /** Nothing real in it yet: loading, or a load that failed. Drawn as focusable skeletons that can be passed. */
     val onlyPlaceholders: Boolean
         get() = items.isNotEmpty() && items.all {
@@ -176,7 +180,7 @@ internal fun buildNewLookRows(
     val cwGroup = if (cwIndex < 0) emptyList() else presentation.drop(cwIndex).take(2).filterIndexed { i, row ->
         i == 0 || row.key == MODERN_UPCOMING_ROW_KEY
     }
-    val wideRows = cwGroup.map { NewLookRow(it.key, it.title, RowKind.WIDE, it.items.list, source = it) }
+    val wideRows = cwGroup.map { NewLookRow(it.key, it.title, RowKind.POSTER, it.items.list, source = it) }
     val merged = HomeRowOrder.merge(
         orderKeys, BuiltInRow.entries, settings.homeRowOrder, continueWatching = wideRows.isNotEmpty()
     ) { types[it] }
@@ -204,7 +208,7 @@ internal fun buildNewLookRows(
     var leadingPlaced = false
     for (row in presentation) {
         if (row.isWide) {
-            if (cwGroup.none { it === row }) out += NewLookRow(row.key, row.title, RowKind.WIDE, row.items.list, source = row)
+            if (cwGroup.none { it === row }) out += NewLookRow(row.key, row.title, RowKind.POSTER, row.items.list, source = row)
             continue
         }
         if (!leadingPlaced) {
@@ -367,7 +371,7 @@ internal fun buildRemoteNewLookRows(
     posterPattern: String
 ): List<NewLookRow> {
     val wide = if (withContinueWatching) {
-        presentation.filter { it.isWide }.map { NewLookRow(it.key, it.title, RowKind.WIDE, it.items.list, source = it) }
+        presentation.filter { it.isWide }.map { NewLookRow(it.key, it.title, RowKind.POSTER, it.items.list, source = it) }
     } else emptyList()
     val today = java.time.LocalDate.now()
     val rows = remote.mapIndexedNotNull { index, entry ->

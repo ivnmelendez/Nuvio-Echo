@@ -358,7 +358,9 @@ internal fun PosterCard(
     /** The title's trailer, played in the opened card; null while it's closed or has none. */
     trailerUrl: String? = null,
     trailerAudioUrl: String? = null,
-    muted: Boolean = true
+    muted: Boolean = true,
+    /** How far in a Continue Watching title is (0 to 1); a bar along the bottom, or nothing when null. */
+    progress: Float? = null
 ) {
     // A regular row stays on its card when the trailer ends: the backdrop comes back.
     var ended by remember(trailerUrl) { mutableStateOf(false) }
@@ -415,6 +417,17 @@ internal fun PosterCard(
             }
         }
         if (watched) WatchedMark(Modifier.align(Alignment.TopEnd).padding(8.dp))
+        if (progress != null && progress > 0f) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(Color.White.copy(alpha = 0.28f))
+            ) {
+                Box(modifier = Modifier.fillMaxHeight().fillMaxWidth(progress.coerceIn(0f, 1f)).background(Color.White))
+            }
+        }
     }
 }
 
