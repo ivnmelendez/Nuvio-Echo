@@ -2419,10 +2419,11 @@ private fun PlayerControlsOverlay(
             val rowButtons = mainButtons
             val firstButtonFocus = remember { FocusRequester() }
             val belowBarTarget = if (rowButtons.isNotEmpty()) firstButtonFocus else progressBarFocusRequester
-            val audioButtonLabel = (
+            val audioButtonLabel = shortAudioLabel(
                 uiState.audioTracks.firstOrNull { it.index == uiState.selectedAudioTrackIndex }
-                    ?: uiState.audioTracks.firstOrNull { it.isSelected }
-                )?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.player_btn_audio_quality)
+                    ?: uiState.audioTracks.firstOrNull { it.isSelected },
+                stringResource(R.string.player_btn_audio_quality)
+            )
 
             // Play beside the bar, the bar, and the time.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -2626,6 +2627,20 @@ private fun PlayerControlsOverlay(
                 }
             }
         }
+    }
+}
+
+/** "English (5.1)": the language and the channel layout of the playing track, nothing else. */
+private fun shortAudioLabel(track: TrackInfo?, fallback: String): String {
+    track ?: return fallback
+    val language = track.language?.takeIf { it.isNotBlank() && !it.equals("und", true) }
+        ?.let { com.nuvio.tv.domain.model.Subtitle.languageCodeToName(it) }
+        ?.takeIf { it.isNotBlank() }
+    val layout = track.channelCount?.let { CustomDefaultTrackNameProvider.getChannelLayoutName(it) }
+    return when {
+        language != null && layout != null -> "$language ($layout)"
+        language != null -> language
+        else -> track.name.takeIf { it.isNotBlank() } ?: fallback
     }
 }
 
