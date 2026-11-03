@@ -384,7 +384,13 @@ internal fun PosterCard(
         // No lift: the card opens at once, and a lift animating on top of it read as a bounce (and overhung its slot).
         lift = false,
         // The opened (wide) card wears a white frame; the closed poster keeps the thin one.
-        ringWidth = if (activeOpen) 2.dp else 1.dp, ringColor = if (activeOpen) Color.White else null
+        // A row's resting card keeps its frame when the row has no focus: the same width, in a dim gray.
+        ringWidth = if (isOpen) 2.dp else 1.dp,
+        ringColor = when {
+            activeOpen -> Color.White
+            restingOpen -> Color.White.copy(alpha = 0.28f)
+            else -> null
+        }
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
