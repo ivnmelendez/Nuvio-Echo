@@ -23,7 +23,9 @@ internal data class ModernHomePresentationInput(
     val showCatalogTypeSuffix: Boolean,
     val showFullReleaseDate: Boolean,
     val showImdbRatings: Boolean,
-    val localeTag: String
+    val localeTag: String,
+    /** The tracking service Continue Watching comes from (MDBList), named in the row's title; null for the device. */
+    val progressSourceName: String? = null
 )
 
 internal fun buildModernHomePresentation(
@@ -35,6 +37,7 @@ internal fun buildModernHomePresentation(
     val visibleHomeRows = resolveVisibleHomeRows(input)
     val localizedContext = context.withAppLocale()
     val strContinueWatching = localizedContext.getString(R.string.continue_watching)
+        .let { title -> input.progressSourceName?.let { "$title - $it" } ?: title }
     val strAirsDate = localizedContext.getString(R.string.cw_airs_date)
     val strUpcoming = localizedContext.getString(R.string.cw_upcoming)
     val strTypeMovie = localizedContext.getString(R.string.type_movie)
