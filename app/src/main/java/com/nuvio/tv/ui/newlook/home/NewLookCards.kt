@@ -90,9 +90,9 @@ private val OpenCardFoot = Brush.verticalGradient(
 private val LikeOrange = Color(0xFFF5A623)
 private val LikeRed = Color(0xFFE74C3C)
 
-/** The colour of a rating shown as a percentage: green from 70, orange from 40, red below that. */
+/** The colour of a rating shown as a percentage: green from 60, orange from 40, red below that. */
 internal fun ratingPercentColor(percent: Int): Color = when {
-    percent >= 70 -> LikeGreen
+    percent >= 60 -> LikeGreen
     percent >= 40 -> LikeOrange
     else -> LikeRed
 }

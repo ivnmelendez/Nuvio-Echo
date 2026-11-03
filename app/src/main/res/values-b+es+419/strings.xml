@@ -2375,4 +2375,6 @@
     <string name="detail_watch_justwatch">Datos de JustWatch</string>
     <string name="nd_hold_mark_watched">Marcar como visto</string>
     <string name="nd_hold_mark_unwatched">Marcar como no visto</string>
+    <string name="nd_where_back">Atrás</string>
+    <string name="nd_where_none">No hay datos de disponibilidad para tu región.</string>
 </resources>

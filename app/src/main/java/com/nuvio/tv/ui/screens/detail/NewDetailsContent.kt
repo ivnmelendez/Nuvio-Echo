@@ -31,6 +31,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.outlined.Group
@@ -313,9 +315,14 @@ internal fun NewDetailsContent(
         if (isSeries) heroVideo?.let { upcomingReminder(meta, it) } else upcomingReminder(meta)
     }
     val reminderOn = upcoming != null && upcoming.key in reminders
+    // With no addon that serves streams (Play build), Play opens the page of where the title is offered.
+    var whereOpen by remember { mutableStateOf(false) }
+    val noStreamAddon = !state.canPlay
+    val playEpisodeOrWhere: (Video) -> Unit = { video -> if (noStreamAddon) whereOpen = true else onPlayEpisode(video) }
     val play: () -> Unit = {
         when {
             upcoming != null -> extras.toggleReminder(upcoming)
+            noStreamAddon -> whereOpen = true
             heroVideo != null -> onPlayEpisode(heroVideo)
             else -> onPlayTitle(meta.id)
         }
@@ -361,8 +368,8 @@ internal fun NewDetailsContent(
 
     val trailerItemFocus = remember { FocusRequester() }
     // With no Play button (no addon that serves streams), the first thing on the menu takes the focus.
-    LaunchedEffect(meta.id, state.canPlay) {
-        val targets = if (state.canPlay) listOf(playFocus) else listOf(episodesItemFocus, trailerItemFocus)
+    LaunchedEffect(meta.id) {
+        val targets = listOf(playFocus)
         repeat(4) {
             if (targets.any { runCatching { it.requestFocus() }.getOrDefault(false) }) return@LaunchedEffect
             delay(80)
@@ -549,7 +556,7 @@ internal fun NewDetailsContent(
                     binFocus = binFocus,
                     onBinBounds = { binBounds = it },
                     onPlay = play,
-                    onPlayHold = if (upcoming == null) ({ playOptionsOpen = true }) else null,
+                    onPlayHold = if (upcoming == null && !noStreamAddon) ({ playOptionsOpen = true }) else null,
                     onPlayBounds = { playBounds = it },
                     hasTrailersTab = isSeries && trailers.isNotEmpty(),
                     onPlayFocused = onPlayButtonFocused,
@@ -558,7 +565,7 @@ internal fun NewDetailsContent(
                     onOpenCast = { returnFocusTo = castItemFocus; panel = NdPanel.CAST },
                     onTrailer = onTrailerClick,
                     onRandomEpisode = {
-                        meta.watchableEpisodes().randomOrNull()?.let(onPlayEpisode)
+                        meta.watchableEpisodes().randomOrNull()?.let(playEpisodeOrWhere)
                     },
                     onFocusedInHero = {
                         if (listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0) {
@@ -605,7 +612,7 @@ internal fun NewDetailsContent(
                 onToggleReminder = { video -> upcomingReminder(meta, video)?.let(extras::toggleReminder) },
                 episodeRatings = episodeRatings,
                 episodeReviews = episodeReviews,
-                onPlayEpisode = { video -> panel = null; onPlayEpisode(video) },
+                onPlayEpisode = { video -> panel = null; playEpisodeOrWhere(video) },
                 onToggleEpisodeWatched = onToggleEpisodeWatched,
                 onRateEpisode = { video, rating -> extras.toggleEpisodeRating(meta, video, rating) },
                 onLoadEpisodeReviews = { video -> extras.loadEpisodeReviews(meta, video) },
@@ -627,6 +634,20 @@ internal fun NewDetailsContent(
                 onClose = { panel = null }
             )
             null -> Unit
+        }
+
+        if (whereOpen) {
+            NdWhereToWatchScreen(
+                title = meta.name,
+                providers = state.watchProviders,
+                onClose = {
+                    whereOpen = false
+                    scope.launch {
+                        delay(40)
+                        runCatching { playFocus.requestFocus() }
+                    }
+                }
+            )
         }
 
         if (playOptionsOpen) {
@@ -803,7 +824,7 @@ private fun NdHero(
                     }
                 }
                 NdPlayMenu(
-                    showPlay = state.canPlay,
+                    showPlay = true,
                     upFocus = binFocus,
                     playLabel = playLabel,
                     playIcon = playIcon,
@@ -816,11 +837,6 @@ private fun NdHero(
                     onPlayFocusChanged = onPlayFocusChanged,
                     items = items
                 )
-                // Where to watch is for a person with no streaming addon; with one, the page has its own Play.
-                if (!state.canPlay) state.watchProviders?.let {
-                    Spacer(Modifier.height(14.dp))
-                    NdWhereToWatch(it)
-                }
             }
         }
     }
@@ -1308,56 +1324,103 @@ internal fun shortReleaseDate(date: java.time.LocalDate): String {
 }
 
 /**
- * Where the title is offered in the region (TMDB's watch providers, which are JustWatch's data), with each provider's
- * logo. Selecting it opens TMDB's page for the title, which links to each provider.
+ * The page Play opens while no addon serves streams: where the title is offered in the region, with TMDB's logo and
+ * name for each provider (JustWatch's data). A provider opens TMDB's page for the title, which links to it.
  */
 @Composable
-private fun NdWhereToWatch(providers: WatchProviders) {
+private fun NdWhereToWatchScreen(title: String, providers: WatchProviders?, onClose: () -> Unit) {
     val context = LocalContext.current
-    var focused by remember { mutableStateOf(false) }
-    val link = providers.link
+    BackHandler(onBack = onClose)
+    val first = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        repeat(5) {
+            if (runCatching { first.requestFocus() }.getOrDefault(false)) return@LaunchedEffect
+            delay(60)
+        }
+    }
+    val openLink: () -> Unit = {
+        providers?.link?.let { link ->
+            runCatching {
+                context.startActivity(
+                    android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(link))
+                        .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            }
+        }
+    }
     Column(
         Modifier
-            .width(256.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(if (focused) Color.White.copy(alpha = 0.12f) else Color.Transparent)
-            .then(
-                if (link == null) Modifier else Modifier.ndClickable(
-                    onFocusChanged = { focused = it },
-                    onClick = {
-                        runCatching {
-                            context.startActivity(
-                                android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(link))
-                                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                            )
-                        }
-                    }
-                )
-            )
-            .padding(horizontal = 8.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(horizontal = 56.dp, vertical = 36.dp)
+            .focusGroup(),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(stringResource(R.string.detail_where_to_watch), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-        listOf(
-            R.string.detail_watch_stream to providers.stream,
-            R.string.detail_watch_rent to providers.rent,
-            R.string.detail_watch_buy to providers.buy
-        ).filter { it.second.isNotEmpty() }.forEach { (label, shown) ->
-            Text(stringResource(label), color = NdText2, fontSize = 11.sp)
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                shown.take(6).forEach { provider ->
-                    if (provider.logoUrl != null) {
-                        AsyncImage(
-                            model = provider.logoUrl,
-                            contentDescription = provider.name,
-                            modifier = Modifier.size(24.dp).clip(RoundedCornerShape(5.dp))
-                        )
-                    } else {
-                        Text(provider.name, color = NdText2, fontSize = 11.sp, maxLines = 1)
+        var backFocused by remember { mutableStateOf(false) }
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (backFocused) Color.White.copy(alpha = 0.16f) else Color.Transparent)
+                .ndClickable(onFocusChanged = { backFocused = it }, onClick = onClose)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White, modifier = Modifier.size(22.dp))
+            Text(stringResource(R.string.nd_where_back), color = Color.White, fontSize = 18.sp)
+        }
+        Column(Modifier.padding(start = 100.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 13.sp)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                Icon(Icons.Filled.PlayArrow, null, tint = Color.White, modifier = Modifier.size(34.dp))
+                Column {
+                    Text(stringResource(R.string.detail_where_to_watch), color = NdText2, fontSize = 22.sp)
+                    Text(title, color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+                }
+            }
+            val groups = listOf(
+                R.string.detail_watch_stream to providers?.stream.orEmpty(),
+                R.string.detail_watch_rent to providers?.rent.orEmpty(),
+                R.string.detail_watch_buy to providers?.buy.orEmpty()
+            ).filter { it.second.isNotEmpty() }
+            if (groups.isEmpty()) {
+                Text(stringResource(R.string.nd_where_none), color = NdText2, fontSize = 16.sp)
+            }
+            var firstTile = true
+            groups.forEach { (label, shown) ->
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Icon(Icons.Filled.PlayArrow, null, tint = Color(0xFF3DDC84), modifier = Modifier.size(20.dp))
+                    Text(stringResource(label), color = Color.White, fontSize = 22.sp)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    shown.take(8).forEach { provider ->
+                        var focused by remember { mutableStateOf(false) }
+                        val requester = if (firstTile) first else null
+                        firstTile = false
+                        Column(
+                            Modifier
+                                .width(150.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color(0xFF1C1C1C))
+                                .border(if (focused) 3.dp else 1.dp, if (focused) Color.White else Color(0xFF333333), RoundedCornerShape(14.dp))
+                                .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = openLink)
+                                .padding(14.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (provider.logoUrl != null) {
+                                AsyncImage(
+                                    model = provider.logoUrl.replace("/w45/", "/w154/"),
+                                    contentDescription = provider.name,
+                                    modifier = Modifier.size(72.dp).clip(RoundedCornerShape(8.dp))
+                                )
+                            }
+                            Text(provider.name, color = Color.White, fontSize = 14.sp, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                        }
                     }
                 }
             }
         }
-        Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 10.sp)
     }
 }
