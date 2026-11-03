@@ -530,7 +530,7 @@ internal fun NewLookHomeContent(
         } else {
             buildNewLookRows(
                 presentation.rows.list, builtIns.withCustomPosterUrls(homePosterPattern), settings, titles, smartHighlights
-            )
+            ).forTab(remoteTab)
         }
     }
     // Light mode: the Top 10 rows are plain poster rows, like the others (the first card open, the rest vertical). Each

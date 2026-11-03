@@ -358,9 +358,12 @@ internal fun NewDetailsContent(
     val castItemFocus = remember { FocusRequester() }
     var returnFocusTo by remember { mutableStateOf<FocusRequester?>(null) }
 
-    LaunchedEffect(meta.id) {
+    val trailerItemFocus = remember { FocusRequester() }
+    // With no Play button (no addon that serves streams), the first thing on the menu takes the focus.
+    LaunchedEffect(meta.id, state.canPlay) {
+        val targets = if (state.canPlay) listOf(playFocus) else listOf(episodesItemFocus, trailerItemFocus)
         repeat(4) {
-            if (runCatching { playFocus.requestFocus() }.getOrDefault(false)) return@LaunchedEffect
+            if (targets.any { runCatching { it.requestFocus() }.getOrDefault(false) }) return@LaunchedEffect
             delay(80)
         }
     }
@@ -536,6 +539,7 @@ internal fun NewDetailsContent(
                     playFocus = playFocus,
                     episodesItemFocus = episodesItemFocus,
                     castItemFocus = castItemFocus,
+                    trailerItemFocus = trailerItemFocus,
                     watched = watched,
                     watchedPending = state.isMovieWatchedPending,
                     onToggleWatched = toggleWatched,
@@ -703,6 +707,7 @@ private fun NdHero(
     playFocus: FocusRequester,
     episodesItemFocus: FocusRequester,
     castItemFocus: FocusRequester,
+    trailerItemFocus: FocusRequester,
     watched: Boolean,
     watchedPending: Boolean,
     onToggleWatched: () -> Unit,
@@ -792,10 +797,11 @@ private fun NdHero(
                         episodesItemFocus, onOpenEpisodes))
                     // A series' trailers are in the Episodes panel's Trailers tab instead.
                     if (state.trailerButtonEnabled && !state.trailerUrl.isNullOrBlank() && !hasTrailersTab) {
-                        add(NdMenuItem(Icons.Outlined.Movie, stringResource(R.string.nd_menu_trailer), null, null, onTrailer))
+                        add(NdMenuItem(Icons.Outlined.Movie, stringResource(R.string.nd_menu_trailer), null, trailerItemFocus, onTrailer))
                     }
                 }
                 NdPlayMenu(
+                    showPlay = state.canPlay,
                     upFocus = binFocus,
                     playLabel = playLabel,
                     playIcon = playIcon,
@@ -808,6 +814,10 @@ private fun NdHero(
                     onPlayFocusChanged = onPlayFocusChanged,
                     items = items
                 )
+                state.watchProviders?.let {
+                    Spacer(Modifier.height(14.dp))
+                    NdWhereToWatch(it)
+                }
             }
         }
     }
@@ -1129,6 +1139,7 @@ internal data class NdMenuItem(
 /** Play and the menu under it share one glass lens that glides to whatever is focused. */
 @Composable
 private fun NdPlayMenu(
+    showPlay: Boolean,
     upFocus: FocusRequester,
     playLabel: String,
     playIcon: ImageVector,
@@ -1163,7 +1174,7 @@ private fun NdPlayMenu(
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Row(
+            if (showPlay) Row(
                 modifier = Modifier
                     .onGloballyPositioned {
                         bounds[0] = it.boundsInParent()
@@ -1291,4 +1302,23 @@ internal fun upcomingReminder(meta: Meta): com.nuvio.tv.data.local.ReleaseRemind
 internal fun shortReleaseDate(date: java.time.LocalDate): String {
     val pattern = if (date.year == java.time.LocalDate.now().year) "MMM d" else "MMM d, yyyy"
     return date.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.getDefault()))
+}
+
+/** Where the title is offered in the region (TMDB's watch providers, which are JustWatch's data). */
+@Composable
+private fun NdWhereToWatch(providers: WatchProviders) {
+    Column(Modifier.width(256.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(stringResource(R.string.detail_where_to_watch), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+        listOf(
+            R.string.detail_watch_stream to providers.stream,
+            R.string.detail_watch_rent to providers.rent,
+            R.string.detail_watch_buy to providers.buy
+        ).filter { it.second.isNotEmpty() }.forEach { (label, names) ->
+            Text(
+                "${stringResource(label)}: ${names.take(6).joinToString(", ")}",
+                color = NdText2, fontSize = 11.sp, maxLines = 2
+            )
+        }
+        Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 10.sp)
+    }
 }

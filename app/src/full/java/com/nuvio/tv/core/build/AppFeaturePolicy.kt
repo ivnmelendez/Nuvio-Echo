@@ -17,6 +17,7 @@ object AppFeaturePolicy {
     val firstLaunchNoticeEnabled: Boolean = false
     val parentalGuideAvailable: Boolean = true
     val homeFromPublishedRowsOnly: Boolean = false
+    val playNeedsStreamAddon: Boolean = false
     val essentialSettingsOnly: Boolean = false
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = "es-419"

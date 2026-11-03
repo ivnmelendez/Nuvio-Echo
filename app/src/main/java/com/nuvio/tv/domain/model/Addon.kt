@@ -89,3 +89,7 @@ data class StremioAddonsConfig(
     val issuer: String? = null,
     val signature: String? = null
 )
+
+/** True when an enabled addon serves streams; a catalog and metadata addon (Cinemeta) does not. */
+fun List<Addon>.hasStreamAddon(): Boolean =
+    enabledAddons().any { addon -> addon.resources.any { it.name.equals("stream", ignoreCase = true) } }

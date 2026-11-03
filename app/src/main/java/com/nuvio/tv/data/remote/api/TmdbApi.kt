@@ -28,6 +28,18 @@ interface TmdbApi {
         @Query("api_key") apiKey: String
     ): Response<TmdbExternalIdsResponse>
 
+    @GET("movie/{movie_id}/watch/providers")
+    suspend fun getMovieWatchProviders(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): Response<TmdbWatchProvidersResponse>
+
+    @GET("tv/{tv_id}/watch/providers")
+    suspend fun getTvWatchProviders(
+        @Path("tv_id") tvId: Int,
+        @Query("api_key") apiKey: String
+    ): Response<TmdbWatchProvidersResponse>
+
     @GET("movie/{movie_id}/videos")
     suspend fun getMovieVideos(
         @Path("movie_id") movieId: Int,
@@ -874,4 +886,21 @@ data class TmdbTitleKeywordsResponse(
 data class TmdbTitleKeyword(
     @Json(name = "id") val id: Int? = null,
     @Json(name = "name") val name: String? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class TmdbWatchProvidersResponse(
+    @Json(name = "results") val results: Map<String, TmdbWatchRegion> = emptyMap()
+)
+
+@JsonClass(generateAdapter = true)
+data class TmdbWatchRegion(
+    @Json(name = "flatrate") val flatrate: List<TmdbWatchProvider> = emptyList(),
+    @Json(name = "rent") val rent: List<TmdbWatchProvider> = emptyList(),
+    @Json(name = "buy") val buy: List<TmdbWatchProvider> = emptyList()
+)
+
+@JsonClass(generateAdapter = true)
+data class TmdbWatchProvider(
+    @Json(name = "provider_name") val name: String? = null
 )

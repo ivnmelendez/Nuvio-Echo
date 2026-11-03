@@ -407,3 +407,15 @@ private fun com.nuvio.tv.data.remoteconfig.RemoteRow.bannerUrl(): String? {
 }
 
 private const val TOP_TEN = 10
+
+/**
+ * With no published rows, the Movies and Series tabs show the catalogs and built-in rows of their own type, and Home
+ * shows everything; a row with both kinds (this week's trending) stays on Home.
+ */
+internal fun List<NewLookRow>.forTab(tab: String?): List<NewLookRow> = when (tab) {
+    com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_MOVIES ->
+        filter { it.builtIn == BuiltInRow.TOP_MOVIES_TODAY || it.source?.apiType.equals("movie", ignoreCase = true) }
+    com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_SERIES ->
+        filter { it.builtIn == BuiltInRow.TOP_SHOWS_TODAY || it.source?.apiType.equals("series", ignoreCase = true) }
+    else -> this
+}

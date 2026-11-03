@@ -4,7 +4,7 @@ object AppFeaturePolicy {
     val pluginsEnabled: Boolean = false
     val inAppUpdatesEnabled: Boolean = false
     val inAppTrailerPlaybackEnabled: Boolean = false
-    val externalTrailerPlaybackEnabled: Boolean = false
+    val externalTrailerPlaybackEnabled: Boolean = true
     val homeTrailersSwitchAvailable: Boolean = false
     val codeActivationEnabled: Boolean = false
     /** Wide auto-advancing rows (highlights, grand rows, smart highlights); off means plain poster rows only. */
@@ -22,6 +22,8 @@ object AppFeaturePolicy {
      * starts on the installed addons' catalogs (Cinemeta's) until an addon names its own rows file.
      */
     val homeFromPublishedRowsOnly: Boolean = false
+    /** Without an installed addon that serves streams, a title's page has no Play button (trailer and info only). */
+    val playNeedsStreamAddon: Boolean = true
     val essentialSettingsOnly: Boolean = true
     /** The app language on a device where none has been chosen yet; empty follows the device. */
     val defaultAppLocaleTag: String = ""

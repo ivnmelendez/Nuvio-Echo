@@ -11,6 +11,7 @@ import com.nuvio.tv.core.poster.withCustomPosterUrls
 import com.nuvio.tv.core.tmdb.TmdbMetadataService
 import com.nuvio.tv.core.tmdb.TmdbMovieCollection
 import com.nuvio.tv.core.tmdb.TmdbService
+import com.nuvio.tv.domain.model.hasStreamAddon
 import com.nuvio.tv.data.local.LayoutPreferenceDataStore
 import com.nuvio.tv.data.local.MDBListSettingsDataStore
 import com.nuvio.tv.data.local.PlayerSettingsDataStore
@@ -80,6 +81,8 @@ class MetaDetailsViewModel @Inject constructor(
     private val streamPrefetcher: com.nuvio.tv.core.streams.StreamPrefetcher,
     private val tmdbSettingsDataStore: TmdbSettingsDataStore,
     private val tmdbService: TmdbService,
+    private val tmdbApi: com.nuvio.tv.data.remote.api.TmdbApi,
+    private val addonRepository: com.nuvio.tv.domain.repository.AddonRepository,
     private val tmdbMetadataService: TmdbMetadataService,
     private val mdbListRepository: MDBListRepository,
     private val mdbListSettingsDataStore: MDBListSettingsDataStore,
@@ -159,6 +162,8 @@ class MetaDetailsViewModel @Inject constructor(
 
     init {
         posterOptions.bind(viewModelScope)
+        observeStreamAddons()
+        observeWatchProviders()
         observeMetaViewSettings()
         observeTrailerAutoplaySettings()
         observeTraktCommentsAvailability()
@@ -245,6 +250,48 @@ class MetaDetailsViewModel @Inject constructor(
                     hideUnreleasedContent = enabled
                 }
         }
+    }
+
+    /** The Play button needs an addon that serves streams, in builds that say so. */
+    private fun observeStreamAddons() {
+        viewModelScope.launch {
+            addonRepository.getInstalledAddons()
+                .map { !AppFeaturePolicy.playNeedsStreamAddon || it.hasStreamAddon() }
+                .distinctUntilChanged()
+                .collect { canPlay -> _uiState.update { it.copy(canPlay = canPlay) } }
+        }
+    }
+
+    /** Where to watch, from TMDB's watch providers (JustWatch's data), for the device's region. */
+    private fun observeWatchProviders() {
+        viewModelScope.launch {
+            _uiState.map { state -> state.meta?.let { Triple(it.id, it.apiType, it.imdbId) } }
+                .distinctUntilChanged()
+                .collectLatest { key ->
+                    if (key == null) return@collectLatest
+                    val providers = runCatching { loadWatchProviders() }.getOrNull()
+                    _uiState.update { it.copy(watchProviders = providers) }
+                }
+        }
+    }
+
+    private suspend fun loadWatchProviders(): WatchProviders? {
+        val meta = _uiState.value.meta ?: return null
+        val apiKey = com.nuvio.tv.core.apikeys.ApiKeys.tmdb
+        if (apiKey.isBlank()) return null
+        val contentType = resolveTmdbContentType(meta)
+        val tmdbId = tmdbService.ensureTmdbId(meta.id, contentType.toApiString(), fallbackImdbId = meta.imdbId)
+            ?.toIntOrNull() ?: return null
+        val response = if (contentType == ContentType.SERIES) tmdbApi.getTvWatchProviders(tmdbId, apiKey)
+        else tmdbApi.getMovieWatchProviders(tmdbId, apiKey)
+        val region = java.util.Locale.getDefault().country.takeIf { it.length == 2 } ?: "MX"
+        val found = response.body()?.results?.get(region) ?: return null
+        val result = WatchProviders(
+            stream = found.flatrate.mapNotNull { it.name }.distinct(),
+            rent = found.rent.mapNotNull { it.name }.distinct(),
+            buy = found.buy.mapNotNull { it.name }.distinct()
+        )
+        return result.takeUnless { it.isEmpty }
     }
 
     private fun observeMetaViewSettings() {

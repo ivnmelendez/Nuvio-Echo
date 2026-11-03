@@ -49,6 +49,10 @@ data class MetaDetailsUiState(
     val sharedTrailerErrorMessage: String? = null,
     val selectedSharedTrailer: MetaTrailer? = null,
     val trailerButtonEnabled: Boolean = false,
+    /** False while no installed addon serves streams (Play build): the page then has no Play button. */
+    val canPlay: Boolean = true,
+    /** Where the title streams, rents or sells, from TMDB (JustWatch's data); null until known or when none. */
+    val watchProviders: WatchProviders? = null,
     val librarySourceMode: LibrarySourceMode = LibrarySourceMode.LOCAL,
     val binPending: Boolean = false,
     val isMovieWatched: Boolean = false,
@@ -119,4 +123,13 @@ sealed class MetaDetailsEvent {
     data object OnLibraryLongPress : MetaDetailsEvent()
     data object OnClearMessage : MetaDetailsEvent()
     data object OnLifecyclePause : MetaDetailsEvent()
+}
+
+/** Provider names by how the title is offered in the region. */
+data class WatchProviders(
+    val stream: List<String> = emptyList(),
+    val rent: List<String> = emptyList(),
+    val buy: List<String> = emptyList()
+) {
+    val isEmpty: Boolean get() = stream.isEmpty() && rent.isEmpty() && buy.isEmpty()
 }
