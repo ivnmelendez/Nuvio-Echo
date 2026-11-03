@@ -84,6 +84,18 @@ import com.nuvio.tv.ui.newlook.focusRingColor
 internal val CardBackground = Color(0xFF222222)
 private val OpenEasing = CubicBezierEasing(0.2f, 0.8f, 0.2f, 1f)
 private val LikeGreen = Color(0xFF2ECC71)
+private val OpenCardFoot = Brush.verticalGradient(
+    0f to Color.Transparent, 0.45f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.88f)
+)
+private val LikeOrange = Color(0xFFF5A623)
+private val LikeRed = Color(0xFFE74C3C)
+
+/** The colour of a rating shown as a percentage: green from 70, orange from 40, red below that. */
+internal fun ratingPercentColor(percent: Int): Color = when {
+    percent >= 70 -> LikeGreen
+    percent >= 40 -> LikeOrange
+    else -> LikeRed
+}
 
 /**
  * A focusable card with the new look's 1 px hairline (in the Appearance colour) instead of the thick white ring. A null [width] leaves
@@ -417,9 +429,8 @@ internal fun PosterCard(
                         surfaceView = com.nuvio.tv.ui.components.LocalTrailerVideoLayer.current
                     )
                 }
-                Box(modifier = Modifier.fillMaxSize().background(
-                    Brush.verticalGradient(0f to Color.Transparent, 0.5f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.6f))
-                ))
+                // Fixed, never animated or recomputed: a darker foot behind the logo and the corner labels.
+                Box(modifier = Modifier.fillMaxSize().background(OpenCardFoot))
                 CardLogo(logo, title, 0.4f, 0.28f, dims.posterOpenWidth, dims.posterHeight, 14.dp, 20f)
             }
         }
@@ -435,7 +446,7 @@ internal fun PosterCard(
                     .align(Alignment.BottomEnd)
                     .padding(end = 12.dp, bottom = 12.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(Color.Black.copy(alpha = 0.7f))
+                    .background(Color.Black.copy(alpha = 0.85f))
                     .padding(horizontal = 8.dp, vertical = 3.dp)
             )
         }
@@ -644,12 +655,13 @@ internal fun DetailsLine(
     )
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         if (percent != null) {
+            val ratingColor = ratingPercentColor(percent)
             com.nuvio.tv.ui.screens.detail.DetailGlyphIcon(
-                com.nuvio.tv.ui.screens.detail.DetailGlyph.THUMB_UP, true, LikeGreen, 17.dp
+                com.nuvio.tv.ui.screens.detail.DetailGlyph.THUMB_UP, true, ratingColor, 17.dp
             )
             Text(
                 text = " $percent%",
-                color = LikeGreen,
+                color = ratingColor,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,

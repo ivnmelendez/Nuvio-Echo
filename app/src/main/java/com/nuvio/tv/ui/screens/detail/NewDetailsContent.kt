@@ -841,7 +841,7 @@ private fun NdMetaLines(meta: Meta, isSeries: Boolean, tmdbRating: Float?) {
         )
     }
     val text = Color(0xFFD6D6D6)
-    val like = Color(0xFF2ECC71)
+    val like = percent?.let { com.nuvio.tv.ui.newlook.home.ratingPercentColor(it) } ?: Color(0xFF2ECC71)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         if (percent != null) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
