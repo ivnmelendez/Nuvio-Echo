@@ -41,7 +41,8 @@ class RemoteTabRowsRepository @Inject constructor(
         val items = libraryRepository.libraryItems.first()
             .filter { !fromMdbList || MDBLIST_WATCHLIST_KEY in it.listKeys }
             .sortedByDescending { it.listedAt }
-            .map { it.toMetaPreview() }
+            // The account's text is in English; without it the card takes TMDB's, in the app's language.
+            .map { it.toMetaPreview().copy(description = null) }
         if (items.isEmpty()) return emptyList()
         val row = RemoteRow(
             list = "watchlist", title = context.getString(R.string.nav_library), limit = items.size, hideTitle = false

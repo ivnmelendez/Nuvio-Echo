@@ -814,7 +814,8 @@ private fun NdHero(
                     onPlayFocusChanged = onPlayFocusChanged,
                     items = items
                 )
-                state.watchProviders?.let {
+                // Where to watch is for a person with no streaming addon; with one, the page has its own Play.
+                if (!state.canPlay) state.watchProviders?.let {
                     Spacer(Modifier.height(14.dp))
                     NdWhereToWatch(it)
                 }
