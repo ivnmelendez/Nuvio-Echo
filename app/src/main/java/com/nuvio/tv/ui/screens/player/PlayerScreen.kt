@@ -114,6 +114,7 @@ import com.nuvio.tv.ui.screens.detail.requestFocusAfterFrames
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -1430,7 +1431,7 @@ private fun PlayerScreenContent(
             exit = fadeOut(animationSpec = tween(150)),
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(end = 28.dp, top = NuvioTheme.spacing.xl)
+                .padding(end = 82.dp, top = 22.dp)
                 .zIndex(2.15f)
         ) {
             PlayerClockOverlayHost(
@@ -2376,7 +2377,7 @@ private fun PlayerControlsOverlay(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = NuvioTheme.spacing.xxl, vertical = NuvioTheme.spacing.xl)
+                .padding(start = 80.dp, end = 80.dp, bottom = 28.dp)
         ) {
             val hasEpisodeContext = uiState.currentSeason != null && uiState.currentEpisode != null
             val hasSubtitleControl = uiState.subtitleTracks.isNotEmpty() || uiState.addonSubtitles.isNotEmpty()
@@ -2408,18 +2409,19 @@ private fun PlayerControlsOverlay(
             // Play beside the bar, the bar, and the time.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    modifier = Modifier.fillMaxWidth().padding(end = 18.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     // The state of playback, not a button: on the bar, OK plays or pauses.
                     Icon(
                         painter = if (uiState.isPlaying) customPausePainter else customPlayPainter,
                         contentDescription = if (uiState.isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                         tint = Color.White,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(26.dp)
                     )
+                    Spacer(modifier = Modifier.width(46.dp))
                     PlayerTimeSide(viewModel = viewModel, duration = false)
+                    Spacer(modifier = Modifier.width(10.dp))
                     // Asking this box for focus lands on the bar, the one thing on this row that takes it.
                     Box(modifier = Modifier.weight(1f).focusRequester(playPauseFocusRequester).focusGroup()) {
                         if (!isLivePlayback) {
@@ -2441,11 +2443,12 @@ private fun PlayerControlsOverlay(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.width(10.dp))
                     PlayerTimeSide(viewModel = viewModel, duration = true)
                 }
             }
 
-            Spacer(modifier = Modifier.height(NuvioTheme.spacing.sm))
+            Spacer(modifier = Modifier.height(17.dp))
 
             // The named buttons: the focused one is a white pill.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -3287,19 +3290,25 @@ private fun PlayerClockOverlay(
             .padding(horizontal = NuvioTheme.spacing.xxs, vertical = NuvioTheme.spacing.xxs),
         horizontalAlignment = Alignment.End
     ) {
+        val clockText = timeFormatter.format(Date(nowMs))
+        // "11:16" large, the "PM" beside it smaller, as in the reference.
+        val clockSplit = clockText.indexOf(' ')
         Text(
-            text = timeFormatter.format(Date(nowMs)),
+            text = if (clockSplit > 0) androidx.compose.ui.text.buildAnnotatedString {
+                append(clockText.substring(0, clockSplit))
+                withStyle(androidx.compose.ui.text.SpanStyle(fontSize = 12.sp)) { append(clockText.substring(clockSplit)) }
+            } else androidx.compose.ui.text.AnnotatedString(clockText),
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             ),
-            color = Color.White.copy(alpha = 0.96f)
+            color = Color.White
         )
         if (!isLive) {
             Text(
                 text = stringResource(R.string.player_ends_at, endTimeText),
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 10.sp),
-                color = Color.White.copy(alpha = 0.78f)
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                color = Color.White.copy(alpha = 0.85f)
             )
         }
     }

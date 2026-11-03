@@ -32,15 +32,9 @@ internal fun PlayerRuntimeController.showControlsTemporarily() {
     scheduleHideControls()
 }
 
+/** Seeking with the controls hidden brings the whole control bar up (not a lone bar), and it hides again by itself. */
 internal fun PlayerRuntimeController.showSeekOverlayTemporarily() {
-    hideSeekOverlayJob?.cancel()
-    _uiState.update { it.copy(showSeekOverlay = true) }
-    hideSeekOverlayJob = scope.launch {
-        delay(1500)
-        // A scrub still waiting to commit (seek thumbnails) keeps its bar and picture on screen.
-        while (previewCommitPending) delay(100)
-        _uiState.update { it.copy(showSeekOverlay = false) }
-    }
+    showControlsTemporarily()
 }
 
 internal fun PlayerRuntimeController.selectAudioTrack(trackIndex: Int) {
