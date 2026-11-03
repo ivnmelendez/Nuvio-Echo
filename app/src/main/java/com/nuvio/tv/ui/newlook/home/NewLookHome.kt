@@ -228,8 +228,6 @@ internal interface NewLookHomeSource {
     suspend fun refreshBuiltIns()
     fun cachedDetails(id: String): NewLookDetails?
     suspend fun details(item: MetaPreview, withTag: Boolean, topTen: Set<String>): NewLookDetails?
-    /** One episode's own details, for a Continue Watching card of a series. */
-    suspend fun episodeDetails(item: MetaPreview, season: Int, episode: Int): NewLookDetails? = null
     /** [surfaceHeightPx]: how tall the trailer will play, so Auto trailer quality can match it. */
     fun requestTrailer(itemId: String, title: String, releaseInfo: String?, apiType: String, surfaceHeightPx: Int? = null)
     fun requestLazyCatalogLoad(catalogKey: String)
@@ -282,8 +280,6 @@ private fun viewModelSource(
     override fun cachedDetails(id: String) = enricher.cached(id)
     override suspend fun details(item: MetaPreview, withTag: Boolean, topTen: Set<String>) =
         enricher.details(item, withTag, topTen)
-    override suspend fun episodeDetails(item: MetaPreview, season: Int, episode: Int) =
-        enricher.episodeDetails(item, season, episode)
     override fun requestTrailer(itemId: String, title: String, releaseInfo: String?, apiType: String, surfaceHeightPx: Int?) {
         // Trailers off (About): nothing is fetched, so no card ever has one to play.
         if (!betaStore.current.value.homeTrailers) return
@@ -572,22 +568,6 @@ internal fun NewLookHomeContent(
 
     // Details (logo, genres, runtime) fetched on focus, by item id.
     val details = remember { mutableStateMapOf<String, NewLookDetails>() }
-    // A series card in Continue Watching shows its episode's details, not the show's: loaded for the first cards of the row.
-    fun loadEpisodeDetails(item: ModernCarouselItem) {
-        val cw = (item.payload as? ModernPayload.ContinueWatching)?.item ?: return
-        val (season, episode) = when (cw) {
-            is ContinueWatchingItem.InProgress -> cw.progress.season to cw.progress.episode
-            is ContinueWatchingItem.NextUp -> cw.info.season to cw.info.episode
-        }
-        val meta = item.metaPreview ?: return
-        if (season == null || episode == null) return
-        val key = "ep:${item.key}"
-        if (details.containsKey(key)) return
-        scope.launch { source.episodeDetails(meta, season, episode)?.let { details[key] = it } }
-    }
-    LaunchedEffect(rows) {
-        rows.filter { it.isContinueWatching }.forEach { row -> row.items.take(8).forEach(::loadEpisodeDetails) }
-    }
     fun loadDetails(item: MetaPreview?, withTag: Boolean = false, topTen: Set<String> = emptySet()) {
         item ?: return
         if (details[item.id]?.let { !withTag || it.tag != null } == true) return
@@ -1839,10 +1819,7 @@ private fun NewLookRowView(
                         .offset(x = contentStart + if (row.ranked) dims.rankPad else 0.dp, y = dims.rowHead + row.cardHeight(dims) + 10.dp)
                         .graphicsLayer { alpha = metaAlpha.value }
                 ) {
-                    RowMeta(
-                        row, shownItem, shownItem.metaPreview?.id?.let { details[it] }, dims,
-                        episodeDetails = details["ep:${shownItem.key}"]
-                    )
+                    RowMeta(row, shownItem, shownItem.metaPreview?.id?.let { details[it] }, dims)
                 }
             }
         }
@@ -2044,13 +2021,7 @@ private fun RowCard(
 
 /** Under the focused card: the details line, and for highlighted rows the synopsis under it. */
 @Composable
-private fun RowMeta(
-    row: NewLookRow,
-    item: ModernCarouselItem,
-    details: NewLookDetails?,
-    dims: NewLookDimens,
-    episodeDetails: NewLookDetails? = null
-) {
+private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookDetails?, dims: NewLookDimens) {
     val preview = item.heroPreview
     if (row.collection || row.kind == RowKind.COLLECTION) {
         val folder = item.payload as? ModernPayload.CollectionFolder
@@ -2067,25 +2038,20 @@ private fun RowMeta(
     }
     val meta = item.metaPreview
     val isSeries = preview.isSeries
-    // A series in Continue Watching: the episode's rating, year, length and synopsis; the show's rating isn't shown.
-    val episodeCard = item.payload is ModernPayload.ContinueWatching && isSeries
     val genres = preview.genres.list.ifEmpty { details?.genres.orEmpty() }
-    val rating = if (episodeCard) preview.imdbText
-    else preview.imdbText ?: details?.rating?.takeIf { it > 0 }?.let { String.format(java.util.Locale.US, "%.1f", it) }
+    val rating = preview.imdbText ?: details?.rating?.takeIf { it > 0 }?.let { String.format(java.util.Locale.US, "%.1f", it) }
     val ratingIsImdb = preview.imdbText != null && (meta?.id?.startsWith("tt") == true || meta?.imdbId != null)
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         DetailsLine(
             type = stringResource(if (isSeries) R.string.home_type_show else R.string.home_type_movie),
             genres = genres,
-            year = if (episodeCard) yearOf(episodeDetails?.year) ?: yearOf(preview.yearText)
-            else yearOf(preview.yearText) ?: yearOf(meta?.released) ?: yearOf(details?.year),
-            runtime = preview.runtimeText ?: formatRuntime(if (episodeCard) episodeDetails?.runtimeMinutes else details?.runtimeMinutes),
+            year = yearOf(preview.yearText) ?: yearOf(meta?.released) ?: yearOf(details?.year),
+            runtime = preview.runtimeText ?: formatRuntime(details?.runtimeMinutes),
             rating = rating,
             ratingIsImdb = ratingIsImdb
         )
         if (row.kind == RowKind.HIGHLIGHT || row.kind == RowKind.POSTER) {
-            val synopsis = if (episodeCard) episodeDetails?.overview ?: preview.description
-            else preview.description ?: details?.overview
+            val synopsis = preview.description ?: details?.overview
             if (!synopsis.isNullOrBlank()) {
                 Text(
                     text = synopsis,
