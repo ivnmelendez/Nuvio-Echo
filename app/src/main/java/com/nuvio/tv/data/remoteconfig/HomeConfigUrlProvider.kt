@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Where Home's published rows come from. An installed addon can name its own rows file in its manifest
  * (`behaviorHints.homeConfigUrl`), so with that addon the rows are the ones made for its catalog. Without one, the
- * build's own address is used, which in the Play Store build is the default rows file.
+ * build's own address is used, which is empty in the Play Store build: Home then shows the addons' catalogs.
  */
 @Singleton
 class HomeConfigUrlProvider @Inject constructor(
