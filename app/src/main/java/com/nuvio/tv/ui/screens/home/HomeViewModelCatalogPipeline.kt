@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import com.nuvio.tv.domain.model.MetaPreview
@@ -868,12 +869,25 @@ internal fun HomeViewModel.reconcilePosterStatusObserversPipeline(rows: List<Cat
     if (allSeriesItemsByKey.isNotEmpty()) {
         seriesWatchedObserverJob?.cancel()
         seriesWatchedObserverJob = viewModelScope.launch {
+            // A show still in Continue Watching (started, or with a next episode) is not finished, whatever the
+            // cached "fully watched" list says: it never gets the watched mark on its poster.
+            val inContinueWatching = uiState
+                .map { state ->
+                    state.continueWatchingItems.mapTo(HashSet()) { item ->
+                        when (item) {
+                            is ContinueWatchingItem.InProgress -> item.progress.contentId
+                            is ContinueWatchingItem.NextUp -> item.info.contentId
+                        }
+                    } as Set<String>
+                }
+                .distinctUntilChanged()
             combine(
                 fullyWatchedSeriesIds.fullyWatchedSeriesIds,
-                watchProgressRepository.watchedItems
-            ) { fullyWatched, watchedItems ->
-                fullyWatched to watchedItems
-            }.collectLatest { (fullyWatched, watchedItems) ->
+                watchProgressRepository.watchedItems,
+                inContinueWatching
+            ) { fullyWatched, watchedItems, started ->
+                Triple(fullyWatched - started, watchedItems, started)
+            }.collectLatest { (fullyWatched, watchedItems, _) ->
                 val effectiveFullyWatched = if (
                     watchProgressRepository.activeProviderOwnsCompletedHistoryProjection()
                 ) {
