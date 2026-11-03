@@ -175,9 +175,9 @@ internal fun NewLookScaffold(
     drawerIcon: @Composable (item: DrawerItem, tint: Color, modifier: Modifier) -> Unit
 ) {
     val showMenu = currentRoute in rootRoutes
-    // Movies and Series are Home's screen with other rows: same avatar, same bar.
+    // Movies, Series and Watch later are Home's screen with other rows: same avatar, same bar.
     val onHome = currentRoute == Screen.Home.route || currentRoute == Screen.Movies.route ||
-        currentRoute == Screen.SeriesTab.route
+        currentRoute == Screen.SeriesTab.route || currentRoute == Screen.Library.route
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val contentFocusRequester = remember { FocusRequester() }

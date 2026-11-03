@@ -60,7 +60,8 @@ class NewLookEnricher @Inject constructor(
                 item.apiType.equals("series", true)
             try {
                 val tmdbId = tmdbService.ensureTmdbId(item.id, if (isTv) "tv" else "movie", item.imdbId) ?: return@withContext null
-                val language = tmdbSettingsDataStore.settings.value.language
+                // The app's language now, not the settings copy: that one starts as English until the file has been read.
+                val language = com.nuvio.tv.data.local.tmdbLanguageForApp()
                 val enrichment = tmdbMetadataService.fetchEnrichment(
                     tmdbId, if (isTv) ContentType.SERIES else ContentType.MOVIE, language
                 )

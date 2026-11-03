@@ -67,7 +67,7 @@ class TmdbSettingsDataStore @Inject constructor(
                 useCollections = prefs[useCollectionsKey] ?: false
             )
         }
-    }.stateIn(scope, SharingStarted.Eagerly, TmdbSettings())
+    }.stateIn(scope, SharingStarted.Eagerly, TmdbSettings(language = tmdbLanguageForApp()))
 
     suspend fun setEnabled(enabled: Boolean) {
         store().edit { it[enabledKey] = enabled }

@@ -22,6 +22,16 @@
             android:name=".core.player.ExternalPlaybackKeepAliveService"
             tools:node="remove" />
         <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter tools:node="remove">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="stremio" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".launcher.AppIconArcticBlue"
             tools:node="remove" />
         <activity
