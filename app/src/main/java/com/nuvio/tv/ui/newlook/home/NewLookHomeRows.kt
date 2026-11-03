@@ -414,12 +414,17 @@ private const val TOP_TEN = 10
 
 /**
  * With no published rows, the Movies and Series tabs show the catalogs and built-in rows of their own type, and Home
- * shows everything; a row with both kinds (this week's trending) stays on Home.
+ * only what is of neither type: a row with both kinds (this week's trending) stays on Home.
  */
 internal fun List<NewLookRow>.forTab(tab: String?): List<NewLookRow> = when (tab) {
     com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_MOVIES ->
         filter { it.builtIn == BuiltInRow.TOP_MOVIES_TODAY || it.source?.apiType.equals("movie", ignoreCase = true) }
     com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_SERIES ->
         filter { it.builtIn == BuiltInRow.TOP_SHOWS_TODAY || it.source?.apiType.equals("series", ignoreCase = true) }
+    // Home keeps what belongs to neither tab: Continue Watching, mixed rows and the other kinds of catalog.
+    com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_HOME -> filterNot {
+        it.builtIn == BuiltInRow.TOP_MOVIES_TODAY || it.builtIn == BuiltInRow.TOP_SHOWS_TODAY ||
+            it.source?.apiType.equals("movie", ignoreCase = true) || it.source?.apiType.equals("series", ignoreCase = true)
+    }
     else -> this
 }
