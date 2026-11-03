@@ -46,7 +46,7 @@ class LayoutPreferenceDataStore @Inject constructor(
         private const val FEATURE = "layout_settings"
         private const val DEFAULT_POSTER_CARD_WIDTH_DP = 126
         private const val DEFAULT_POSTER_CARD_HEIGHT_DP = 189
-        private const val DEFAULT_POSTER_CARD_CORNER_RADIUS_DP = 12
+        private const val DEFAULT_POSTER_CARD_CORNER_RADIUS_DP = 6
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

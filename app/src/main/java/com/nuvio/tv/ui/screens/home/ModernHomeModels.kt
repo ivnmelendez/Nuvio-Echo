@@ -236,6 +236,9 @@ internal fun buildContinueWatchingItem(
                 contentTypeText = episodeLabel,
                 isSeries = isSeries,
                 yearText = extractYearOrRange(item.releaseInfo),
+                // How long this episode or film runs, when the history knows it.
+                runtimeText = item.progress.duration.takeIf { it > 0L }
+                    ?.let { com.nuvio.tv.ui.newlook.home.formatRuntime((it / 60_000L).toInt()) },
                 secondaryHighlightText = secondaryHighlightText,
                 imdbText = item.episodeImdbRating
                     ?.let { String.format("%.1f", it) },
