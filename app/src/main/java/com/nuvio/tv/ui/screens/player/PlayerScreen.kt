@@ -2416,9 +2416,9 @@ private fun PlayerControlsOverlay(
                     else -> true
                 }
             }
-            val rowButtons = mainButtons + listOfNotNull(PlayerButton.NEXT_EPISODE.takeIf { showNextEpisodeButton })
+            val rowButtons = mainButtons
             val firstButtonFocus = remember { FocusRequester() }
-            val belowBarTarget = if (rowButtons.isNotEmpty()) firstButtonFocus else playPauseFocusRequester
+            val belowBarTarget = if (rowButtons.isNotEmpty()) firstButtonFocus else progressBarFocusRequester
             val audioButtonLabel = (
                 uiState.audioTracks.firstOrNull { it.index == uiState.selectedAudioTrackIndex }
                     ?: uiState.audioTracks.firstOrNull { it.isSelected }
@@ -2431,16 +2431,16 @@ private fun PlayerControlsOverlay(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    ControlButton(
-                        icon = if (uiState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        iconPainter = if (uiState.isPlaying) customPausePainter else customPlayPainter,
+                    // The state of playback, not a button: on the bar, OK plays or pauses.
+                    Icon(
+                        painter = if (uiState.isPlaying) customPausePainter else customPlayPainter,
                         contentDescription = if (uiState.isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
-                        onClick = onPlayPause,
-                        focusRequester = playPauseFocusRequester,
-                        onDownKey = { runCatching { belowBarTarget.requestFocus() } },
-                        onFocused = onResetHideTimer
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
                     )
-                    Box(modifier = Modifier.weight(1f)) {
+                    PlayerTimeSide(viewModel = viewModel, duration = false)
+                    // Asking this box for focus lands on the bar, the one thing on this row that takes it.
+                    Box(modifier = Modifier.weight(1f).focusRequester(playPauseFocusRequester).focusGroup()) {
                         if (!isLivePlayback) {
                             if (seekThumbnails != null) {
                                 SeekThumbnailAnchor(
@@ -2455,11 +2455,12 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressBarUpFocusRequester,
                                 downFocusRequester = belowBarTarget,
                                 onUpKey = onHideControls,
-                                onFocused = onResetHideTimer
+                                onFocused = onResetHideTimer,
+                                onPlayPause = onPlayPause
                             )
                         }
                     }
-                    PlayerControlsTimeTextHost(viewModel = viewModel)
+                    PlayerTimeSide(viewModel = viewModel, duration = true)
                 }
             }
 
@@ -2468,12 +2469,13 @@ private fun PlayerControlsOverlay(
             // The named buttons: the focused one is a white pill.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 64.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val renderButton: @Composable (PlayerButton) -> Unit = { button ->
                         val rowFocus = if (button == rowButtons.firstOrNull()) firstButtonFocus else null
-                        val rowLeft = if (button == rowButtons.firstOrNull()) playPauseFocusRequester else null
+                        val rowLeft: FocusRequester? = null
                         when (button) {
                             PlayerButton.NEXT_EPISODE -> ControlButton(
                                 icon = Icons.Default.SkipNext,
@@ -2485,6 +2487,7 @@ private fun PlayerControlsOverlay(
                                 label = stringResource(R.string.player_btn_next_episode),
                                 focusRequester = rowFocus,
                                 leftFocusRequester = rowLeft,
+                                compact = true,
                                 alwaysLabel = true
                             )
                             PlayerButton.SUBTITLES -> ControlButton(
@@ -2498,6 +2501,7 @@ private fun PlayerControlsOverlay(
                                 label = stringResource(R.string.player_btn_subtitles),
                                 focusRequester = rowFocus,
                                 leftFocusRequester = rowLeft,
+                                compact = true,
                                 alwaysLabel = true
                             )
                             PlayerButton.AUDIO -> ControlButton(
@@ -2512,6 +2516,7 @@ private fun PlayerControlsOverlay(
                                 label = audioButtonLabel,
                                 focusRequester = rowFocus,
                                 leftFocusRequester = rowLeft,
+                                compact = true,
                                 alwaysLabel = true
                             )
                             PlayerButton.SOURCES -> ControlButton(
@@ -2524,7 +2529,8 @@ private fun PlayerControlsOverlay(
                                 onFocused = onResetHideTimer,
                                 label = stringResource(R.string.player_btn_links),
                                 focusRequester = rowFocus,
-                                leftFocusRequester = rowLeft
+                                leftFocusRequester = rowLeft,
+                                compact = true
                             )
                             PlayerButton.QUALITY -> ControlButton(
                                 icon = QualityIcon,
@@ -2555,6 +2561,7 @@ private fun PlayerControlsOverlay(
                                 label = stringResource(R.string.player_btn_episodes),
                                 focusRequester = rowFocus,
                                 leftFocusRequester = rowLeft,
+                                compact = true,
                                 alwaysLabel = true
                             )
                             PlayerButton.SPEED -> ControlButton(
@@ -2576,7 +2583,8 @@ private fun PlayerControlsOverlay(
                                 onFocused = onResetHideTimer,
                                 label = stringResource(R.string.player_btn_aspect),
                                 focusRequester = rowFocus,
-                                leftFocusRequester = rowLeft
+                                leftFocusRequester = rowLeft,
+                                compact = true
                             )
                             PlayerButton.EXTERNAL_PLAYER -> ControlButton(
                                 icon = Icons.AutoMirrored.Filled.OpenInNew,
@@ -2612,11 +2620,9 @@ private fun PlayerControlsOverlay(
                     }
 
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(34.dp), verticalAlignment = Alignment.CenterVertically) {
                         mainButtons.forEach { button -> key(button) { renderButton(button) } }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    if (showNextEpisodeButton) renderButton(PlayerButton.NEXT_EPISODE)
                 }
             }
         }
@@ -2630,11 +2636,11 @@ private fun PlayerTitleBlock(uiState: PlayerUiState, modifier: Modifier = Modifi
     val isEpisode = uiState.currentSeason != null && uiState.currentEpisode != null
     val displayName = if (isEpisode) uiState.contentName ?: uiState.title else uiState.title
     if (displayName.isBlank()) return
-    Column(modifier = modifier.padding(start = 56.dp, top = 36.dp, end = 280.dp)) {
+    Column(modifier = modifier.padding(start = 80.dp, top = 28.dp, end = 280.dp)) {
         Text(
             text = displayName,
             color = Color.White,
-            fontSize = 24.sp,
+            fontSize = 19.sp,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -2643,31 +2649,27 @@ private fun PlayerTitleBlock(uiState: PlayerUiState, modifier: Modifier = Modifi
             val episodeTitle = uiState.currentEpisodeTitle?.takeIf { it.isNotBlank() }?.localizeEpisodeTitle(appContext)
             Text(
                 text = "S${uiState.currentSeason}:E${uiState.currentEpisode}" + (episodeTitle?.let { " - $it" } ?: ""),
-                color = Color.White.copy(alpha = 0.78f),
-                fontSize = 15.sp,
+                color = Color.White.copy(alpha = 0.72f),
+                fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
         val quality = uiState.currentStreamQuality?.label
-        val addon = uiState.currentStreamAddonName?.takeIf { it.isNotBlank() }
-        if (quality != null || addon != null) {
+        if (quality != null) {
             Spacer(modifier = Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (quality != null) {
                     Text(
                         text = quality,
                         color = Color.White,
-                        fontSize = 13.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
                             .background(Color.White.copy(alpha = 0.28f))
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     )
-                }
-                if (addon != null) {
-                    Text(text = addon, color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp, maxLines = 1)
                 }
             }
         }
@@ -2693,7 +2695,8 @@ private fun PlayerControlsProgressBarHost(
     upFocusRequester: FocusRequester? = null,
     downFocusRequester: FocusRequester? = null,
     onUpKey: (() -> Unit)? = null,
-    onFocused: (() -> Unit)? = null
+    onFocused: (() -> Unit)? = null,
+    onPlayPause: (() -> Unit)? = null
 ) {
     val playbackTimeline by viewModel.playbackTimeline.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -2714,6 +2717,10 @@ private fun PlayerControlsProgressBarHost(
             if (viewModel.controller.previewCommitPending) {
                 viewModel.onEvent(PlayerEvent.OnCommitPreviewSeekNow)
                 true
+            } else if (onPlayPause != null) {
+                // On the bar and not mid-seek, OK plays or pauses.
+                onPlayPause()
+                true
             } else {
                 false
             }
@@ -2727,23 +2734,25 @@ private fun PlayerControlsProgressBarHost(
     )
 }
 
+/** One end of the bar's time: where it is now, or how long it runs; small, as in the reference. */
 @Composable
-private fun PlayerControlsTimeTextHost(viewModel: PlayerViewModel) {
+private fun PlayerTimeSide(viewModel: PlayerViewModel, duration: Boolean) {
     val playbackTimeline by viewModel.playbackTimeline.collectAsState()
     val switching = viewModel.uiState.collectAsState().value.sourceSwitch
-    val timeText = if (switching != null) {
-        "${formatTime(switching.positionMs)} / ${formatTime(switching.durationMs)}"
-    } else if (playbackTimeline.isLive) {
-        stringResource(R.string.player_live_watched, formatTime(playbackTimeline.watchedDurationMs))
-    } else {
-        "${formatTime(playbackTimeline.currentPosition)} / ${formatTime(playbackTimeline.duration)}"
+    val millis = when {
+        switching != null -> if (duration) switching.durationMs else switching.positionMs
+        duration -> playbackTimeline.duration
+        else -> playbackTimeline.currentPosition
     }
-
-    Text(
-        text = timeText,
-        style = MaterialTheme.typography.bodyMedium,
-        color = Color.White.copy(alpha = 0.9f)
-    )
+    if (playbackTimeline.isLive) {
+        if (!duration) Text(
+            text = stringResource(R.string.player_live_watched, formatTime(playbackTimeline.watchedDurationMs)),
+            fontSize = 11.sp,
+            color = Color.White.copy(alpha = 0.9f)
+        )
+        return
+    }
+    Text(text = formatTime(millis), fontSize = 11.sp, color = Color.White.copy(alpha = 0.9f))
 }
 
 @Composable
@@ -2805,10 +2814,12 @@ private fun ControlButton(
     /** Shows [label] all the time, not only while focused. */
     alwaysLabel: Boolean = false,
     /** Left from this button goes here (the play button beside the bar). */
-    leftFocusRequester: FocusRequester? = null
+    leftFocusRequester: FocusRequester? = null,
+    /** The player's small named buttons: a short pill with a small icon and 11 sp text. */
+    compact: Boolean = false
 ) {
     if (label != null) {
-        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused, alwaysLabel, leftFocusRequester)
+        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused, alwaysLabel, leftFocusRequester, compact)
         return
     }
     var isFocused by remember { mutableStateOf(false) }
@@ -2894,14 +2905,15 @@ private fun NamedControlButton(
     onDownKey: (() -> Unit)?,
     onFocused: (() -> Unit)?,
     alwaysLabel: Boolean = false,
-    leftFocusRequester: FocusRequester? = null
+    leftFocusRequester: FocusRequester? = null,
+    compact: Boolean = false
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val content = if (isFocused) Color.Black else Color.White.copy(alpha = if (enabled) 1f else 0.4f)
     Row(
         modifier = Modifier
-            .height(NuvioTheme.spacing.xxxl)
-            .widthIn(min = NuvioTheme.spacing.xxxl)
+            .height(if (compact) 30.dp else NuvioTheme.spacing.xxxl)
+            .widthIn(min = if (compact) 30.dp else NuvioTheme.spacing.xxxl)
             .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
             .then(if (upFocusRequester != null) Modifier.focusProperties { up = upFocusRequester } else Modifier)
             .onPreviewKeyEvent { keyEvent ->
@@ -2934,20 +2946,20 @@ private fun NamedControlButton(
                 onClick = onClick
             )
             .animateContentSize(animationSpec = tween(240))
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = if (compact) 9.dp else 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (iconPainter != null) {
-            Icon(painter = iconPainter, contentDescription = label, tint = content, modifier = Modifier.size(NuvioTheme.spacing.xl))
+            Icon(painter = iconPainter, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) 14.dp else NuvioTheme.spacing.xl))
         } else {
-            Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(24.dp))
+            Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) 14.dp else 24.dp))
         }
         if (isFocused || alwaysLabel) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(if (compact) 6.dp else 8.dp))
             Text(
                 text = label,
                 color = if (isFocused) Color.Black else Color.White.copy(alpha = 0.92f),
-                fontSize = 14.sp,
+                fontSize = if (compact) 11.sp else 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.padding(end = 4.dp)
