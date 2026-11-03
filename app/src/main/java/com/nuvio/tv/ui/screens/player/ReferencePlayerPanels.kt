@@ -68,7 +68,7 @@ private fun ReferencePanel(
                 .align(Alignment.CenterEnd)
                 .width(width)
                 .fillMaxHeight()
-                .background(Color(0xE60B0710))
+                .background(Color.Black.copy(alpha = 0.82f))
                 .padding(start = 14.dp, end = 14.dp, top = 14.dp)
         ) {
             Text(

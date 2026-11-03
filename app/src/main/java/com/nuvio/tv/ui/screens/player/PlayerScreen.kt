@@ -223,6 +223,23 @@ private fun PlayerScreenContent(
         }
     }
     val betaSettings by rememberBetaPerformanceSettings()
+    // Audio, subtitles and links hold the picture still behind them, and let it go again when they close.
+    var pausedBySelectionPanel by remember { mutableStateOf(false) }
+    val selectionPanelOpen = uiState.showAudioOverlay || uiState.showSubtitleOverlay || uiState.showSourcesPanel
+    LaunchedEffect(selectionPanelOpen) {
+        if (selectionPanelOpen) {
+            if (viewModel.uiState.value.isPlaying) {
+                pausedBySelectionPanel = true
+                viewModel.onEvent(PlayerEvent.OnPlayPause)
+                delay(60)
+                // The long-pause screen has no place under a menu.
+                runCatching { viewModel.controller.cancelPauseOverlay() }
+            }
+        } else if (pausedBySelectionPanel) {
+            pausedBySelectionPanel = false
+            if (!viewModel.uiState.value.isPlaying) viewModel.onEvent(PlayerEvent.OnPlayPause)
+        }
+    }
     val postPlayRecommendationState by viewModel.postPlayRecommendationUiState.collectAsState()
     val effectiveAutoplayEnabled by viewModel.effectiveAutoplayEnabled.collectAsState(initial = false)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -1662,8 +1679,8 @@ private fun PlayerScreenContent(
         // Sources panel scrim
         AnimatedVisibility(
             visible = uiState.showSourcesPanel && uiState.error == null,
-            enter = fadeIn(animationSpec = tween(120)),
-            exit = fadeOut(animationSpec = tween(120))
+            enter = androidx.compose.animation.EnterTransition.None,
+            exit = androidx.compose.animation.ExitTransition.None
 ) {
     Box(
         modifier = Modifier
@@ -1675,14 +1692,8 @@ private fun PlayerScreenContent(
         // Sources panel (slides in from right)
         AnimatedVisibility(
             visible = uiState.showSourcesPanel && uiState.error == null,
-            enter = slideInHorizontally(
-                animationSpec = tween(220),
-                initialOffsetX = { it }
-            ),
-            exit = slideOutHorizontally(
-                animationSpec = tween(220),
-                targetOffsetX = { it }
-            )
+            enter = androidx.compose.animation.EnterTransition.None,
+            exit = androidx.compose.animation.ExitTransition.None
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 ReferenceLinksPanel(
