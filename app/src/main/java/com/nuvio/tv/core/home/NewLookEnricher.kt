@@ -97,6 +97,34 @@ class NewLookEnricher @Inject constructor(
         }.getOrNull()?.takeIf { it.isNotBlank() }
     }
 
+    private val episodeCache = HashMap<String, NewLookDetails>()
+
+    /**
+     * One episode's own text, air year and length from TMDB, for a Continue Watching card: the show's details
+     * (rating, first-air year, synopsis) are not the episode's. Null without a TMDB key or when TMDB has no entry.
+     */
+    suspend fun episodeDetails(item: MetaPreview, season: Int, episode: Int): NewLookDetails? =
+        withContext(Dispatchers.IO) {
+            val key = "${item.id}:$season:$episode"
+            synchronized(episodeCache) { episodeCache[key] }?.let { return@withContext it }
+            if (com.nuvio.tv.core.apikeys.ApiKeys.tmdb.isBlank()) return@withContext null
+            try {
+                val tmdbId = tmdbService.ensureTmdbId(item.id, "tv", item.imdbId) ?: return@withContext null
+                val found = tmdbMetadataService.fetchEpisodeEnrichment(
+                    tmdbId, listOf(season), com.nuvio.tv.data.local.tmdbLanguageForApp()
+                )[season to episode] ?: return@withContext null
+                NewLookDetails(
+                    overview = found.overview?.takeIf { it.isNotBlank() },
+                    year = found.airDate,
+                    runtimeMinutes = found.runtimeMinutes
+                ).also { synchronized(episodeCache) { episodeCache[key] = it } }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+        }
+
     private suspend fun tagFor(
         item: MetaPreview,
         isTv: Boolean,
