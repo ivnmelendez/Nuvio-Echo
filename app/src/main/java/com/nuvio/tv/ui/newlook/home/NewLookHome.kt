@@ -58,6 +58,8 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
@@ -1525,6 +1527,17 @@ private val NoBringIntoView = object : BringIntoViewSpec {
 }
 
 
+/**
+ * The slide of a poster row's closed cards after the focus steps one card. The layout jumps to its new shape at once
+ * (the opened card appears opened, the old one closes); the closed cards after the opened one then glide from where
+ * they were. It lives in two floats read only while drawing, so a step costs no recomposition and no relayout.
+ */
+private class RowSlide(var prevCol: Int) {
+    /** Px the cards still sit from their place when [progress] is 0 (positive: to the right). */
+    var from by androidx.compose.runtime.mutableFloatStateOf(0f)
+    var progress by androidx.compose.runtime.mutableFloatStateOf(1f)
+}
+
 /** Rows pin the focused card to their start, so a row always starts with its focused card. */
 internal class PinToStart(private val startPx: Float) : BringIntoViewSpec {
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
@@ -1750,6 +1763,59 @@ private fun NewLookRowView(
         // A ranked card sits rankPad into its item, so the item itself goes to the start.
         val lastCol = (row.items.size - 1).coerceAtLeast(0)
         SideEffect { listState.requestScrollToItem(col.coerceIn(0, lastCol)) }
+        // Measured off the reference app (24 fps capture): one poster plus its gap, 300 ms, cubic-bezier(.2,0,0,1) (fit over four steps of two captures). Set here, in
+        // the apply phase, so the cards are already at their old place in the very frame the layout changes.
+        val slide = remember { RowSlide(col) }
+        val slideEnabled = row.kind == RowKind.POSTER && !row.isPlaceholder
+        val stepPx = with(density) { (row.cardWidth(dims) + dims.gap).toPx() }
+        SideEffect {
+            val step = col - slide.prevCol
+            if (step != 0) {
+                slide.prevCol = col
+                if (slideEnabled && abs(step) == 1) {
+                    // A step taken mid-glide carries on from where the cards are, capped so a held key never trails far.
+                    val left = slide.from * (1f - slide.progress)
+                    slide.from = (left + step * stepPx).coerceIn(-2f * stepPx, 2f * stepPx)
+                    slide.progress = 0f
+                } else {
+                    slide.from = 0f
+                    slide.progress = 1f
+                }
+            }
+        }
+        LaunchedEffect(col) {
+            if (slide.progress < 1f) {
+                // Keys in quick succession: a shorter, front-loaded glide, or the slow start of each one piles up.
+                val chained = abs(slide.from) > stepPx * 1.2f
+                androidx.compose.animation.core.animate(
+                    0f, 1f,
+                    animationSpec = if (chained) tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
+                    else tween(300, easing = androidx.compose.animation.core.CubicBezierEasing(0.2f, 0f, 0f, 1f))
+                ) { v, _ -> slide.progress = v }
+            }
+        }
+        // Stepping right, the card that takes focus was a closed poster a moment ago: it slides left behind the opened
+        // card as the others follow it, so no gap opens at the opened card's edge (the reference does the same). Drawn
+        // under the row, only while the glide runs; their alpha is read while drawing, so nothing recomposes per frame.
+        if (slideEnabled && rowActive) {
+            val gapDp = dims.gap
+            for (k in 0..1) {
+                val ghost = row.items.getOrNull(col - k) ?: continue
+                Box(
+                    modifier = Modifier
+                        .offset(x = contentStart + dims.posterOpenWidth + gapDp - (row.cardWidth(dims) + gapDp) * (1 + k), y = cardTop)
+                        .size(row.cardWidth(dims), row.cardHeight(dims))
+                        .graphicsLayer {
+                            translationX = slide.from * (1f - slide.progress)
+                            alpha = if (slide.from > 0f && slide.progress < 1f) 1f else 0f
+                        }
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(dims.cardRadius))
+                ) {
+                    Artwork(ghost.heroPreview.poster ?: ghost.imageUrl, Modifier.fillMaxSize())
+                    Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
+                }
+            }
+        }
         CompositionLocalProvider(LocalBringIntoViewSpec provides remember { PinToStart(0f) }) {
             LazyRow(
                 state = listState,
@@ -1770,7 +1836,12 @@ private fun NewLookRowView(
                         // Cards the row has scrolled past stay composed, so focus can go back to them, but aren't drawn,
                         // except the one just before the start: its right edge peeks out left of the focused card. This
                         // follows `col` directly (no animation in between), and the row scrolls to `col` in the same pass.
-                        .graphicsLayer { alpha = if (index < col - 1) 0f else 1f }
+                        .graphicsLayer {
+                            alpha = if (index < col - 1) 0f else 1f
+                            translationX = if (index > col) slide.from * (1f - slide.progress) else 0f
+                        }
+                        // The opened card stays over the cards gliding past its edge.
+                        .zIndex(if (index == col) 1f else 0f)
                         .then(
                             when (index) {
                                 focusCol -> Modifier.focusRequester(focusRequester)
