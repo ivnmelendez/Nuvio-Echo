@@ -232,7 +232,9 @@ internal fun buildContinueWatchingItem(
             HeroPreview(
                 title = item.progress.name,
                 logo = item.progress.logo,
-                description = item.episodeDescription ?: item.progress.episodeTitle?.localizeEpisodeTitle(context),
+                // A series card shows the show's synopsis (from TMDB, in the app's language), not the episode's.
+                description = if (isSeries) null
+                else item.episodeDescription ?: item.progress.episodeTitle?.localizeEpisodeTitle(context),
                 contentTypeText = episodeLabel,
                 isSeries = isSeries,
                 yearText = extractYearOrRange(item.releaseInfo),
@@ -264,9 +266,8 @@ internal fun buildContinueWatchingItem(
             HeroPreview(
                 title = item.info.name,
                 logo = item.info.logo,
-                description = item.info.episodeDescription
-                    ?: item.info.episodeTitle?.localizeEpisodeTitle(context)
-                    ?: item.info.airDateLabel?.let { airsDateTemplate.format(it) },
+                // The show's synopsis, as for a started episode.
+                description = null,
                 contentTypeText = episodeLabel,
                 isSeries = true,
                 yearText = extractYearOrRange(item.info.releaseInfo),
