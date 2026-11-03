@@ -2394,4 +2394,5 @@
     <string name="nd_hold_mark_unwatched">Mark as unwatched</string>
     <string name="nd_where_back">Back</string>
     <string name="nd_where_none">No availability found for your region.</string>
+    <string name="player_btn_links">Links</string>
 </resources>

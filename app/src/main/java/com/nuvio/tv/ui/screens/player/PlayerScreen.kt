@@ -2390,131 +2390,90 @@ private fun PlayerControlsOverlay(
                 )
         )
 
+        PlayerTitleBlock(uiState = uiState, modifier = Modifier.align(Alignment.TopStart))
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = NuvioTheme.spacing.xxl, vertical = NuvioTheme.spacing.xl)
         ) {
-            val skipIntroVisible = uiState.activeSkipInterval != null
-
-            AnimatedVisibility(
-                visible = !skipIntroVisible,
-                enter = fadeIn(animationSpec = tween(NuvioMotion.tokens.durations.fast)),
-                exit = fadeOut(animationSpec = tween(NuvioMotion.tokens.durations.fast))
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    val displayName = if (uiState.currentSeason != null && uiState.currentEpisode != null) {
-                        uiState.contentName ?: uiState.title
-                    } else {
-                        uiState.title
-                    }
-
-                    if (uiState.currentSeason != null && uiState.currentEpisode != null) {
-                        val seasonEpisodeCode = stringResource(
-                            R.string.season_episode_format,
-                            uiState.currentSeason,
-                            uiState.currentEpisode
-                        )
-                        val appContext = LocalContext.current
-                        val localizedEpisodeTitle = uiState.currentEpisodeTitle
-                            ?.takeIf { it.isNotBlank() }
-                            ?.localizeEpisodeTitle(appContext)
-                        val episodeInfo = if (localizedEpisodeTitle != null) {
-                            "$seasonEpisodeCode • $localizedEpisodeTitle"
-                        } else {
-                            seasonEpisodeCode
-                        }
-                        Text(
-                            text = episodeInfo,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White.copy(alpha = 0.9f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+            val hasEpisodeContext = uiState.currentSeason != null && uiState.currentEpisode != null
+            val hasSubtitleControl = uiState.subtitleTracks.isNotEmpty() || uiState.addonSubtitles.isNotEmpty()
+            val hasAudioControl = uiState.audioTracks.isNotEmpty()
+            val showNextEpisodeButton = uiState.nextEpisode?.hasAired == true &&
+                (uiState.postPlayMode as? PostPlayMode.AutoPlay)?.let {
+                    !it.searching && it.countdownSec == null
+                } != false
+            // Subtitles, audio (named for the track playing), episodes, aspect and links; Next sits at the far right.
+            val mainButtons = listOf(
+                PlayerButton.SUBTITLES, PlayerButton.AUDIO, PlayerButton.EPISODES, PlayerButton.ASPECT_RATIO, PlayerButton.SOURCES
+            ).filter { button ->
+                when (button) {
+                    PlayerButton.SUBTITLES -> hasSubtitleControl
+                    PlayerButton.AUDIO -> hasAudioControl || showQualityButton
+                    PlayerButton.EPISODES -> hasEpisodeContext
+                    else -> true
                 }
             }
+            val rowButtons = mainButtons + listOfNotNull(PlayerButton.NEXT_EPISODE.takeIf { showNextEpisodeButton })
+            val firstButtonFocus = remember { FocusRequester() }
+            val belowBarTarget = if (rowButtons.isNotEmpty()) firstButtonFocus else playPauseFocusRequester
+            val audioButtonLabel = (
+                uiState.audioTracks.firstOrNull { it.index == uiState.selectedAudioTrackIndex }
+                    ?: uiState.audioTracks.firstOrNull { it.isSelected }
+                )?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.player_btn_audio_quality)
 
-            Spacer(modifier = Modifier.height(NuvioTheme.spacing.md))
-
-            if (!isLivePlayback) {
-                // Progress bar — always LTR regardless of locale
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    if (seekThumbnails != null) {
-                        SeekThumbnailAnchor(
-                            engine = seekThumbnails,
-                            positionMs = uiState.pendingPreviewSeekPosition,
-                            durationMs = playbackTimeline.duration,
-                        )
-                    }
-                    PlayerControlsProgressBarHost(
-                        viewModel = viewModel,
-                        focusRequester = progressBarFocusRequester,
-                        upFocusRequester = progressBarUpFocusRequester,
-                        downFocusRequester = playPauseFocusRequester,
-                        onUpKey = onHideControls,
-                        onFocused = onResetHideTimer
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(NuvioTheme.spacing.lg))
-            } else {
-                Spacer(modifier = Modifier.height(NuvioTheme.spacing.lg))
-            }
-
-            // Control buttons row — always LTR regardless of locale
+            // Play beside the bar, the bar, and the time.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 Row(
-                    // The buttons sit in a glass dock, like Home's menu bar, the focused one under the app's lens.
-                    modifier = Modifier
-                        .glassSurface(PlayerPillShape)
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    val hasEpisodeContext = uiState.currentSeason != null && uiState.currentEpisode != null
-                    val hasSubtitleControl = uiState.subtitleTracks.isNotEmpty() || uiState.addonSubtitles.isNotEmpty()
-                    val hasAudioControl = uiState.audioTracks.isNotEmpty()
-                    val showNextEpisodeButton = uiState.nextEpisode?.hasAired == true &&
-                        (uiState.postPlayMode as? PostPlayMode.AutoPlay)?.let {
-                            !it.searching && it.countdownSec == null
-                        } != false
-
                     ControlButton(
                         icon = if (uiState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                         iconPainter = if (uiState.isPlaying) customPausePainter else customPlayPainter,
                         contentDescription = if (uiState.isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                         onClick = onPlayPause,
                         focusRequester = playPauseFocusRequester,
-                        upFocusRequester = progressUpTarget,
-                        onDownKey = onHideControls,
-                        onFocused = onResetHideTimer,
-                        label = stringResource(if (uiState.isPlaying) R.string.player_btn_pause else R.string.player_btn_play)
+                        onDownKey = { runCatching { belowBarTarget.requestFocus() } },
+                        onFocused = onResetHideTimer
                     )
-
-                    // Audio and Quality are one button, and the main row is Play/Pause, Next episode,
-                    // Subtitles, Audio & Quality and Episodes; Sources and Switch player lead the tucked group.
-                    val availableButtons = PlayerButton.entries.filter { button ->
-                        when (button) {
-                            PlayerButton.NEXT_EPISODE -> showNextEpisodeButton
-                            PlayerButton.SUBTITLES -> hasSubtitleControl
-                            PlayerButton.AUDIO -> hasAudioControl || showQualityButton
-                            PlayerButton.QUALITY -> false
-                            PlayerButton.EPISODES -> hasEpisodeContext
-                            // The bar keeps Play, Subtitles and Audio (and the episode buttons on a series); sources,
-                            // speed, aspect, engine, external player, stream info and report are left out.
-                            else -> false
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (!isLivePlayback) {
+                            if (seekThumbnails != null) {
+                                SeekThumbnailAnchor(
+                                    engine = seekThumbnails,
+                                    positionMs = uiState.pendingPreviewSeekPosition,
+                                    durationMs = playbackTimeline.duration,
+                                )
+                            }
+                            PlayerControlsProgressBarHost(
+                                viewModel = viewModel,
+                                focusRequester = progressBarFocusRequester,
+                                upFocusRequester = progressBarUpFocusRequester,
+                                downFocusRequester = belowBarTarget,
+                                onUpKey = onHideControls,
+                                onFocused = onResetHideTimer
+                            )
                         }
                     }
-                    val (rowButtons, tuckedButtons) = availableButtons.partition { it in PlayerButton.newLookMainRow }
+                    PlayerControlsTimeTextHost(viewModel = viewModel)
+                }
+            }
 
+            Spacer(modifier = Modifier.height(NuvioTheme.spacing.sm))
+
+            // The named buttons: the focused one is a white pill.
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 64.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     val renderButton: @Composable (PlayerButton) -> Unit = { button ->
+                        val rowFocus = if (button == rowButtons.firstOrNull()) firstButtonFocus else null
+                        val rowLeft = if (button == rowButtons.firstOrNull()) playPauseFocusRequester else null
                         when (button) {
                             PlayerButton.NEXT_EPISODE -> ControlButton(
                                 icon = Icons.Default.SkipNext,
@@ -2523,7 +2482,10 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_next_episode)
+                                label = stringResource(R.string.player_btn_next_episode),
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft,
+                                alwaysLabel = true
                             )
                             PlayerButton.SUBTITLES -> ControlButton(
                                 icon = Icons.Default.ClosedCaption,
@@ -2533,7 +2495,10 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_subtitles)
+                                label = stringResource(R.string.player_btn_subtitles),
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft,
+                                alwaysLabel = true
                             )
                             PlayerButton.AUDIO -> ControlButton(
                                 icon = Icons.AutoMirrored.Filled.VolumeUp,
@@ -2544,7 +2509,10 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_audio_quality)
+                                label = audioButtonLabel,
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft,
+                                alwaysLabel = true
                             )
                             PlayerButton.SOURCES -> ControlButton(
                                 icon = Icons.Default.SwapHoriz,
@@ -2554,7 +2522,9 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_sources)
+                                label = stringResource(R.string.player_btn_links),
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft
                             )
                             PlayerButton.QUALITY -> ControlButton(
                                 icon = QualityIcon,
@@ -2582,7 +2552,10 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_episodes)
+                                label = stringResource(R.string.player_btn_episodes),
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft,
+                                alwaysLabel = true
                             )
                             PlayerButton.SPEED -> ControlButton(
                                 icon = Icons.Default.Speed,
@@ -2601,7 +2574,9 @@ private fun PlayerControlsOverlay(
                                 upFocusRequester = progressUpTarget,
                                 onDownKey = onHideControls,
                                 onFocused = onResetHideTimer,
-                                label = stringResource(R.string.player_btn_aspect)
+                                label = stringResource(R.string.player_btn_aspect),
+                                focusRequester = rowFocus,
+                                leftFocusRequester = rowLeft
                             )
                             PlayerButton.EXTERNAL_PLAYER -> ControlButton(
                                 icon = Icons.AutoMirrored.Filled.OpenInNew,
@@ -2636,57 +2611,64 @@ private fun PlayerControlsOverlay(
                         }
                     }
 
-                    rowButtons.forEach { button -> key(button) { renderButton(button) } }
 
-                    if (tuckedButtons.isNotEmpty()) {
-                        AnimatedVisibility(
-                            visible = uiState.showMoreDialog,
-                            enter = slideInHorizontally(
-                                animationSpec = tween(NuvioMotion.tokens.durations.fast),
-                                initialOffsetX = { it / 2 }
-                            ) + fadeIn(animationSpec = tween(NuvioMotion.tokens.durations.fast)),
-                            exit = slideOutHorizontally(
-                                animationSpec = tween(160),
-                                targetOffsetX = { it / 2 }
-                            ) + fadeOut(animationSpec = tween(160))
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                tuckedButtons.forEach { button -> key(button) { renderButton(button) } }
-                            }
-                        }
-
-                        ControlButton(
-                            icon = if (uiState.showMoreDialog) {
-                                Icons.AutoMirrored.Filled.KeyboardArrowLeft
-                            } else {
-                                Icons.AutoMirrored.Filled.KeyboardArrowRight
-                            },
-                            contentDescription = if (uiState.showMoreDialog) stringResource(R.string.cd_close_more_actions) else stringResource(R.string.cd_more_actions),
-                            onClick = onToggleMoreActions,
-                            upFocusRequester = progressUpTarget,
-                            onDownKey = onHideControls,
-                            onFocused = onResetHideTimer,
-                            label = stringResource(if (uiState.showMoreDialog) R.string.player_btn_less else R.string.player_btn_more)
-                        )
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        mainButtons.forEach { button -> key(button) { renderButton(button) } }
                     }
-                }
-
-                // Right side - time, with the playing quality just above it in the minimal player
-                Box {
-                    PlayerControlsTimeTextHost(viewModel = viewModel)
-                    if (minimalControls && qualityLabel != null && !uiState.showSeekOverlay) {
-                        PlayerQualityLabel(
-                            text = qualityLabel,
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(y = (-20).dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (showNextEpisodeButton) renderButton(PlayerButton.NEXT_EPISODE)
                 }
             }
+        }
+    }
+}
+
+/** Top left, over the picture: the title, the episode, and what is playing (quality, addon). */
+@Composable
+private fun PlayerTitleBlock(uiState: PlayerUiState, modifier: Modifier = Modifier) {
+    val appContext = LocalContext.current
+    val isEpisode = uiState.currentSeason != null && uiState.currentEpisode != null
+    val displayName = if (isEpisode) uiState.contentName ?: uiState.title else uiState.title
+    if (displayName.isBlank()) return
+    Column(modifier = modifier.padding(start = 56.dp, top = 36.dp, end = 280.dp)) {
+        Text(
+            text = displayName,
+            color = Color.White,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        if (isEpisode) {
+            val episodeTitle = uiState.currentEpisodeTitle?.takeIf { it.isNotBlank() }?.localizeEpisodeTitle(appContext)
+            Text(
+                text = "S${uiState.currentSeason}:E${uiState.currentEpisode}" + (episodeTitle?.let { " - $it" } ?: ""),
+                color = Color.White.copy(alpha = 0.78f),
+                fontSize = 15.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        val quality = uiState.currentStreamQuality?.label
+        val addon = uiState.currentStreamAddonName?.takeIf { it.isNotBlank() }
+        if (quality != null || addon != null) {
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (quality != null) {
+                    Text(
+                        text = quality,
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.White.copy(alpha = 0.28f))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    )
+                }
+                if (addon != null) {
+                    Text(text = addon, color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp, maxLines = 1)
+                }
             }
         }
     }
@@ -2819,10 +2801,14 @@ private fun ControlButton(
     onDownKey: (() -> Unit)? = null,
     onFocused: (() -> Unit)? = null,
     /** New look: the name the button shows while focused. */
-    label: String? = null
+    label: String? = null,
+    /** Shows [label] all the time, not only while focused. */
+    alwaysLabel: Boolean = false,
+    /** Left from this button goes here (the play button beside the bar). */
+    leftFocusRequester: FocusRequester? = null
 ) {
     if (label != null) {
-        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused)
+        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused, alwaysLabel, leftFocusRequester)
         return
     }
     var isFocused by remember { mutableStateOf(false) }
@@ -2906,7 +2892,9 @@ private fun NamedControlButton(
     upFocusRequester: FocusRequester?,
     enabled: Boolean,
     onDownKey: (() -> Unit)?,
-    onFocused: (() -> Unit)?
+    onFocused: (() -> Unit)?,
+    alwaysLabel: Boolean = false,
+    leftFocusRequester: FocusRequester? = null
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val content = if (isFocused) Color.Black else Color.White.copy(alpha = if (enabled) 1f else 0.4f)
@@ -2925,6 +2913,10 @@ private fun NamedControlButton(
                     } else false
                     KeyEvent.KEYCODE_DPAD_DOWN -> if (onDownKey != null) {
                         onDownKey()
+                        true
+                    } else false
+                    KeyEvent.KEYCODE_DPAD_LEFT -> if (leftFocusRequester != null) {
+                        runCatching { leftFocusRequester.requestFocus() }
                         true
                     } else false
                     else -> false
@@ -2950,11 +2942,11 @@ private fun NamedControlButton(
         } else {
             Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(24.dp))
         }
-        if (isFocused) {
+        if (isFocused || alwaysLabel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = label,
-                color = Color.Black,
+                color = if (isFocused) Color.Black else Color.White.copy(alpha = 0.92f),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,

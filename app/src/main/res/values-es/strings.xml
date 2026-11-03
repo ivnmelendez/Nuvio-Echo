@@ -2299,4 +2299,5 @@
     <string name="nd_hold_mark_unwatched">Marcar como no visto</string>
     <string name="nd_where_back">Atrás</string>
     <string name="nd_where_none">No hay datos de disponibilidad para tu región.</string>
+    <string name="player_btn_links">Enlaces</string>
 </resources>
