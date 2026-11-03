@@ -37,10 +37,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.automirrored.filled.PlaylistAddCheck
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Shuffle
 import androidx.compose.material.icons.outlined.Tv
+import androidx.compose.material.icons.outlined.VideoLibrary
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -117,6 +121,7 @@ import kotlinx.coroutines.launch
 internal val NdText2 = Color(0xFFB3B3B3)
 internal val NdText3 = Color(0xFF808080)
 internal val NdPill = RoundedCornerShape(999.dp)
+internal val NdButtonShape = RoundedCornerShape(4.dp)
 
 internal fun ndIsSelectKey(keyCode: Int): Boolean =
     keyCode == AndroidKeyEvent.KEYCODE_DPAD_CENTER ||
@@ -430,7 +435,6 @@ internal fun NewDetailsContent(
         seedUrl?.let { ImageRequest.Builder(context).data(it).crossfade(false).size(width = widthPx, height = heightPx).build() }
     }
     val background = NuvioTheme.colors.Background
-    val leftGradient = remember(background, widthPx) { detailLeftGradient(background, widthPx) }
     val emptyGradient = remember { android.graphics.Bitmap.createBitmap(1, 1, android.graphics.Bitmap.Config.ARGB_8888).asImageBitmap() }
 
     Box(
@@ -479,14 +483,14 @@ internal fun NewDetailsContent(
             onTrailerProgressChanged = onTrailerProgressChanged,
             onTrailerEnded = onTrailerEnded,
             isScrolledPastHero = scrolledPast,
-            leftGradient = leftGradient,
+            leftGradient = emptyGradient,
             bottomGradient = emptyGradient,
             pauseBackgroundTrailer = !playFocused,
             onBackgroundTrailerShowing = { trailerShowing = it }
         )
         // A soft dark band behind the text column, so it reads over bright backdrops.
         val scrimAlpha by animateFloatAsState(
-            if (state.isTrailerPlaying || scrolledPast || immersive) 0f else 0.7f,
+            if (state.isTrailerPlaying || scrolledPast || immersive) 0f else 1f,
             tween(if (scrolledPast) 300 else 800), label = "ndScrim"
         )
         Box(
@@ -495,9 +499,9 @@ internal fun NewDetailsContent(
                 .drawBehind {
                     drawRect(
                         Brush.horizontalGradient(
-                            0f to Color.Black.copy(alpha = 0.9f),
-                            0.30f to Color.Black.copy(alpha = 0.72f),
-                            0.50f to Color.Black.copy(alpha = 0.35f),
+                            0f to Color.Black.copy(alpha = 0.55f),
+                            0.30f to Color.Black.copy(alpha = 0.30f),
+                            0.50f to Color.Black.copy(alpha = 0.10f),
                             0.66f to Color.Transparent
                         ),
                         alpha = scrimAlpha
@@ -771,26 +775,26 @@ private fun NdHero(
             .bringIntoViewResponder(noScroll)
             .fillMaxWidth()
             .heightIn(min = 488.dp)
-            .padding(start = 48.dp, end = 48.dp, top = 44.dp)
+            .padding(start = 90.dp, end = 48.dp, top = 52.dp)
             .onFocusChanged { if (it.hasFocus) onFocusedInHero() }
     ) {
-        Column(modifier = Modifier.fillMaxWidth(0.46f)) {
+        Column(modifier = Modifier.width(528.dp)) {
             if (!meta.logo.isNullOrBlank() && !logoFailed) {
                 AsyncImage(
                     model = remember(meta.logo) { ImageRequest.Builder(context).data(meta.logo).crossfade(true).build() },
                     contentDescription = meta.name,
                     onError = { logoFailed = true },
-                    modifier = Modifier.height(64.dp).fillMaxWidth(0.8f),
+                    modifier = Modifier.size(width = 300.dp, height = 72.dp),
                     contentScale = ContentScale.Fit,
-                    alignment = Alignment.CenterStart
+                    alignment = Alignment.BottomStart
                 )
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(11.dp))
             } else {
                 Text(meta.name, color = Color.White, fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, maxLines = 2)
                 Spacer(Modifier.height(10.dp))
             }
             NdMetaLines(meta = meta, isSeries = isSeries, tmdbRating = state.tmdbRating)
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(18.dp))
             NdSynopsis(
                 meta = meta,
                 isSeries = isSeries,
@@ -801,33 +805,30 @@ private fun NdHero(
                 modifier = Modifier.zIndex(2f)
             )
             Column(Modifier.alpha(dim)) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(17.dp))
                 NdCredits(isSeries = isSeries, castOnly = castOnly, crew = crew)
-                Spacer(Modifier.height(14.dp))
-                NdRatingRow(
-                    inBin = state.isInLibrary,
-                    inBinLabel = if (state.isInLibrary) stringResource(R.string.watch_later_in) else null,
-                    binFocus = binFocus,
-                    onBinBounds = onBinBounds,
-                    watched = watched,
-                    watchedPending = watchedPending,
-                    onToggleLibrary = onToggleLibrary,
-                    onLibraryLongPress = onLibraryLongPress,
-                    onToggleWatched = onToggleWatched
-                )
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(44.dp))
                 val items = buildList {
-                    if (isSeries) add(NdMenuItem(Icons.Outlined.Tv, stringResource(R.string.nd_menu_episodes),
-                        pluralStringResource(R.plurals.nd_seasons_count, state.seasons.count { it > 0 }, state.seasons.count { it > 0 }),
-                        episodesItemFocus, onOpenEpisodes))
+                    if (isSeries) add(NdMenuItem(Icons.Outlined.VideoLibrary, stringResource(R.string.nd_menu_episodes),
+                        null, episodesItemFocus, onOpenEpisodes))
                     // A series' trailers are in the Episodes panel's Trailers tab instead.
                     if (state.trailerButtonEnabled && !state.trailerUrl.isNullOrBlank() && !hasTrailersTab) {
-                        add(NdMenuItem(Icons.Outlined.Movie, stringResource(R.string.nd_menu_trailer), null, trailerItemFocus, onTrailer))
+                        add(NdMenuItem(Icons.Filled.Movie, stringResource(R.string.nd_menu_trailer), null, trailerItemFocus, onTrailer))
                     }
+                    add(NdMenuItem(
+                        if (state.isInLibrary) Icons.AutoMirrored.Filled.PlaylistAddCheck else Icons.AutoMirrored.Filled.PlaylistAdd,
+                        stringResource(if (state.isInLibrary) R.string.watch_later_in else R.string.watch_later_add),
+                        null, binFocus, onToggleLibrary, onLibraryLongPress, onBinBounds
+                    ))
+                    if (!isSeries) add(NdMenuItem(
+                        if (watched) Icons.Filled.Visibility else Icons.Outlined.Visibility,
+                        stringResource(if (watched) R.string.nd_watched else R.string.nd_mark_watched),
+                        null, null, { if (!watchedPending) onToggleWatched() }
+                    ))
                 }
                 NdPlayMenu(
                     showPlay = true,
-                    upFocus = binFocus,
+                    upFocus = FocusRequester.Default,
                     playLabel = playLabel,
                     playIcon = playIcon,
                     playAside = playAside,
@@ -851,25 +852,39 @@ private fun NdMetaLines(meta: Meta, isSeries: Boolean, tmdbRating: Float?) {
     // A score of 0 means nobody has rated it yet (an unreleased title): leave it out.
     val score = meta.imdbRating?.takeIf { it > 0f } ?: tmdbRating?.takeIf { it > 0f }
     val percent = score?.let { Math.round(it * 10f) }
-    val parts = remember(meta, isSeries) {
-        listOfNotNull(
-            formatYearRange(meta.releaseInfo),
-            meta.genres.firstOrNull()?.let { localizedGenreLabel(context, it) },
-            meta.runtime?.let { formatRuntime(it) }
-        )
-    }
-    val text = Color(0xFFD6D6D6)
     val like = percent?.let { com.nuvio.tv.ui.newlook.home.ratingPercentColor(it) } ?: Color(0xFF2ECC71)
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    val genres = remember(meta) { meta.genres.take(2).map { localizedGenreLabel(context, it) } }
+    val year = remember(meta) { formatYearRange(meta.releaseInfo) }
+    val runtime = remember(meta) { meta.runtime?.let { formatRuntime(it) } }
+    val age = meta.ageRating?.trim()?.takeIf { it.isNotBlank() }
+    val font = com.nuvio.tv.ui.theme.MontserratFamily
+    Row(
+        modifier = Modifier.heightIn(min = 21.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(15.5.dp)
+    ) {
         if (percent != null) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                DetailGlyphIcon(DetailGlyph.THUMB_UP, true, like, 18.dp)
-                Text("$percent%", color = like, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            DetailGlyphIcon(DetailGlyph.THUMB_UP, true, like, 18.dp)
+            Text("$percent%", color = like, fontSize = 13.sp, fontFamily = font, maxLines = 1)
+        }
+        year?.let { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, maxLines = 1) }
+        if (genres.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.5.dp)) {
+                genres.forEach { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, maxLines = 1) }
             }
         }
-        parts.forEach { part ->
-            Text(part, color = text, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+        age?.let {
+            Box(
+                modifier = Modifier
+                    .height(21.dp)
+                    .widthIn(min = 16.5.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(Color(0xFF9B9B9B))
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) { Text(it, color = Color(0xFF1A1A1A), fontSize = 13.sp, fontFamily = font, fontWeight = FontWeight.Medium, maxLines = 1) }
         }
+        runtime?.let { Text(it, color = Color(0xFFB3B3B3), fontSize = 13.sp, fontFamily = font, maxLines = 1) }
     }
 }
 
@@ -885,7 +900,6 @@ private fun NdCredits(isSeries: Boolean, castOnly: List<MetaCastMember>, crew: L
     }
     Column {
         if (castLine.isNotBlank()) CreditLine(stringResource(R.string.nd_credit_cast), castLine)
-        if (crewLabel != null) CreditLine(crewLabel, crew.joinToString(", ") { it.name })
     }
 }
 
@@ -893,23 +907,22 @@ private fun NdCredits(isSeries: Boolean, castOnly: List<MetaCastMember>, crew: L
 private fun CreditLine(label: String, value: String) {
     Text(
         text = androidx.compose.ui.text.buildAnnotatedString {
-            pushStyle(androidx.compose.ui.text.SpanStyle(color = NdText3, fontWeight = FontWeight.Medium))
+            pushStyle(androidx.compose.ui.text.SpanStyle(color = Color(0xFF9A9A9A)))
             append(label)
             pop()
             append(" ")
             append(value)
         },
-        color = NdText2,
-        fontSize = 12.sp,
-        lineHeight = 17.sp,
+        color = Color(0xFF9A9A9A),
+        fontSize = 13.sp,
+        lineHeight = 18.sp,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
 }
 
 /**
- * The synopsis. Focused, a glass panel grows sideways from it (the column's width out to about 840 dp) with the
- * full text and the title's facts; it doesn't push anything down, and shrinks back when focus moves on.
+ * The synopsis: plain text, three lines at most.
  */
 @Composable
 private fun NdSynopsis(
@@ -921,76 +934,17 @@ private fun NdSynopsis(
     onOpenChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val description = meta.description?.trim().orEmpty()
-    val density = LocalDensity.current
-    var collapsed by remember { mutableStateOf(IntSize.Zero) }
-    var innerHeight by remember { mutableIntStateOf(0) }
-    val padH = with(density) { 16.dp.roundToPx() }
-    val padV = with(density) { 12.dp.roundToPx() }
-    val expandedWidth = with(density) { 840.dp.roundToPx() }
-    val easing = FastOutSlowInEasing
-    val width by animateIntAsState(
-        if (open) expandedWidth else collapsed.width + padH * 2, tween(460, easing = easing), label = "ndSynW"
+    Text(
+        text = meta.description?.trim().orEmpty(),
+        color = Color.White,
+        fontSize = 12.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.sp,
+        fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier.fillMaxWidth()
     )
-    val height by animateIntAsState(
-        if (open) maxOf(innerHeight + padV * 2, collapsed.height + padV * 2) else collapsed.height + padV * 2,
-        tween(460, easing = easing), label = "ndSynH"
-    )
-    val panelAlpha by animateFloatAsState(
-        if (open) 1f else 0f, tween(if (open) 160 else 220, delayMillis = if (open) 0 else 300), label = "ndSynPanel"
-    )
-    val contentAlpha by animateFloatAsState(
-        if (open) 1f else 0f, tween(if (open) 280 else 140, delayMillis = if (open) 180 else 0), label = "ndSynContent"
-    )
-    val shape = RoundedCornerShape(18.dp)
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .ndClickable(onFocusChanged = onOpenChange, onClick = {})
-    ) {
-        Text(
-            text = description,
-            color = Color.White,
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
-            letterSpacing = 0.25.sp,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .onSizeChanged { collapsed = it }
-                .alpha(1f - contentAlpha)
-        )
-        // Takes no space: drawn from the text's corner, over what's below and to the right. Kept (invisible) while
-        // closed, so its height is known before it opens.
-        Box(
-            modifier = Modifier
-                .layout { measurable, _ ->
-                    val placeable = measurable.measure(Constraints.fixed(width.coerceAtLeast(1), height.coerceAtLeast(1)))
-                    layout(0, 0) { placeable.place(-padH, -padV) }
-                }
-                .alpha(panelAlpha)
-                .detailGlassPanel(shape)
-                .clip(shape)
-        ) {
-            Box(
-                modifier = Modifier
-                    .layout { measurable, constraints ->
-                        val innerWidth = expandedWidth - padH * 2
-                        val placeable = measurable.measure(Constraints(minWidth = innerWidth, maxWidth = innerWidth))
-                        layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(padH, padV) }
-                    }
-                    .alpha(contentAlpha)
-            ) {
-                NdSynopsisDetails(
-                    meta = meta,
-                    isSeries = isSeries,
-                    castOnly = castOnly,
-                    crew = crew,
-                    modifier = Modifier.onSizeChanged { innerHeight = it.height }
-                )
-            }
-        }
-    }
 }
 
 @Composable
@@ -1154,7 +1108,9 @@ internal data class NdMenuItem(
     val label: String,
     val aside: String?,
     val focusRequester: FocusRequester?,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
+    val onLongClick: (() -> Unit)? = null,
+    val onBounds: ((Rect) -> Unit)? = null
 )
 
 /** Play and the menu under it share one glass lens that glides to whatever is focused. */
@@ -1190,19 +1146,19 @@ private fun NdPlayMenu(
                         layout(0, 0) { p.place(IntOffset(0, lensY)) }
                     }
                     .alpha(lensAlpha)
-                    .clip(NdPill)
+                    .clip(NdButtonShape)
                     .background(Color.White)
             )
         }
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column {
             if (showPlay) Row(
                 modifier = Modifier
                     .onGloballyPositioned {
                         bounds[0] = it.boundsInParent()
                         onPlayBounds(it.boundsInRoot())
                     }
-                    .width(256.dp)
-                    .height(36.dp)
+                    .width(310.dp)
+                    .height(40.dp)
                     // Up from Play goes to the first rating button, not whichever is nearest.
                     .focusProperties { up = upFocus }
                     .ndClickable(
@@ -1216,11 +1172,11 @@ private fun NdPlayMenu(
                     )
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 val playColor = if (focused == 0) Color.Black else Color.White
-                Icon(playIcon, null, tint = playColor, modifier = Modifier.size(18.dp))
-                Text(playLabel, color = playColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1,
+                Icon(playIcon, null, tint = playColor, modifier = Modifier.size(16.dp))
+                Text(playLabel, color = playColor, fontSize = 14.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, maxLines = 1,
                     modifier = Modifier.weight(1f))
                 if (playAside != null) {
                     Text(playAside, color = if (focused == 0) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 11.sp, maxLines = 1)
@@ -1230,21 +1186,25 @@ private fun NdPlayMenu(
                 val index = i + 1
                 Row(
                     modifier = Modifier
-                        .onGloballyPositioned { bounds[index] = it.boundsInParent() }
-                        .width(256.dp)
-                        .height(36.dp)
+                        .onGloballyPositioned {
+                            bounds[index] = it.boundsInParent()
+                            item.onBounds?.invoke(it.boundsInRoot())
+                        }
+                        .width(310.dp)
+                        .height(40.dp)
                         .ndClickable(
                             focusRequester = item.focusRequester,
                             onFocusChanged = { f -> if (f) focused = index else if (focused == index) focused = -1 },
+                            onLongClick = item.onLongClick,
                             onClick = item.onClick
                         )
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    val color = if (focused == index) Color.Black else Color.White.copy(alpha = 0.84f)
+                    val color = if (focused == index) Color.Black else Color.White
                     Icon(item.icon, null, tint = color, modifier = Modifier.size(16.dp))
-                    Text(item.label, color = color, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1,
+                    Text(item.label, color = color, fontSize = 14.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, maxLines = 1,
                         modifier = Modifier.weight(1f))
                     if (item.aside != null) {
                         Text(item.aside, color = if (focused == index) Color.Black.copy(alpha = 0.6f) else NdText3, fontSize = 11.sp, maxLines = 1)

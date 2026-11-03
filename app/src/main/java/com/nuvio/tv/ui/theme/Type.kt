@@ -32,6 +32,27 @@ val OpenSansFamily = FontFamily(
     Font(R.font.opensans_variable, FontWeight.Bold)
 )
 
+val RubikFamily = FontFamily(
+    Font(R.font.rubik_regular, FontWeight.Normal),
+    Font(R.font.rubik_medium, FontWeight.Medium),
+    Font(R.font.rubik_medium, FontWeight.SemiBold),
+    Font(R.font.rubik_medium, FontWeight.Bold)
+)
+
+val MontserratFamily = FontFamily(
+    Font(R.font.montserrat_medium, FontWeight.Normal),
+    Font(R.font.montserrat_medium, FontWeight.Medium),
+    Font(R.font.montserrat_bold, FontWeight.SemiBold),
+    Font(R.font.montserrat_bold, FontWeight.Bold)
+)
+
+val QuicksandFamily = FontFamily(
+    Font(R.font.quicksand_regular, FontWeight.Normal),
+    Font(R.font.quicksand_regular, FontWeight.Medium),
+    Font(R.font.quicksand_bold, FontWeight.SemiBold),
+    Font(R.font.quicksand_bold, FontWeight.Bold)
+)
+
 fun getFontFamily(appFont: AppFont): FontFamily = when (appFont) {
     AppFont.INTER -> InterFamily
     AppFont.DM_SANS -> DMSansFamily
@@ -58,35 +79,35 @@ data class NuvioTextStyleTokens(
 @OptIn(ExperimentalTvMaterial3Api::class)
 fun buildNuvioTypography(fontFamily: FontFamily): Typography = Typography(
     displayLarge = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 48.sp,
         lineHeight = 56.sp,
         letterSpacing = (-0.5).sp
     ),
     displayMedium = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = 0.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = MontserratFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         lineHeight = 28.sp,
@@ -128,21 +149,21 @@ fun buildNuvioTypography(fontFamily: FontFamily): Typography = Typography(
         letterSpacing = 0.4.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = QuicksandFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = QuicksandFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = fontFamily,
+        fontFamily = QuicksandFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 10.sp,
         lineHeight = 14.sp,
@@ -151,7 +172,7 @@ fun buildNuvioTypography(fontFamily: FontFamily): Typography = Typography(
 )
 
 @OptIn(ExperimentalTvMaterial3Api::class)
-val NuvioTypography = buildNuvioTypography(InterFamily)
+val NuvioTypography = buildNuvioTypography(RubikFamily)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 fun buildNuvioTextStyles(typography: Typography): NuvioTextStyleTokens = NuvioTextStyleTokens(

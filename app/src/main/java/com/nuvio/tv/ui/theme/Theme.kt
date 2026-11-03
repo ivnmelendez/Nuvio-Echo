@@ -71,7 +71,7 @@ fun NuvioTheme(
         amoledMode = amoledMode,
         amoledSurfacesMode = amoledSurfacesMode
     )
-    val typography = buildNuvioTypography(getFontFamily(appFont))
+    val typography = buildNuvioTypography(RubikFamily)
     val textStyles = buildNuvioTextStyles(typography)
 
     val materialColorScheme = darkColorScheme(

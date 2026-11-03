@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="watch_later_add">Add to Watch later</string>
-    <string name="watch_later_in">In Watch later</string>
+    <string name="watch_later_add">Add to watchlist</string>
+    <string name="watch_later_in">In watchlist</string>
     <string name="watch_later_remove">Remove from Watch later</string>
     <string name="watch_later_added">Added to Watch later</string>
     <string name="watch_later_removed">Removed from Watch later</string>

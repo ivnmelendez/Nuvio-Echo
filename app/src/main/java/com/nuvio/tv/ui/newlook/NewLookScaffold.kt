@@ -8,6 +8,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.filled.Settings
+import com.nuvio.tv.ui.theme.MontserratFamily
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -144,8 +146,10 @@ internal val SidebarColumn = 96.dp
 private val AvatarSize = 36.dp
 internal val AvatarX = 30.dp
 internal val AvatarY = 12.dp
-private val BarHeight = 36.dp
+private val BarHeight = 37.dp
+private val LensHeight = 25.dp
 private val BarTop = 12.dp
+private val BarEnd = 32.dp
 
 /**
  * The new look's navigation: a liquid-glass pill of icons on the left (or a glass tab bar on top), the profile
@@ -431,7 +435,7 @@ internal fun NewLookScaffold(
                     .height(120.dp)
                     .background(Brush.verticalGradient(listOf(Color(0xE0060606), Color.Transparent)))
             )
-            Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop), contentAlignment = Alignment.TopCenter) {
+            Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop, end = BarEnd), contentAlignment = Alignment.TopEnd) {
                 topBar({ closeMenu() }, Modifier)
             }
             LaunchedEffect(Unit) { openMenu() }
@@ -442,7 +446,7 @@ internal fun NewLookScaffold(
             Box(modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = pinReveal }) {
                 // The black band under the bar lives in Home (it comes and goes with the rows). Here it went as soon as the
                 // route left Home, while Home was still fading out, and the row hidden behind it showed for a moment.
-                Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop), contentAlignment = Alignment.TopCenter) {
+                Box(modifier = Modifier.fillMaxWidth().padding(top = BarTop, end = BarEnd), contentAlignment = Alignment.TopEnd) {
                     topBar({ closeMenu() }, Modifier)
                 }
             }
@@ -681,7 +685,6 @@ internal fun GlassTabBar(
     // on purpose, or any key pressed in the bar. Focus that lands by itself (Back or a tab click replaces the screen)
     // stays grey, so it doesn't flash white for a moment.
     var lit by remember { mutableStateOf(false) }
-    val bounds = remember { mutableStateMapOf<Int, Pair<Float, Float>>() }
     // While the screen changes the route briefly matches no tab; the lens stays on the last tab it knew rather than
     // falling back to the first one (Search) and coming back.
     val lastSelected = remember { IntArray(1) }
@@ -689,12 +692,65 @@ internal fun GlassTabBar(
     if (selectedFound >= 0) lastSelected[0] = selectedFound
     val selectedIndex = if (selectedFound >= 0) selectedFound else lastSelected[0].coerceIn(0, (items.size - 1).coerceAtLeast(0))
     val at = if (hasFocus && focusedIndex in items.indices) focusedIndex else selectedIndex
-    val shape = androidx.compose.foundation.shape.RoundedCornerShape(19.dp)
-    Box(
+    val pillShape = androidx.compose.foundation.shape.RoundedCornerShape(50)
+    val body = Color(0xFF1F1F1F)
+    val settingsIndex = items.indexOfFirst { it.route == Screen.Settings.route }
+    @Composable
+    fun BarItem(index: Int, item: DrawerItem) {
+        key(item.route) {
+            var itemFocused by remember { mutableStateOf(false) }
+            val iconOnly = item.route == Screen.Search.route || item.route == Screen.Settings.route
+            val isSettings = item.route == Screen.Settings.route
+            val isLens = index == at
+            val driven = hasFocus && lit
+            val color = if (itemFocused && lit) Color.Black else Color.White
+            Box(
+                modifier = Modifier
+                    .height(LensHeight)
+                    .then(if (iconOnly) Modifier.width(if (item.route == Screen.Settings.route) LensHeight else 32.5.dp) else Modifier)
+                    .let {
+                        when {
+                            isLens && driven -> it.background(Color.White, pillShape)
+                            isLens -> it.background(Color(0xFF5D5D5D), pillShape)
+                            isSettings -> it.background(Color(0xFF3A3A3A), pillShape)
+                            else -> it
+                        }
+                    }
+                    .focusRequester(itemFocus.getValue(item.route))
+                    .onFocusChanged {
+                        itemFocused = it.isFocused
+                        if (it.isFocused) focusedIndex = index
+                    }
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onClick(item.route) }
+                    .padding(horizontal = if (iconOnly) 0.dp else 10.5.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isSettings) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.Settings,
+                        contentDescription = item.label,
+                        tint = color,
+                        modifier = Modifier.size(13.dp)
+                    )
+                } else if (iconOnly) {
+                    drawerIcon(item, color, Modifier.size(15.dp))
+                } else {
+                    Text(text = item.label, color = color, fontSize = 9.3.sp, letterSpacing = 0.sp, fontWeight = FontWeight.Medium, fontFamily = MontserratFamily, maxLines = 1)
+                }
+            }
+        }
+    }
+    val grow by animateFloatAsState(if (hasFocus) 1.08f else 1f, androidx.compose.animation.core.snap(), label = "barGrow")
+    Row(
         modifier = modifier
-            .height(BarHeight)
-            .menuFrost(shape)
-            .glassSurface(shape)
+            .graphicsLayer {
+                scaleX = grow
+                scaleY = grow
+                transformOrigin = TransformOrigin(1f, 0.5f)
+            }
             .onFocusChanged {
                 hasFocus = it.hasFocus
                 lit = it.hasFocus && (lit || litAllowed())
@@ -731,66 +787,27 @@ internal fun GlassTabBar(
                     }
                     else -> false
                 }
-            }
-            .padding(3.dp)
+            },
+        horizontalArrangement = Arrangement.spacedBy(15.5.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        val target = bounds[at]
-        if (target != null) {
-            // A short straight slide: no spring, no swell.
-            val x by animateFloatAsState(target.first, androidx.compose.animation.core.snap(), label = "barLensX")
-            val w by animateFloatAsState(target.second, androidx.compose.animation.core.snap(), label = "barLensW")
-            val alpha by animateFloatAsState(if (hasFocus && lit) 1f else 0.55f, androidx.compose.animation.core.snap(), label = "barLensAlpha")
-            val density = LocalDensity.current
+        Row(
+            modifier = Modifier
+                .height(BarHeight)
+                .background(body, pillShape)
+                .padding(horizontal = 6.5.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEachIndexed { index, item -> if (index != settingsIndex) BarItem(index, item) }
+        }
+        if (settingsIndex >= 0) {
             Box(
                 modifier = Modifier
-                    // Moved by layout, not the layer's translation (see PillLens).
-                    .offset { IntOffset(x.roundToInt(), 0) }
-                    .graphicsLayer { this.alpha = alpha }
-                    .width(with(density) { w.toDp() })
-                    .height(30.dp)
-                    .let {
-                        val pill = androidx.compose.foundation.shape.RoundedCornerShape(15.dp)
-                        // Focused: a solid white pill, as on Netflix; at rest the faint grey one on the current screen.
-                        if (hasFocus && lit) it.solidLens(pill) else it.glassLens(pill)
-                    }
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.CenterVertically) {
-            items.forEachIndexed { index, item ->
-                key(item.route) {
-                    var itemFocused by remember { mutableStateOf(false) }
-                    val selected = item.route == selectedRoute
-                    val color = when {
-                        itemFocused && lit -> Color.Black
-                        selected -> Color(0xFFE6E6E6)
-                        else -> Color(0xFF9E9E9E)
-                    }
-                    val iconOnly = item.route == Screen.Search.route || item.route == Screen.Settings.route
-                    Box(
-                        modifier = Modifier
-                            .height(30.dp)
-                            .widthIn(min = 32.dp)
-                            .onGloballyPositioned { bounds[index] = it.positionInParent().x to it.size.width.toFloat() }
-                            .focusRequester(itemFocus.getValue(item.route))
-                            .onFocusChanged {
-                                itemFocused = it.isFocused
-                                if (it.isFocused) focusedIndex = index
-                            }
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) { onClick(item.route) }
-                            .padding(horizontal = if (iconOnly) 9.dp else 14.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (iconOnly) {
-                            drawerIcon(item, color, Modifier.size(16.dp))
-                        } else {
-                            Text(text = item.label, color = color, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                        }
-                    }
-                }
-            }
+                    .size(BarHeight)
+                    .background(body, pillShape),
+                contentAlignment = Alignment.Center
+            ) { BarItem(settingsIndex, items[settingsIndex]) }
         }
     }
 }

@@ -27,7 +27,7 @@ data class NewLookDimens(
     /** Details line plus synopsis under a highlighted row. */
     val highlightMeta: Dp = 84.dp,
     /** Space after each row. */
-    val rowSpace: Dp = 26.dp,
+    val rowSpace: Dp = 28.dp,
     val cardRadius: Dp = 12.dp,
     /**
      * A grand row's card: the hero window's size, whatever the Card size. Home sets the width from the screen and
@@ -123,7 +123,7 @@ internal object NewLookLayout {
     /** Window and rows start right of the sidebar column... */
     val ContentStartWithSidebar = 106.dp
     /** ...or near the edge when there's no sidebar (menu hidden or on top). */
-    val ContentStartFullWidth = 24.dp
+    val ContentStartFullWidth = 31.dp
     val RowsTop = 462.dp
     /** The edge-to-edge hero: the whole screen tall, its bottom fading out under the first row. */
     val EdgeHeroHeight = 540.dp

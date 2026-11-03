@@ -411,7 +411,9 @@ internal fun NewLookHomeContent(
     val dims = remember(uiState.posterCardWidthDp, uiState.posterCardCornerRadiusDp, screenWidth, contentStart) {
         // Home draws its posters a fifth larger than the setting says, so three fit beside the opened one.
         val posterWidthDp = (uiState.posterCardWidthDp * 1.2f).roundToInt()
-        NewLookDimens.of(posterWidthDp, uiState.posterCardCornerRadiusDp).withGrandWidth(screenWidth, contentStart)
+        NewLookDimens.of(posterWidthDp, uiState.posterCardCornerRadiusDp)
+            .copy(posterWidth = 160.dp, posterHeight = 251.5.dp, posterOpenWidth = 432.dp, gap = 8.dp)
+            .withGrandWidth(screenWidth, contentStart)
     }
     val inset = chrome?.contentInset ?: 0.dp
     val memory = source.memory
@@ -1713,7 +1715,7 @@ private fun NewLookRowView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .padding(start = contentStart, end = 24.dp)
+                .padding(start = contentStart + 4.dp, top = 4.dp, end = 24.dp)
                 .graphicsLayer {
                     alpha = titleAlpha.value
                     compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.ModulateAlpha
@@ -1816,7 +1818,7 @@ private fun NewLookRowView(
             if (rowShown || fading) {
                 Box(
                     modifier = Modifier
-                        .offset(x = contentStart + if (row.ranked) dims.rankPad else 0.dp, y = dims.rowHead + row.cardHeight(dims) + 10.dp)
+                        .offset(x = contentStart + 4.dp + if (row.ranked) dims.rankPad else 0.dp, y = dims.rowHead + row.cardHeight(dims) + 10.dp)
                         .graphicsLayer { alpha = metaAlpha.value }
                 ) {
                     RowMeta(row, shownItem, shownItem.metaPreview?.id?.let { details[it] }, dims)
@@ -2056,11 +2058,12 @@ private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookD
                 Text(
                     text = synopsis,
                     color = Color(0xFFB8B8B8),
-                    fontSize = 13.5.sp,
-                    lineHeight = 18.sp,
+                    fontSize = 11.8.sp,
+                    lineHeight = 16.sp,
+                    fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.width(if (row.kind == RowKind.POSTER) dims.posterOpenWidth else dims.highlightWidth)
+                    modifier = Modifier.width((if (row.kind == RowKind.POSTER) dims.posterOpenWidth else dims.highlightWidth) + 8.dp)
                 )
             }
         }

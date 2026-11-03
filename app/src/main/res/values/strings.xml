@@ -1568,7 +1568,7 @@
     <string name="nav_home">Home</string>
     <string name="nav_discover">Discover</string>
     <string name="nav_search">Search</string>
-    <string name="nav_library">Watch later</string>
+    <string name="nav_library">Watchlist</string>
     <string name="nav_addons">Addons</string>
     <string name="nav_settings">Settings</string>
     <string name="action_select">Select</string>
@@ -2371,7 +2371,7 @@
     <string name="collections_editor_show_all_tab">Show \"All\" Tab</string>
     <string name="collections_editor_show_all_tab_desc">Combine all catalogs into one tab</string>
     <string name="nav_movies" tools:ignore="MissingTranslation">Movies</string>
-    <string name="nav_series" tools:ignore="MissingTranslation">Series</string>
+    <string name="nav_series" tools:ignore="MissingTranslation">TV Shows</string>
     <string name="activation_title" tools:ignore="MissingTranslation">Enter your code</string>
     <string name="activation_button" tools:ignore="MissingTranslation">Activate</string>
     <string name="activation_working" tools:ignore="MissingTranslation">Activating…</string>

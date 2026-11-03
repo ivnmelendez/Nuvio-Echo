@@ -5,8 +5,8 @@
     <string name="nd_watched">Watched</string>
 
     <string name="nd_play">Play</string>
-    <string name="nd_menu_episodes">Episodes</string>
-    <string name="nd_menu_trailer">Play trailer</string>
+    <string name="nd_menu_episodes">More episodes</string>
+    <string name="nd_menu_trailer">Trailer</string>
     <plurals name="nd_seasons_count">
         <item quantity="one">%d season</item>
         <item quantity="other">%d seasons</item>
