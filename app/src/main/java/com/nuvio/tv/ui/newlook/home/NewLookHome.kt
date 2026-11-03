@@ -1373,22 +1373,14 @@ internal fun NewLookHomeContent(
                 }
             }
         }
-        // A fixed, light fade at the bottom (hero view included) that covers the row below the focused one. It never
-        // moves with the page and its brush is built once, so scrolling costs it nothing.
-        val shadeBrush = remember {
-            Brush.verticalGradient(
-                0f to Color.Transparent,
-                0.25f to Color(0x55000000),
-                0.6f to Color(0xC8000000),
-                1f to Color(0xF0000000)
-            )
-        }
+        // A fixed, even veil at the bottom (hero view included) over the row below the focused one: the same opacity as
+        // the closed posters, no gradient. It never moves with the page, so scrolling costs it nothing.
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(140.dp)
-                .background(shadeBrush)
+                .height(80.dp)
+                .background(Color.Black.copy(alpha = ClosedVeilAlpha))
         )
         // Solid OLED black from the top of the screen to just under the tab bar, where the rows rest: a row scrolling
         // off the page goes under it and vanishes, instead of showing around the bar or through its glass. It is part
@@ -1740,7 +1732,7 @@ private fun NewLookRowView(
             // The closed cards that come in at the right as the row moves, and the logos the opened ones will wear: loaded
             // only once composed, they popped in on nearly every step.
             val lastIndex = row.items.lastIndex
-            val posters = (col..(col + 9).coerceAtMost(lastIndex)).mapNotNull { i ->
+            val posters = ((col - 1).coerceAtLeast(0)..(col + 9).coerceAtMost(lastIndex)).mapNotNull { i ->
                 val item = row.items[i]
                 (item.heroPreview.poster ?: item.imageUrl)?.let { if (light) lightSizedUrl(it) else it }
             }
@@ -1775,9 +1767,10 @@ private fun NewLookRowView(
             ) {
                 itemsIndexed(row.items, key = { _, item -> item.key }) { index, item ->
                     val modifier = Modifier
-                        // Cards the row has scrolled past stay composed, so focus can go back to them, but aren't drawn. This
+                        // Cards the row has scrolled past stay composed, so focus can go back to them, but aren't drawn,
+                        // except the one just before the start: its right edge peeks out left of the focused card. This
                         // follows `col` directly (no animation in between), and the row scrolls to `col` in the same pass.
-                        .graphicsLayer { alpha = if (index < col) 0f else 1f }
+                        .graphicsLayer { alpha = if (index < col - 1) 0f else 1f }
                         .then(
                             when (index) {
                                 focusCol -> Modifier.focusRequester(focusRequester)

@@ -87,6 +87,8 @@ private val LikeGreen = Color(0xFF2ECC71)
 private val OpenCardFoot = Brush.verticalGradient(
     0f to Color.Transparent, 0.45f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.88f)
 )
+/** The one fixed dark veil shared by closed posters and the row below the focused one. */
+internal const val ClosedVeilAlpha = 0.28f
 private val LikeOrange = Color(0xFFF5A623)
 private val LikeRed = Color(0xFFE74C3C)
 
@@ -409,6 +411,8 @@ internal fun PosterCard(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
             fallbackTitle = title, fallbackUrl = posterFallback
         )
+        // Closed posters wear one fixed dark veil (lighter than the reference's measured 40%, by eye); only the opened card is undimmed.
+        if (!isOpen) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
         if (showOpen) {
             Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                 Artwork(backdrop, Modifier.fillMaxSize())
