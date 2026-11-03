@@ -100,6 +100,7 @@ import com.nuvio.tv.ui.screens.player.LoadingOverlay
 import com.nuvio.tv.ui.screens.player.rememberBetaPerformanceSettings
 import com.nuvio.tv.core.intro.PlaybackIntroState
 import com.nuvio.tv.ui.screens.player.AddonFilterChips
+import com.nuvio.tv.ui.components.LoadingIndicator
 import com.nuvio.tv.ui.theme.NuvioTheme
 import com.nuvio.tv.ui.navigation.sourceSelectionRestoreTarget
 import androidx.compose.runtime.DisposableEffect
@@ -392,37 +393,37 @@ fun StreamScreen(
         return
     }
 
+    // Finding the link by itself: this window is only a dim veil and a spinner over the page that opened it, which
+    // stays in view. The list, when it is shown, brings its own background.
+    val veilOnly = uiState.autoPlayDecided && showOverlay
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (uiState.autoPlayDecided && !showOverlay) Modifier.background(NuvioTheme.colors.Background) else Modifier)
     ) {
-        // Full screen backdrop
-        StreamBackdrop(
-            backdrop = uiState.backdrop ?: uiState.poster,
-            isLoading = uiState.isLoading,
-            modifier = if (streamHazeState != null && uiState.autoPlayDecided && !showOverlay) {
-                Modifier.hazeSource(state = streamHazeState)
-            } else {
-                Modifier
-            }
-        )
+        if (!veilOnly) {
+            // Full screen backdrop
+            StreamBackdrop(
+                backdrop = uiState.backdrop ?: uiState.poster,
+                isLoading = uiState.isLoading,
+                modifier = if (streamHazeState != null && uiState.autoPlayDecided && !showOverlay) {
+                    Modifier.hazeSource(state = streamHazeState)
+                } else {
+                    Modifier
+                }
+            )
+        }
 
         if (!uiState.autoPlayDecided) {
             // Don't render overlay or stream list until ViewModel decides
             // whether direct autoplay is active — prevents single-frame flash.
         } else if (showOverlay) {
-            LoadingOverlay(
-                visible = true,
-                backdropUrl = uiState.backdrop ?: uiState.poster,
-                logoUrl = uiState.logo,
-                title = uiState.title,
-                message = if (uiState.directAutoPlayMessage != null) {
-                    uiState.directAutoPlayMessage
-                } else {
-                    null
-                },
-                progress = uiState.directAutoPlayProgress,
-                modifier = Modifier.fillMaxSize()
-            )
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)),
+                contentAlignment = Alignment.Center
+            ) {
+                LoadingIndicator()
+            }
         } else {
             // Content overlay
             Row(

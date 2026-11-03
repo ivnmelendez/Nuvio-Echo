@@ -27,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.nuvio.tv.core.build.AppFeaturePolicy
 import com.nuvio.tv.ui.screens.CatalogSeeAllScreen
@@ -493,7 +494,7 @@ private fun PlaybackNavHost(
             }
         }
 
-        composable(
+        dialog(
             route = Screen.Stream.route,
             arguments = listOf(
                 navArgument("videoId") { type = NavType.StringType },
@@ -584,6 +585,13 @@ private fun PlaybackNavHost(
                     nullable = true
                     defaultValue = null
                 }
+            ),
+            // A window over the page that opened it, so while the link is found the details stay in view, dimmed.
+            dialogProperties = androidx.compose.ui.window.DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
             )
         ) { backStackEntry ->
             val streamArgs = backStackEntry.arguments
