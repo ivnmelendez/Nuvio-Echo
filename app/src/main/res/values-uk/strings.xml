@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Продовжити перегляд</string>
     <string name="type_movie">Фільм</string>
     <string name="type_movies">Фільми</string>
@@ -344,7 +344,6 @@
     <string name="essential_audio_language">Мова аудіо</string>
     <string name="audio_lang_media_default">За замовчуванням медіа</string>
     <string name="essential_playback_header_title">Відтворення</string>
-    <string name="essential_playback_header_subtitle">Прості налаштування відтворення, субтитрів, аудіо та P2P.</string>
     <string name="essential_stream_selection_subtitle">Обирайте вручну або автозапускайте перше доступне джерело.</string>
     <string name="essential_autoplay_next_episode">Автовідтворення наступного епізоду</string>
     <string name="essential_autoplay_next_episode_subtitle">Продовжити з наступним епізодом після закінчення потоку.</string>
@@ -1357,7 +1356,6 @@
     <string name="collections_paste_clipboard">Вставити з буфера обміну</string>
     <string name="collections_validate">Перевірити</string>
     <string name="collections_paste_hint">Вставте JSON колекцій сюди…</string>
-    <string name="collections_file_description">Читає nuvio-collections.json з папки Завантаження.</string>
     <string name="collections_load_file">Завантажити файл</string>
     <string name="collections_file_loaded">Файл завантажено (%1$d символів)</string>
     <string name="collections_fetch_url">Завантажити URL</string>
@@ -1452,7 +1450,6 @@
     <string name="collections_editor_tmdb_help_discover">Створіть живий рядок TMDB з фільтрами. Залиште поля порожніми, якщо фільтр не потрібен.</string>
     <string name="collections_editor_tmdb_search_helper">Приклади: Marvel Studios, 420 або https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Приклад: Колекція Зоряних воєн, Колекція Гаррі Поттера або URL колекції.</string>
-    <string name="collections_editor_tmdb_network_helper">Приклади ID: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Приклад: https://www.themoviedb.org/list/8504994 або 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID персони</string>
     <string name="collections_editor_tmdb_person_helper">Приклад: https://www.themoviedb.org/person/31-tom-hanks або 31.</string>
@@ -1482,7 +1479,6 @@
     <string name="collections_editor_tmdb_companies">ID компаній</string>
     <string name="collections_editor_tmdb_companies_helper">Використовуйте ID студій/компаній. Швидкі чипи заповнюють приклади.</string>
     <string name="collections_editor_tmdb_networks">ID мереж</string>
-    <string name="collections_editor_tmdb_networks_helper">Тільки для серіалів. Використовуйте ID мереж: Netflix 213, HBO 49.</string>
     <string name="collections_editor_tmdb_year">Рік</string>
     <string name="collections_editor_tmdb_year_helper">Використовуйте чотиризначний рік, наприклад 2024.</string>
     <string name="collections_editor_sort_original">Вихідний</string>
@@ -1511,7 +1507,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 або 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 для колекції Зоряних воєн</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 або URL компанії</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 для Netflix, 49 для HBO, 2739 для Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 для Tom Hanks або URL персони</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 або 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1571,13 +1566,11 @@
     <string name="collection_editor_folder_count_other">%1$d елементів</string>
     <string name="collections_editor_delete_folder_title">Видалити папку?</string>
     <string name="collections_editor_delete_folder_subtitle">Це безповоротно видалить \"%1$s\" та її вміст.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Найкращі бойовики, Корейські дорами, Аніме 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Фільми з Tom Hanks, Улюблені актори</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Фільми Christopher Nolan, Улюблені режисери</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 для супергероїв</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 для Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 для Netflix</string>
     <string name="folder_detail_not_found">Папку не знайдено</string>
     <string name="cast_error_load_details_for">Не вдалося завантажити деталі для %1$s</string>
     <string name="tmdb_entity_error_load_named">Не вдалося завантажити %1$s</string>
@@ -1600,7 +1593,6 @@
     <string name="collections_editor_emoji_category_flags">Прапори</string>
     <string name="collections_editor_emoji_category_symbols">Символи</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 для Netflix, 49 для HBO, 2739 для Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 для колекції Зоряних воєн</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420 або URL компанії</string>
     <string name="collections_editor_tmdb_genre_action">Бойовик</string>
@@ -1631,8 +1623,6 @@
     <string name="playback_player_internal_desc">Використовувати вбудований плеєр Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d сідів · %2$d пірів</string>
-    <string name="player_torrent_buffered_status">%1$s буфер · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Аудіо %1$d</string>
     <string name="player_track_subtitle_fallback">Субтитри %1$d</string>
 
@@ -1768,12 +1758,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-            <item quantity="one">%d вибрано</item>
-            <item quantity="few">%d вибрано</item>
-            <item quantity="many">%d вибрано</item>
-            <item quantity="other">%d вибрано</item>
-        </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Невідома</string>

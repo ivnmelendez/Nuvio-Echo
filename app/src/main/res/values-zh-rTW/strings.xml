@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">繼續觀看</string>
     <string name="type_movie">電影</string>
     <string name="type_movies">電影</string>
@@ -435,7 +435,6 @@
     <string name="essential_audio_language">音訊語言</string>
     <string name="audio_lang_media_default">媒體預設</string>
     <string name="essential_playback_header_title">播放</string>
-    <string name="essential_playback_header_subtitle">簡易播放、字幕、音訊和 P2P 偏好設定。</string>
     <string name="essential_stream_selection_subtitle">手動選擇或自動播放第一個可用串流。</string>
     <string name="essential_autoplay_next_episode">自動播放下一集</string>
     <string name="essential_autoplay_next_episode_subtitle">在串流播放結束後繼續播放下一集。</string>
@@ -1653,7 +1652,6 @@
     <string name="collections_paste_clipboard">從剪貼簿貼上</string>
     <string name="collections_validate">驗證</string>
     <string name="collections_paste_hint">在此貼上收藏 JSON…</string>
-    <string name="collections_file_description">從下載資料夾讀取 nuvio-collections.json。</string>
     <string name="collections_load_file">載入檔案</string>
     <string name="collections_file_loaded">檔案已載入 (%1$d 個字元)</string>
     <string name="collections_fetch_url">擷取網址</string>
@@ -1748,7 +1746,6 @@
     <string name="collections_editor_tmdb_help_discover">使用選用過濾器建立即時 TMDB 列。不需要的過濾器欄位請留空。</string>
     <string name="collections_editor_tmdb_search_helper">範例：Marvel Studios、420 或 https://www.themoviedb.org/company/420。</string>
     <string name="collections_editor_tmdb_collection_helper">範例：Star Wars Collection、Harry Potter Collection 或收藏網址。</string>
-    <string name="collections_editor_tmdb_network_helper">範例 ID：Netflix 213、HBO 49、Disney+ 2739。</string>
     <string name="collections_editor_tmdb_list_helper">範例：https://www.themoviedb.org/list/8504994 或 8504994。</string>
     <string name="collections_editor_tmdb_person_id">人物 ID</string>
     <string name="collections_editor_tmdb_person_helper">範例：https://www.themoviedb.org/person/31-tom-hanks 或 31。</string>
@@ -1784,7 +1781,6 @@
     <string name="collections_editor_tmdb_without_companies">排除的公司 ID</string>
     <string name="collections_editor_tmdb_without_companies_helper">排除與這些 TMDB 公司編號相關的標題。</string>
     <string name="collections_editor_tmdb_networks">頻道 ID</string>
-    <string name="collections_editor_tmdb_networks_helper">僅適用於影集。使用頻道 ID，如 Netflix 213 或 HBO 49。</string>
     <string name="collections_editor_tmdb_year">年份</string>
     <string name="collections_editor_tmdb_year_helper">使用四位數年份，例如 2024。</string>
     <string name="collections_editor_sort_original">原始</string>
@@ -1813,7 +1809,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 或 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">星際大戰收藏為 10</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios、420 或公司網址</string>
-    <string name="collections_editor_tmdb_placeholder_network">Netflix 為 213、HBO 為 49、Disney+ 為 2739</string>
     <string name="collections_editor_tmdb_person_placeholder">湯姆·漢克斯為 31，或人物網址</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 或 123456</string>
     <string name="collections_editor_url_short_placeholder">https://…</string>
@@ -1874,7 +1869,6 @@
     <string name="collection_editor_folder_count_other">%1$d 個項目</string>
     <string name="collections_editor_delete_folder_title">刪除資料夾？</string>
     <string name="collections_editor_delete_folder_subtitle">這將永久刪除「%1$s」及其內容。</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">漫威電影、Netflix 原創、皮克斯</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">最佳動作片、韓劇、2024 動畫</string>
     <string name="collections_editor_tmdb_person_title_placeholder">湯姆·漢克斯電影、喜愛演員</string>
     <string name="collections_editor_tmdb_director_title_placeholder">克里斯多福·諾蘭電影、喜愛導演</string>
@@ -1882,7 +1876,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 代表漫威影業</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 代表 Netflix</string>
     <string name="folder_detail_not_found">找不到資料夾</string>
     <string name="cast_error_load_details_for">無法載入 %1$s 的詳細資訊</string>
     <string name="tmdb_entity_error_load_named">無法載入 %1$s</string>
@@ -1905,7 +1898,6 @@
     <string name="collections_editor_emoji_category_flags">旗幟</string>
     <string name="collections_editor_emoji_category_symbols">符號</string>
     <!-- 收藏編輯器：TMDB 選擇器佔位符 + 類型 -->
-    <string name="collections_editor_tmdb_network_placeholder_example">Netflix 為 213、HBO 為 49、Disney+ 為 2739</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">星際大戰收藏為 10</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios、420 或公司網址</string>
     <string name="collections_editor_tmdb_genre_action">動作</string>
@@ -1936,8 +1928,6 @@
     <string name="playback_player_internal_desc">使用 Tivistream 的內建播放器</string>
 
     <!-- 播放器執行時期：torrent 覆蓋層 + 音軌 -->
-    <string name="player_torrent_peer_info">%1$d 個種子 · %2$d 個對等節點</string>
-    <string name="player_torrent_buffered_status">%1$s 已緩衝 · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">音訊 %1$d</string>
     <string name="player_track_subtitle_fallback">字幕 %1$d</string>
 
@@ -2107,10 +2097,6 @@
     <!-- Debrid：過濾規則列 -->
 
     <!-- Debrid：選擇計數 + 大小範圍標籤 -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">已選 %d 個</item>
-        <item quantity="other">已選 %d 個</item>
-    </plurals>
 
     <!-- 字幕選擇：未知語言備用文字 -->
     <string name="subtitle_language_unknown">未知</string>

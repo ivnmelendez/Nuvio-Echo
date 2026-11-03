@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">tivilatino</string>
+  <string name="app_name">Tivistream</string>
   <string name="tv_channel_continue_watching">Συνέχεια παρακολούθησης</string>
   <string name="type_movie">Ταινία</string>
   <string name="type_movies">Ταινίες</string>
@@ -388,7 +388,6 @@
   <string name="essential_audio_language">Γλώσσα ήχου</string>
   <string name="audio_lang_media_default">Προεπιλογή πολυμέσου</string>
   <string name="essential_playback_header_title">Αναπαραγωγή</string>
-  <string name="essential_playback_header_subtitle">Απλές προτιμήσεις αναπαραγωγής, υπότιτλων, ήχου και P2P.</string>
   <string name="essential_stream_selection_subtitle">Επιλέξτε χειροκίνητα ή αυτόματη αναπαραγωγή της πρώτης διαθέσιμης ροής.</string>
   <string name="essential_autoplay_next_episode">Αυτόματη αναπαραγωγή επόμενου επεισοδίου</string>
   <string name="essential_autoplay_next_episode_subtitle">Συνέχεια στο επόμενο επεισόδιο μετά το τέλος μιας ροής.</string>
@@ -1554,7 +1553,6 @@
   <string name="collections_paste_clipboard">Επικόλληση από το πρόχειρο</string>
   <string name="collections_validate">Επικύρωση</string>
   <string name="collections_paste_hint">Επικολλήστε εδώ το JSON των συλλογών…</string>
-  <string name="collections_file_description">Διαβάζει το nuvio-collections.json από τον φάκελο Λήψεις.</string>
   <string name="collections_load_file">Φόρτωση αρχείου</string>
   <string name="collections_file_loaded">Το αρχείο φορτώθηκε (%1$d χαρακτήρες)</string>
   <string name="collections_fetch_url">Ανάκτηση URL</string>
@@ -1649,7 +1647,6 @@
   <string name="collections_editor_tmdb_help_discover">Δημιουργήστε μια ζωντανή γραμμή TMDB με προαιρετικά φίλτρα. Αφήστε πεδία κενά όταν δεν χρειάζεστε αυτό το φίλτρο.</string>
   <string name="collections_editor_tmdb_search_helper">Παραδείγματα: Marvel Studios, 420 ή https://www.themoviedb.org/company/420.</string>
   <string name="collections_editor_tmdb_collection_helper">Παράδειγμα: Star Wars Collection, Harry Potter Collection ή URL συλλογής.</string>
-  <string name="collections_editor_tmdb_network_helper">Παραδείγματα ID: Netflix 213, HBO 49, Disney+ 2739.</string>
   <string name="collections_editor_tmdb_list_helper">Παράδειγμα: https://www.themoviedb.org/list/8504994 ή 8504994.</string>
   <string name="collections_editor_tmdb_person_id">ID προσώπου</string>
   <string name="collections_editor_tmdb_person_helper">Παράδειγμα: https://www.themoviedb.org/person/31-tom-hanks ή 31.</string>
@@ -1679,7 +1676,6 @@
   <string name="collections_editor_tmdb_companies">ID εταιρειών</string>
   <string name="collections_editor_tmdb_companies_helper">Χρησιμοποιήστε ID στούντιο/εταιρειών. Τα γρήγορα chip συμπληρώνουν συνήθη παραδείγματα.</string>
   <string name="collections_editor_tmdb_networks">ID δικτύων</string>
-  <string name="collections_editor_tmdb_networks_helper">Μόνο για σειρές. Χρησιμοποιήστε ID δικτύων όπως Netflix 213 ή HBO 49.</string>
   <string name="collections_editor_tmdb_year">Έτος</string>
   <string name="collections_editor_tmdb_year_helper">Χρησιμοποιήστε έτος τεσσάρων ψηφίων, για παράδειγμα 2024.</string>
   <string name="collections_editor_sort_original">Αρχικό</string>
@@ -1708,7 +1704,6 @@
   <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 ή 8504994</string>
   <string name="collections_editor_tmdb_placeholder_collection">10 για το Star Wars Collection</string>
   <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 ή URL εταιρείας</string>
-  <string name="collections_editor_tmdb_placeholder_network">213 για Netflix, 49 για HBO, 2739 για Disney+</string>
   <string name="collections_editor_tmdb_person_placeholder">31 για Tom Hanks, ή URL προσώπου</string>
   <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 ή 123456</string>
   <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1768,13 +1763,11 @@
   <string name="collection_editor_folder_count_other">%1$d στοιχεία</string>
   <string name="collections_editor_delete_folder_title">Διαγραφή φακέλου;</string>
   <string name="collections_editor_delete_folder_subtitle">Αυτό θα διαγράψει οριστικά το «%1$s» και το περιεχόμενό του.</string>
-  <string name="collections_editor_tmdb_movie_title_placeholder">Ταινίες Marvel, Netflix Originals, Pixar</string>
   <string name="collections_editor_tmdb_tv_title_placeholder">Καλύτερες ταινίες δράσης, κορεατικά δράματα, animation 2024</string>
   <string name="collections_editor_tmdb_person_title_placeholder">Ταινίες Tom Hanks, αγαπημένοι ηθοποιοί</string>
   <string name="collections_editor_tmdb_director_title_placeholder">Ταινίες Christopher Nolan, αγαπημένοι σκηνοθέτες</string>
   <string name="collections_editor_tmdb_keywords_placeholder">9715 για superhero</string>
   <string name="collections_editor_tmdb_companies_placeholder">420 για Marvel Studios</string>
-  <string name="collections_editor_tmdb_networks_placeholder">213 για Netflix</string>
   <string name="folder_detail_not_found">Ο φάκελος δεν βρέθηκε</string>
   <string name="cast_error_load_details_for">Δεν ήταν δυνατή η φόρτωση λεπτομερειών για %1$s</string>
   <string name="tmdb_entity_error_load_named">Δεν ήταν δυνατή η φόρτωση του %1$s</string>
@@ -1795,7 +1788,6 @@
   <string name="collections_editor_emoji_category_flags">Σημαίες</string>
   <string name="collections_editor_emoji_category_symbols">Σύμβολα</string>
   <!-- Collection editor: TMDB picker placeholders + genres -->
-  <string name="collections_editor_tmdb_network_placeholder_example">213 για Netflix, 49 για HBO, 2739 για Disney+</string>
   <string name="collections_editor_tmdb_collection_placeholder_example">10 για τη συλλογή Star Wars</string>
   <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, ή URL εταιρείας</string>
   <string name="collections_editor_tmdb_genre_action">Δράση</string>
@@ -1824,8 +1816,6 @@
   <!-- Playback settings sections -->
   <string name="playback_player_internal_desc">Χρήση του ενσωματωμένου προγράμματος αναπαραγωγής Tivistream</string>
   <!-- Player runtime: torrent overlay + tracks -->
-  <string name="player_torrent_peer_info">%1$d διανομείς · %2$d λήπτες</string>
-  <string name="player_torrent_buffered_status">%1$s στην προσωρινή μνήμη · %2$s · %3$s</string>
   <string name="player_track_audio_fallback">Ήχος %1$d</string>
   <string name="player_track_subtitle_fallback">Υπότιτλος %1$d</string>
   <!-- Player runtime: error recovery -->
@@ -1983,10 +1973,6 @@
   <string name="update_error_download_failed">Η λήψη απέτυχε</string>
   <string name="update_error_apk_missing">Το ληφθέν αρχείο λείπει</string>
   <string name="subtitle_language_unknown">Άγνωστη</string>
-  <plurals name="debrid_selection_count_value">
-    <item quantity="one">%d επιλεγμένο</item>
-    <item quantity="other">%d επιλεγμένα</item>
-  </plurals>
   <!-- External playback keep-alive notification -->
   <string name="external_playback_channel_description">Διατηρεί την εφαρμογή ενεργή κατά την αναπαραγωγή σε εξωτερικό player</string>
   <string name="external_playback_notification_text">Αναπαραγωγή σε εξωτερικό player</string>

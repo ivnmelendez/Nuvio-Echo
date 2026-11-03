@@ -36,7 +36,7 @@ fun StartupSplashScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_tivilatino_mark),
+                painter = painterResource(id = R.drawable.ic_tivistream_mark),
                 contentDescription = stringResource(R.string.app_name),
                 modifier = Modifier.size(120.dp)
             )

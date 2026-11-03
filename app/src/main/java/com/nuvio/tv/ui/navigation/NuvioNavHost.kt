@@ -639,7 +639,6 @@ private fun PlaybackNavHost(
                 },
                 onStreamSelected = { playbackInfo ->
                     val streamUrl = playbackInfo.url
-                        ?: if (playbackInfo.isTorrent) "torrent://${playbackInfo.infoHash}" else null
                     streamUrl?.let { url ->
                         navController.navigate(
                             Screen.Player.createRoute(
@@ -680,7 +679,6 @@ private fun PlaybackNavHost(
                 },
                 onAutoPlayResolved = { playbackInfo ->
                     val autoPlayUrl = playbackInfo.url
-                        ?: if (playbackInfo.isTorrent) "torrent://${playbackInfo.infoHash}" else null
                     autoPlayUrl?.let { url ->
                         navController.navigate(
                             Screen.Player.createRoute(

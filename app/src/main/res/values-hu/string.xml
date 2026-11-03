@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Megtekintés folytatása</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Filmek</string>
@@ -390,7 +390,6 @@
     <string name="essential_audio_language">Hang nyelve</string>
     <string name="audio_lang_media_default">Média alapértelmezett</string>
     <string name="essential_playback_header_title">Lejátszás</string>
-    <string name="essential_playback_header_subtitle">Egyszerű lejátszási, felirat, hang és P2P preferenciák.</string>
     <string name="essential_stream_selection_subtitle">Válassz kézzel, vagy játszd le automatikusan az első elérhető streamet.</string>
     <string name="essential_autoplay_next_episode">Következő epizód automatikus lejátszása</string>
     <string name="essential_autoplay_next_episode_subtitle">A stream befejezése után lépj a következő epizódra.</string>
@@ -1509,7 +1508,6 @@
     <string name="collections_paste_clipboard">Beillesztés vágólapról</string>
     <string name="collections_validate">Elenőrzés</string>
     <string name="collections_paste_hint">Ide illeszd be a gyűjtemények JSON-t…</string>
-    <string name="collections_file_description">A nuvio-collections.json beolvasása a Letöltések mappából.</string>
     <string name="collections_load_file">Fájl betöltése</string>
     <string name="collections_file_loaded">Fájl betöltve (%1$d karakter)</string>
     <string name="collections_fetch_url">URL lekérése</string>
@@ -1604,7 +1602,6 @@
     <string name="collections_editor_tmdb_help_discover">Állíts össze egy élő TMDB sort opcionális szűrőkkel. Hagyd üresen azokat a mezőket, amelyekre nincs szükséged.</string>
     <string name="collections_editor_tmdb_search_helper">Példák: Marvel Studios, 420, vagy https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Példa: Star Wars gyűjtemény, Harry Potter gyűjtemény, vagy egy gyűjtemény URL-je.</string>
-    <string name="collections_editor_tmdb_network_helper">Példa ID-k: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Példa: https://www.themoviedb.org/list/8504994 vagy 8504994.</string>
     <string name="collections_editor_tmdb_person_id">Személy ID</string>
     <string name="collections_editor_tmdb_person_helper">Példa: https://www.themoviedb.org/person/31-tom-hanks vagy 31.</string>
@@ -1640,7 +1637,6 @@
     <string name="collections_editor_tmdb_without_companies">Kizárt stúdió ID-k</string>
     <string name="collections_editor_tmdb_without_companies_helper">Zárd ki az ezekhez a TMDB stúdiószámokhoz tartozó címeket.</string>
     <string name="collections_editor_tmdb_networks">Hálózat ID-k</string>
-    <string name="collections_editor_tmdb_networks_helper">Csak sorozatokhoz. Használj hálózat ID-kat, mint a Netflix 213 vagy HBO 49.</string>
     <string name="collections_editor_tmdb_year">Év</string>
     <string name="collections_editor_tmdb_year_helper">Adj meg egy négyjegyű évszámot, például 2024.</string>
     <string name="collections_editor_sort_original">Eredeti</string>
@@ -1669,7 +1665,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 vagy 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 a Star Wars gyűjteményhez</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, vagy cég URL</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 a Netflixhez, 49 az HBO-hoz, 2739 a Disney+-hoz</string>
     <string name="collections_editor_tmdb_person_placeholder">31 Tom Hankshez, vagy személy URL-je</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 vagy 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1730,7 +1725,6 @@
     <string name="collection_editor_folder_count_other">%1$d elem</string>
     <string name="collections_editor_delete_folder_title">Mappa törlése?</string>
     <string name="collections_editor_delete_folder_subtitle">Ez véglegesen törli a következőt és annak tartalmát: \&quot;%1$s\&quot;.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel filmek, Netflix eredeti filmek, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Legjobb akciósorozatok, Koreai drámák, 2024 animáció</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Tom Hanks filmek, Kedvenc színészek</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Christopher Nolan filmek, Kedvenc rendezők</string>
@@ -1738,7 +1732,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 a Marvel Studios-hoz</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 a Netflixhez</string>
     <string name="folder_detail_not_found">A mappa nem található</string>
     <string name="cast_error_load_details_for">Nem sikerült betölteni a részleteket ehhez: %1$s</string>
     <string name="tmdb_entity_error_load_named">Nem sikerült betölteni a következőt: %1$s</string>
@@ -1761,7 +1754,6 @@
     <string name="collections_editor_emoji_category_flags">Zászlók</string>
     <string name="collections_editor_emoji_category_symbols">Szimbólumok</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 a Netflixhez, 49 az HBO-hoz, 2739 a Disney+-hoz</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 a Star Wars gyűjteményhez</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, vagy céges URL</string>
     <string name="collections_editor_tmdb_genre_action">Akció</string>
@@ -1792,8 +1784,6 @@
     <string name="playback_player_internal_desc">A Tivistream beépített lejátszójának használata</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seed · %2$d peer</string>
-    <string name="player_torrent_buffered_status">%1$s pufferelve · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Hang %1$d</string>
     <string name="player_track_subtitle_fallback">Felirat %1$d</string>
 
@@ -1975,10 +1965,6 @@ Próbálj meg egy másik forrást. [%1$s]</string>
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d kiválasztva</item>
-        <item quantity="other">%d kiválasztva</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Ismeretlen</string>

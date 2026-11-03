@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="type_movie">Film</string>
     <string name="type_series">Serija</string>
     <string name="type_unknown">Nepoznato</string>
@@ -1014,7 +1014,6 @@
     <string name="collections_paste_clipboard">Zalijepi iz Clipboarda</string>
     <string name="collections_validate">Validiraj</string>
     <string name="collections_paste_hint">Ovdje zalijepi kolekcije iz JSON-a…</string>
-    <string name="collections_file_description">Čita nuvio-collections.json iz foldera Preuzimanja (Downloads).</string>
     <string name="collections_load_file">Učitaj Fajl</string>
     <string name="collections_file_loaded">Fajl učitan (%1$d karaktera)</string>
     <string name="collections_fetch_url">Preuzmi preko URL-a</string>

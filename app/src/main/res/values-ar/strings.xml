@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">متابعة المشاهدة</string>
     <string name="type_movies">أفلام</string>
     <string name="type_movie">فيلم</string>
@@ -354,7 +354,6 @@
     <string name="essential_audio_language">لغة الصوت</string>
     <string name="audio_lang_media_default">الافتراضي للوسائط</string>
     <string name="essential_playback_header_title">وسائط التشغيل</string>
-    <string name="essential_playback_header_subtitle">تفضيلات التشغيل البسيطة، الترجمة، الصوت، ومصادر P2P.</string>
     <string name="essential_stream_selection_subtitle">إختر يدوياً أو قم بتشغيل أول مصدر متاح تلقائياً.</string>
     <string name="essential_autoplay_next_episode">تشغيل الحلقة التالية تلقائياً</string>
     <string name="essential_autoplay_next_episode_subtitle">المتابعة إلى الحلقة التالية بعد انتهاء البث.</string>
@@ -1378,7 +1377,6 @@
     <string name="collections_paste_clipboard">لصق من الحافظة</string>
     <string name="collections_validate">تحقق</string>
     <string name="collections_paste_hint">الصق ملف JSON للمجموعات هنا…</string>
-    <string name="collections_file_description">يقرأ nuvio-collections.json من مجلد التنزيلات.</string>
     <string name="collections_load_file">تحميل الملف</string>
     <string name="collections_file_loaded">تم تحميل الملف (%1$d حرفاً)</string>
     <string name="collections_fetch_url">جلب من الرابط</string>
@@ -1473,7 +1471,6 @@
     <string name="collections_editor_tmdb_help_discover">أنشئ صف TMDB مباشر بفلاتر اختيارية. اترك الحقول فارغة لتجاهلها.</string>
     <string name="collections_editor_tmdb_search_helper">أمثلة: Marvel Studios أو 420 أو رابط الشركة.</string>
     <string name="collections_editor_tmdb_collection_helper">أمثلة: مجموعة Star Wars أو رابط المجموعة.</string>
-    <string name="collections_editor_tmdb_network_helper">معرفات أمثلة: 213 لـ Netflix، 49 لـ HBO.</string>
     <string name="collections_editor_tmdb_list_helper">مثال: الرابط أو الرقم 8504994.</string>
     <string name="collections_editor_tmdb_person_id">معرف الشخص</string>
     <string name="collections_editor_tmdb_person_helper">مثال: الرابط أو الرقم 31 لـ Tom Hanks.</string>
@@ -1503,7 +1500,6 @@
     <string name="collections_editor_tmdb_companies">معرفات الشركات</string>
     <string name="collections_editor_tmdb_companies_helper">معرفات الاستوديوهات. استخدم الشرائح السريعة لتعبئتها.</string>
     <string name="collections_editor_tmdb_networks">معرفات الشبكات</string>
-    <string name="collections_editor_tmdb_networks_helper">للمسلسلات فقط. معرفات مثل 213 لـ Netflix.</string>
     <string name="collections_editor_tmdb_year">السنة</string>
     <string name="collections_editor_tmdb_year_helper">سنة من 4 أرقام، مثال: 2024.</string>
     <string name="collections_editor_sort_original">الأساسي</string>
@@ -1532,7 +1528,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 أو 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 لـ Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios أو 420 أو رابط الشركة</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 لـ Netflix، 49 لـ HBO، 2739 لـ Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 لـ Tom Hanks، أو رابط الشخص</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 أو 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1592,13 +1587,11 @@
     <string name="collection_editor_folder_count_other">%1$d عنصر</string>
     <string name="collections_editor_delete_folder_title">حذف المجلد؟</string>
     <string name="collections_editor_delete_folder_subtitle">هذا سيحذف "%1$s" ومحتوياته نهائياً.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">أفلام Marvel، إنتاجات Netflix، Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">أفضل أفلام الأكشن، دراما كورية</string>
     <string name="collections_editor_tmdb_person_title_placeholder">أفلام توم هانكس، الممثلون المفضلون</string>
     <string name="collections_editor_tmdb_director_title_placeholder">أفلام كريستوفر نولان، مخرجون مفضلون</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 للأبطال الخارقين</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 لـ Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 لـ Netflix</string>
     <string name="folder_detail_not_found">المجلد غير موجود</string>
     <string name="cast_error_load_details_for">تعذر تحميل تفاصيل %1$s</string>
     <string name="tmdb_entity_error_load_named">تعذر تحميل %1$s</string>
@@ -1621,7 +1614,6 @@
     <string name="collections_editor_emoji_category_flags">الأعلام</string>
     <string name="collections_editor_emoji_category_symbols">الرموز</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 لنتفليكس، 49 لـ HBO، و2739 لديزني+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 لسلسلة أفلام حرب النجوم (Star Wars)</string>
     <string name="collections_editor_tmdb_company_placeholder_example">استوديوهات مارفل، 420، أو رابط الشركة</string>
     <string name="collections_editor_tmdb_genre_action">أكشن</string>
@@ -1652,8 +1644,6 @@
     <string name="playback_player_internal_desc">استخدام مشغل Tivistream المدمج</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seeds · %2$d peers</string>
-    <string name="player_torrent_buffered_status">%1$s buffered · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">المسار الصوتي %1$d</string>
     <string name="player_track_subtitle_fallback">ملف الترجمة %1$d</string>
 
@@ -1789,10 +1779,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d محدد</item>
-        <item quantity="other">محددة %d</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">غير معروف</string>

@@ -59,7 +59,7 @@ fun ForcedUpdateScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_tivilatino_mark),
+            painter = painterResource(id = R.drawable.ic_tivistream_mark),
             contentDescription = null,
             modifier = Modifier.size(96.dp)
         )

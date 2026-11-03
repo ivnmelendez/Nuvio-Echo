@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="type_movie">Фильм</string>
     <string name="type_series">Сериал</string>
     <string name="type_unknown">Неизвестно</string>
@@ -1146,7 +1146,6 @@
     <string name="collections_paste_clipboard">Вставить из буфера обмена</string>
     <string name="collections_validate">Проверить</string>
     <string name="collections_paste_hint">Вставьте JSON коллекций сюда…</string>
-    <string name="collections_file_description">Читает nuvio-collections.json из папки Загрузки.</string>
     <string name="collections_load_file">Загрузить файл</string>
     <string name="collections_file_loaded">Файл загружен (%1$d символов)</string>
     <string name="collections_fetch_url">Загрузить URL</string>
@@ -1350,7 +1349,6 @@
     <string name="essential_audio_language">Язык аудио</string>
     <string name="audio_lang_media_default">По умолчанию медиа</string>
     <string name="essential_playback_header_title">Воспроизведение</string>
-    <string name="essential_playback_header_subtitle">Простые настройки воспроизведения, субтитров, аудио и P2P.</string>
     <string name="essential_stream_selection_subtitle">Выбирайте вручную или автозапускайте первый доступный поток.</string>
     <string name="essential_autoplay_next_episode">Автовоспроизведение следующего эпизода</string>
     <string name="essential_autoplay_next_episode_subtitle">Продолжить со следующим эпизодом после окончания потока.</string>
@@ -1703,7 +1701,6 @@
     <string name="collections_editor_tmdb_help_discover">Создайте живой ряд TMDB с фильтрами. Оставьте поля пустыми, если фильтр не нужен.</string>
     <string name="collections_editor_tmdb_search_helper">Примеры: Marvel Studios, 420 или https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Пример: Коллекция Звёздных войн, Коллекция Гарри Поттера или URL коллекции.</string>
-    <string name="collections_editor_tmdb_network_helper">Примеры ID: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Пример: https://www.themoviedb.org/list/8504994 или 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID персоны</string>
     <string name="collections_editor_tmdb_person_helper">Пример: https://www.themoviedb.org/person/31-tom-hanks или 31.</string>
@@ -1739,7 +1736,6 @@
     <string name="collections_editor_tmdb_without_companies">Исключённые ID студий</string>
     <string name="collections_editor_tmdb_without_companies_helper">Исключить тайтлы, связанные с этими номерами студий TMDB.</string>
     <string name="collections_editor_tmdb_networks">ID сетей</string>
-    <string name="collections_editor_tmdb_networks_helper">Только для сериалов. Используйте ID сетей: Netflix 213, HBO 49.</string>
     <string name="collections_editor_tmdb_year">Год</string>
     <string name="collections_editor_tmdb_year_helper">Используйте четырёхзначный год, например 2024.</string>
     <string name="collections_editor_sort_original">Исходный</string>
@@ -1768,7 +1764,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 или 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 для коллекции Звёздных войн</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 или URL компании</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 для Netflix, 49 для HBO, 2739 для Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 для Tom Hanks или URL персоны</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 или 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1823,7 +1818,6 @@
     <string name="collection_editor_folder_count_other">%1$d элементов</string>
     <string name="collections_editor_delete_folder_title">Удалить папку?</string>
     <string name="collections_editor_delete_folder_subtitle">Это навсегда удалит \"%1$s\" и её содержимое.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Лучшие боевики, Корейские дорамы, Аниме 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Фильмы с Tom Hanks, Любимые актёры</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Фильмы Christopher Nolan, Любимые режиссёры</string>
@@ -1831,7 +1825,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 для Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 для Netflix</string>
     <string name="folder_detail_not_found">Папка не найдена</string>
     <string name="cast_error_load_details_for">Не удалось загрузить детали для %1$s</string>
     <string name="tmdb_entity_error_load_named">Не удалось загрузить %1$s</string>
@@ -1849,7 +1842,6 @@
     <string name="collections_editor_emoji_category_objects">Объекты</string>
     <string name="collections_editor_emoji_category_flags">Флаги</string>
     <string name="collections_editor_emoji_category_symbols">Символы</string>
-    <string name="collections_editor_tmdb_network_placeholder_example">213 для Netflix, 49 для HBO, 2739 для Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 для коллекции Звёздных войн</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420 или URL компании</string>
     <string name="collections_editor_tmdb_genre_action">Экшн</string>
@@ -1875,8 +1867,6 @@
     <string name="autoplay_regex_preset_no_cam_ts">Без CAM/TS</string>
     <string name="autoplay_regex_preset_no_remux_hdr">Без REMUX/HDR</string>
     <string name="playback_player_internal_desc">Использовать встроенный плеер Tivistream</string>
-    <string name="player_torrent_peer_info">%1$d сидов · %2$d пиров</string>
-    <string name="player_torrent_buffered_status">%1$s буфер · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Аудио %1$d</string>
     <string name="player_track_subtitle_fallback">Субтитры %1$d</string>
     <string name="player_error_stream_blocked">\n\nИсточник потока заблокирован или ограничен. Попробуйте другой источник.</string>
@@ -1992,12 +1982,6 @@
     <string name="trakt_related_error_request_failed">Не удалось загрузить похожие</string>
     <string name="trakt_comments_error_request_failed">Не удалось загрузить комментарии</string>
     <string name="trakt_library_error_fetch_list_items">Не удалось загрузить элементы списка</string>
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d выбрано</item>
-        <item quantity="few">%d выбрано</item>
-        <item quantity="many">%d выбрано</item>
-        <item quantity="other">%d выбрано</item>
-    </plurals>
     <!-- Batch 13 (final): DV diagnostics, meta/stream addon errors, home poster errors, debrid picker filters, subtitle language unknown -->
     <string name="advanced_section_dv_diagnostics" translatable="false">DV Diagnostics</string>
     <string name="dv7_libdovi_mode_caption" translatable="false">Conversion mode (auto-selected, do not change unless instructed). Pick one to force it; None uses auto. Active only when DV7 Handling is Convert to DV8.1.</string>

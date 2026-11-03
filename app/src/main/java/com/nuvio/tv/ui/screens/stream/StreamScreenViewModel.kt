@@ -1709,7 +1709,6 @@ data class StreamPlaybackInfo(
 
 private fun playbackUrlFor(playbackInfo: StreamPlaybackInfo): String? =
     playbackInfo.url?.takeIf { it.isNotBlank() }
-        ?: if (playbackInfo.isTorrent) playbackInfo.infoHash?.let { "torrent://$it" } else null
 
 private fun Stream.isReadyForDebridPreparation(): Boolean =
     getStreamUrl() == null &&

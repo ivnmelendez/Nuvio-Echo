@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">המשך צפייה</string>
     <string name="type_movie">סרט</string>
     <string name="type_movies">סרטים</string>
@@ -436,7 +436,6 @@
     <string name="essential_audio_language">שפת אודיו</string>
     <string name="audio_lang_media_default">ברירת מחדל של המדיה</string>
     <string name="essential_playback_header_title">הפעלה</string>
-    <string name="essential_playback_header_subtitle">העדפות פשוטות להפעלה, כתוביות, אודיו ו-P2P.</string>
     <string name="essential_stream_selection_subtitle">יש לבחור ידנית או להפעיל אוטומטית את הזרם הראשון שזמין.</string>
     <string name="essential_autoplay_next_episode">הפעלה אוטומטית של הפרק הבא</string>
     <string name="essential_autoplay_next_episode_subtitle">המשך לפרק הבא לאחר סיום ה-Stream.</string>
@@ -1700,7 +1699,6 @@
     <string name="collections_paste_clipboard">הדבקה מהמקלדת</string>
     <string name="collections_validate">אימות</string>
     <string name="collections_paste_hint">הדבקת JSON של אוספים כאן…</string>
-    <string name="collections_file_description">קורא את nuvio-collections.json מתיקיית ההורדות.</string>
     <string name="collections_load_file">טעינת קובץ</string>
     <string name="collections_file_loaded">הקובץ נטען (%1$d תווים)</string>
     <string name="collections_fetch_url">משיכת URL</string>
@@ -1796,7 +1794,6 @@
     <string name="collections_editor_tmdb_help_discover">בניית שורת TMDB חיה באמצעות מסננים אופציונליים. ניתן להשאיר שדות ריקים כשאין צורך באותו סינון.</string>
     <string name="collections_editor_tmdb_search_helper">דוגמות: Marvel Studios, 420, או https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">דוגמה: Star Wars Collection, Harry Potter Collection, או כתובת URL של אוסף.</string>
-    <string name="collections_editor_tmdb_network_helper">מזהים לדוגמה: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">דוגמה: https://www.themoviedb.org/list/8504994 או 8504994.</string>
     <string name="collections_editor_tmdb_person_id">מזהה איש</string>
     <string name="collections_editor_tmdb_person_helper">דוגמה: https://www.themoviedb.org/person/31-tom-hanks או 31.</string>
@@ -1832,7 +1829,6 @@
     <string name="collections_editor_tmdb_without_companies">מזהי חברות מוחרגות</string>
     <string name="collections_editor_tmdb_without_companies_helper">החרגת כותרות המשויכות למספרי החברות האלה של TMDB.</string>
     <string name="collections_editor_tmdb_networks">מזהי רשתות שידור</string>
-    <string name="collections_editor_tmdb_networks_helper">לסדרות בלבד. יש להשתמש במזהי רשת כמו Netflix 213 או HBO 49.</string>
     <string name="collections_editor_tmdb_year">שנה</string>
     <string name="collections_editor_tmdb_year_helper">שימוש בשנה בת ארבע ספרות, לדוגמה 2024.</string>
     <string name="collections_editor_sort_original">מקורי</string>
@@ -1861,7 +1857,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 או 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 עבור Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, או כתובת URL של חברה</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 עבור Netflix, 49 עבור HBO, 2739 עבור Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 עבור Tom Hanks, או כתובת URL של אדם</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 או 123456</string>
     <string name="collections_editor_url_short_placeholder">https://…</string>
@@ -1922,7 +1917,6 @@
     <string name="collection_editor_folder_count_other">%1$d פריטים</string>
     <string name="collections_editor_delete_folder_title">למחוק תיקייה?</string>
     <string name="collections_editor_delete_folder_subtitle">פעולה זו תמחק לצמיתות את \"%1$s\" ואת תכולתה.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Best Action Movies, Korean Dramas, 2024 Animation</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Tom Hanks Movies, Favorite Actors</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Christopher Nolan Movies, Favorite Directors</string>
@@ -1930,7 +1924,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 עבור Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 עבור Netflix</string>
     <string name="folder_detail_not_found">התיקייה לא נמצאה</string>
     <string name="cast_error_load_details_for">לא ניתן היה לטעון פרטים עבור %1$s</string>
     <string name="tmdb_entity_error_load_named">לא ניתן היה לטעון את %1$s</string>
@@ -1953,7 +1946,6 @@
     <string name="collections_editor_emoji_category_flags">דגלים</string>
     <string name="collections_editor_emoji_category_symbols">סמלים</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 for Netflix, 49 for HBO, 2739 for Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 for Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, or company URL</string>
     <string name="collections_editor_tmdb_genre_action">אקשן</string>
@@ -1984,8 +1976,6 @@
     <string name="playback_player_internal_desc">שימוש בנגן המובנה של Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d מקורות · %2$d עמיתים</string>
-    <string name="player_torrent_buffered_status">%1$s במאגר · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">שמע %1$d</string>
     <string name="player_track_subtitle_fallback">כתוביות %1$d</string>
 
@@ -2155,10 +2145,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d נבחר</item>
-        <item quantity="other">%d נבחרו</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">לא ידוע</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">視聴を続ける</string>
     <string name="type_movie">映画</string>
     <string name="type_movies">映画</string>
@@ -345,7 +345,6 @@
     <string name="essential_audio_language">音声言語</string>
     <string name="audio_lang_media_default">メディアのデフォルト</string>
     <string name="essential_playback_header_title">再生</string>
-    <string name="essential_playback_header_subtitle">簡単な再生、字幕、音声、P2P設定。</string>
     <string name="essential_stream_selection_subtitle">手動で選択するか、最初の利用可能なストリームを自動再生。</string>
     <string name="essential_autoplay_next_episode">次のエピソードを自動再生</string>
     <string name="essential_autoplay_next_episode_subtitle">ストリーム終了後に次のエピソードへ続行。</string>
@@ -1362,7 +1361,6 @@
     <string name="collections_paste_clipboard">クリップボードから貼り付け</string>
     <string name="collections_validate">検証</string>
     <string name="collections_paste_hint">コレクションJSONをここに貼り付け…</string>
-    <string name="collections_file_description">ダウンロードフォルダの nuvio-collections.json を読み取ります。</string>
     <string name="collections_load_file">ファイルを読み込む</string>
     <string name="collections_file_loaded">ファイルを読み込みました (%1$d文字)</string>
     <string name="collections_fetch_url">URLを取得</string>
@@ -1457,7 +1455,6 @@
     <string name="collections_editor_tmdb_help_discover">オプションフィルターを使用してライブTMDB行を構築します。不要なフィルターは空欄にします。</string>
     <string name="collections_editor_tmdb_search_helper">例: Marvel Studios, 420, https://www.themoviedb.org/company/420 など。</string>
     <string name="collections_editor_tmdb_collection_helper">例: Star Wars Collection, Harry Potter Collection, またはコレクションURL。</string>
-    <string name="collections_editor_tmdb_network_helper">例: Netflix 213, HBO 49, Disney+ 2739。</string>
     <string name="collections_editor_tmdb_list_helper">例: https://www.themoviedb.org/list/8504994 または 8504994。</string>
     <string name="collections_editor_tmdb_person_id">人物ID</string>
     <string name="collections_editor_tmdb_person_helper">例: https://www.themoviedb.org/person/31-tom-hanks または 31。</string>
@@ -1487,7 +1484,6 @@
     <string name="collections_editor_tmdb_companies">制作会社ID</string>
     <string name="collections_editor_tmdb_companies_helper">スタジオ/制作会社IDを使用。クイックチップは一般的な例を提供します。</string>
     <string name="collections_editor_tmdb_networks">ネットワークID</string>
-    <string name="collections_editor_tmdb_networks_helper">シリーズ専用。Netflix 213 や HBO 49 などのネットワークIDを使用。</string>
     <string name="collections_editor_tmdb_year">年</string>
     <string name="collections_editor_tmdb_year_helper">4桁の年、例: 2024。</string>
     <string name="collections_editor_sort_original">オリジナル</string>
@@ -1516,7 +1512,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 または 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 for Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, または制作会社URL</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 for Netflix, 49 for HBO, 2739 for Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 for Tom Hanks, または人物URL</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 または 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1576,13 +1571,11 @@
     <string name="collection_editor_folder_count_other">%1$d個のアイテム</string>
     <string name="collections_editor_delete_folder_title">フォルダーを削除しますか？</string>
     <string name="collections_editor_delete_folder_subtitle">\"%1$s\" とその内容を完全に削除します。</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">マーベル映画、Netflixオリジナル、ピクサー</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">ベストアクション映画、韓国ドラマ、2024アニメーション</string>
     <string name="collections_editor_tmdb_person_title_placeholder">トム・ハンクス映画、お気に入りの俳優</string>
     <string name="collections_editor_tmdb_director_title_placeholder">クリストファー・ノーラン映画、お気に入りの監督</string>
     <string name="collections_editor_tmdb_keywords_placeholder">スーパーヒーローは9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">マーベル・スタジオは420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">Netflixは213</string>
     <string name="folder_detail_not_found">フォルダーが見つかりません</string>
     <string name="cast_error_load_details_for">%1$s の詳細を読み込めませんでした</string>
     <string name="tmdb_entity_error_load_named">%1$s を読み込めませんでした</string>
@@ -1605,7 +1598,6 @@
     <string name="collections_editor_emoji_category_flags">旗</string>
     <string name="collections_editor_emoji_category_symbols">シンボル</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">Netflixは213、HBOは49、Disney+は2739</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">スター・ウォーズ・コレクションは10</string>
     <string name="collections_editor_tmdb_company_placeholder_example">マーベル・スタジオ、420、または制作会社URL</string>
     <string name="collections_editor_tmdb_genre_action">アクション</string>
@@ -1636,8 +1628,6 @@
     <string name="playback_player_internal_desc">NuvioTVの内蔵プレーヤーを使用</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$dシード · %2$dピア</string>
-    <string name="player_torrent_buffered_status">%1$s バッファ済み · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">音声%1$d</string>
     <string name="player_track_subtitle_fallback">字幕%1$d</string>
 
@@ -1773,10 +1763,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d個選択</item>
-        <item quantity="other">%d個選択</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">不明</string>

@@ -320,24 +320,7 @@ internal fun PlayerRuntimeController.startProgressUpdates() {
                 if (isTorrentStream && _uiState.value.isBuffering && hasRenderedFirstFrame) {
                     val bufferedAheadMs = (player.bufferedPosition - pos).coerceAtLeast(0)
                     val bufferedSec = bufferedAheadMs / 1000f
-                    val statsHidden = _uiState.value.hideTorrentStats
-                    val message = if (statsHidden) {
-                        null
-                    } else {
-                        val speed = formatTorrentSpeed(context, _uiState.value.torrentDownloadSpeed)
-                        val peerInfo = context.getString(
-                            R.string.player_torrent_peer_info,
-                            _uiState.value.torrentSeeds,
-                            _uiState.value.torrentPeers
-                        )
-                        val bufLabel = String.format("%.0fs", bufferedSec)
-                        context.getString(
-                            R.string.player_torrent_buffered_status,
-                            bufLabel,
-                            peerInfo,
-                            speed
-                        )
-                    }
+                    val message: String? = null
                     val progress = (bufferedSec / 10f).coerceIn(0f, 1f)
                     _uiState.update {
                         it.copy(

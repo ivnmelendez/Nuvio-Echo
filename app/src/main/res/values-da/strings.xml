@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Fortsæt med at se</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Film</string>
@@ -345,7 +345,6 @@
     <string name="essential_audio_language">Lydsprog</string>
     <string name="audio_lang_media_default">Mediestandard</string>
     <string name="essential_playback_header_title">Afspilning</string>
-    <string name="essential_playback_header_subtitle">Simpel afspilning, undertekst, lyd og P2P-indstillinger.</string>
     <string name="essential_stream_selection_subtitle">Vælg manuelt eller autoafspil den første tilgængelige stream.</string>
     <string name="essential_autoplay_next_episode">Autoafspil næste afsnit</string>
     <string name="essential_autoplay_next_episode_subtitle">Fortsæt til næste afsnit, når en stream er færdig.</string>
@@ -1365,7 +1364,6 @@
     <string name="collections_paste_clipboard">Indsæt fra udklipsholder</string>
     <string name="collections_validate">Valider</string>
     <string name="collections_paste_hint">Indsæt samlinger-JSON her…</string>
-    <string name="collections_file_description">Læser nuvio-collections.json fra mappen Downloads.</string>
     <string name="collections_load_file">Indlæs fil</string>
     <string name="collections_file_loaded">Fil indlæst (%1$d tegn)</string>
     <string name="collections_fetch_url">Hent URL</string>
@@ -1460,7 +1458,6 @@
     <string name="collections_editor_tmdb_help_discover">Byg en dynamisk TMDB-række med valgfrie filtre. Lad felter stå tomme, hvis du ikke har brug for det pågældende filter.</string>
     <string name="collections_editor_tmdb_search_helper">Eksempler: Marvel Studios, 420, eller https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Eksempel: Star Wars Collection, Harry Potter Collection, eller en samlings-URL.</string>
-    <string name="collections_editor_tmdb_network_helper">Eksempel-ID\'er: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Eksempel: https://www.themoviedb.org/list/8504994 eller 8504994.</string>
     <string name="collections_editor_tmdb_person_id">Person-ID</string>
     <string name="collections_editor_tmdb_person_helper">Eksempel: https://www.themoviedb.org/person/31-tom-hanks eller 31.</string>
@@ -1490,7 +1487,6 @@
     <string name="collections_editor_tmdb_companies">Selskabs-ID\'er</string>
     <string name="collections_editor_tmdb_companies_helper">Brug studie-/selskabs-ID\'er. Hurtige chips udfylder almindelige eksempler.</string>
     <string name="collections_editor_tmdb_networks">Netværks-ID\'er</string>
-    <string name="collections_editor_tmdb_networks_helper">Kun for serier. Brug netværks-ID\'er som Netflix 213 eller HBO 49.</string>
     <string name="collections_editor_tmdb_year">År</string>
     <string name="collections_editor_tmdb_year_helper">Brug et firecifret årstal, for eksempel 2024.</string>
     <string name="collections_editor_sort_original">Original</string>
@@ -1519,7 +1515,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 or 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 for Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, or company URL</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 for Netflix, 49 for HBO, 2739 for Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 for Tom Hanks, or person URL</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 or 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1579,13 +1574,11 @@
     <string name="collection_editor_folder_count_other">%1$d elementer</string>
     <string name="collections_editor_delete_folder_title">Slet mappe?</string>
     <string name="collections_editor_delete_folder_subtitle">Dette vil permanent slette \"%1$s\" og dens indhold.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Bedste actionfilm, Koreanske dramaer, 2024 Animation</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Tom Hanks-film, Yndlingsskuespillere</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Christopher Nolan-film, Yndlingsinstruktører</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 for superhero</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 for Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 for Netflix</string>
     <string name="folder_detail_not_found">Mappe ikke fundet</string>
     <string name="cast_error_load_details_for">Kunne ikke indlæse detaljer for %1$s</string>
     <string name="tmdb_entity_error_load_named">Kunne ikke indlæse %1$s</string>
@@ -1608,7 +1601,6 @@
     <string name="collections_editor_emoji_category_flags">Flag</string>
     <string name="collections_editor_emoji_category_symbols">Symboler</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 for Netflix, 49 for HBO, 2739 for Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 for Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, or company URL</string>
     <string name="collections_editor_tmdb_genre_action">Action</string>
@@ -1639,8 +1631,6 @@
     <string name="playback_player_internal_desc">Brug Tivistream\'s indbyggede afspiller</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seeders · %2$d peers</string>
-    <string name="player_torrent_buffered_status">%1$s bufferet · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Lyd %1$d</string>
     <string name="player_track_subtitle_fallback">Undertekst %1$d</string>
 
@@ -1776,10 +1766,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d valgt</item>
-        <item quantity="other">%d valgt</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Ukendt</string>

@@ -895,6 +895,8 @@ data class TmdbWatchProvidersResponse(
 
 @JsonClass(generateAdapter = true)
 data class TmdbWatchRegion(
+    /** The title's page for this region on TMDB, which lists each provider with JustWatch's outbound links. */
+    @Json(name = "link") val link: String? = null,
     @Json(name = "flatrate") val flatrate: List<TmdbWatchProvider> = emptyList(),
     @Json(name = "rent") val rent: List<TmdbWatchProvider> = emptyList(),
     @Json(name = "buy") val buy: List<TmdbWatchProvider> = emptyList()
@@ -902,5 +904,6 @@ data class TmdbWatchRegion(
 
 @JsonClass(generateAdapter = true)
 data class TmdbWatchProvider(
-    @Json(name = "provider_name") val name: String? = null
+    @Json(name = "provider_name") val name: String? = null,
+    @Json(name = "logo_path") val logoPath: String? = null
 )

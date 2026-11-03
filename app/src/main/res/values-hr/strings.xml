@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Nastavi gledati</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Filmovi</string>
@@ -438,7 +438,6 @@
     <string name="essential_audio_language">Jezik zvuka</string>
     <string name="audio_lang_media_default">Zadano medija</string>
     <string name="essential_playback_header_title">Reprodukcija</string>
-    <string name="essential_playback_header_subtitle">Jednostavne postavke reprodukcije, titlova, zvuka i P2P-a.</string>
     <string name="essential_stream_selection_subtitle">Odaberi ručno ili automatski reproduciraj prvi dostupni stream.</string>
     <string name="essential_autoplay_next_episode">Automatski reproduciraj sljedeću epizodu</string>
     <string name="essential_autoplay_next_episode_subtitle">Nastavi na sljedeću epizodu nakon što stream završi.</string>
@@ -1670,7 +1669,6 @@
     <string name="collections_paste_clipboard">Zalijepi iz međuspremnika</string>
     <string name="collections_validate">Provjeri</string>
     <string name="collections_paste_hint">Ovdje zalijepi JSON kolekcija…</string>
-    <string name="collections_file_description">Čita nuvio-collections.json iz mape Preuzimanja.</string>
     <string name="collections_load_file">Učitaj datoteku</string>
     <string name="collections_file_loaded">Datoteka učitana (znakova: %1$d)</string>
     <string name="collections_fetch_url">Dohvati URL</string>
@@ -1766,7 +1764,6 @@
     <string name="collections_editor_tmdb_help_discover">Izradi dinamički TMDB red pomoću neobaveznih filtara. Ostavi polja prazna kada ti taj filtar ne treba.</string>
     <string name="collections_editor_tmdb_search_helper">Primjeri: Marvel Studios, 420 ili https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Primjer: Star Wars Collection, Harry Potter Collection ili URL kolekcije.</string>
-    <string name="collections_editor_tmdb_network_helper">Primjeri ID-ova: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Primjer: https://www.themoviedb.org/list/8504994 ili 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID osobe</string>
     <string name="collections_editor_tmdb_person_helper">Primjer: https://www.themoviedb.org/person/31-tom-hanks ili 31.</string>
@@ -1802,7 +1799,6 @@
     <string name="collections_editor_tmdb_without_companies">Isključeni ID-ovi tvrtki</string>
     <string name="collections_editor_tmdb_without_companies_helper">Isključi naslove povezane s ovim TMDB brojevima tvrtki.</string>
     <string name="collections_editor_tmdb_networks">ID-ovi mreža</string>
-    <string name="collections_editor_tmdb_networks_helper">Samo za serije. Koristi ID-ove mreža poput Netflix 213 ili HBO 49.</string>
     <string name="collections_editor_tmdb_year">Godina</string>
     <string name="collections_editor_tmdb_year_helper">Koristi četveroznamenkastu godinu, na primjer 2024.</string>
     <string name="collections_editor_sort_original">Izvorno</string>
@@ -1831,7 +1827,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 ili 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 za Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 ili URL tvrtke</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 za Netflix, 49 za HBO, 2739 za Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 za Toma Hanksa ili URL osobe</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 ili 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1892,7 +1887,6 @@
     <string name="collection_editor_folder_count_other">Stavki: %1$d</string>
     <string name="collections_editor_delete_folder_title">Izbrisati mapu?</string>
     <string name="collections_editor_delete_folder_subtitle">Ovo će trajno izbrisati \"%1$s\" i njezin sadržaj.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel filmovi, Netflix originali, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Najbolji akcijski filmovi, Korejske drame, Animacija 2024.</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Filmovi Toma Hanksa, Omiljeni glumci</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Filmovi Christophera Nolana, Omiljeni redatelji</string>
@@ -1900,7 +1894,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 za Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 za Netflix</string>
     <string name="folder_detail_not_found">Mapa nije pronađena</string>
     <string name="cast_error_load_details_for">Nije moguće učitati detalje za %1$s</string>
     <string name="tmdb_entity_error_load_named">Nije moguće učitati %1$s</string>
@@ -1923,7 +1916,6 @@
     <string name="collections_editor_emoji_category_flags">Zastave</string>
     <string name="collections_editor_emoji_category_symbols">Simboli</string>
     <!-- Uređivač kolekcija: TMDB rezervirani tekstovi + žanrovi -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 za Netflix, 49 za HBO, 2739 za Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 za Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420 ili URL tvrtke</string>
     <string name="collections_editor_tmdb_genre_action">Akcija</string>
@@ -1954,8 +1946,6 @@
     <string name="playback_player_internal_desc">Koristi ugrađeni player NuvioTV-a</string>
 
     <!-- Player: torrent sloj + zapisi -->
-    <string name="player_torrent_peer_info">%1$d seedova · %2$d peerova</string>
-    <string name="player_torrent_buffered_status">%1$s u međuspremniku · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Zvuk %1$d</string>
     <string name="player_track_subtitle_fallback">Titlovi %1$d</string>
 
@@ -2125,11 +2115,6 @@
     <!-- Debrid: retci pravila filtara (naslov + podnaslov) -->
 
     <!-- Debrid: broj odabranih + oznake raspona veličine -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d odabran</item>
-        <item quantity="few">%d odabrana</item>
-        <item quantity="other">%d odabrano</item>
-    </plurals>
 
     <!-- Odabir titlova: zamjenska vrijednost za nepoznati jezik -->
     <string name="subtitle_language_unknown">Nepoznato</string>

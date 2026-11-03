@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Pokračovat ve sledování</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Filmy</string>
@@ -357,7 +357,6 @@
     <string name="essential_audio_language">Jazyk zvuku</string>
     <string name="audio_lang_media_default">Výchozí podle média</string>
     <string name="essential_playback_header_title">Přehrávání</string>
-    <string name="essential_playback_header_subtitle">Jednoduché nastavení přehrávání, titulků, zvuku a P2P.</string>
     <string name="essential_stream_selection_subtitle">Vyberte ručně, nebo automaticky přehrávejte první dostupný stream.</string>
     <string name="essential_autoplay_next_episode">Automaticky přehrát další epizodu</string>
     <string name="essential_autoplay_next_episode_subtitle">Po skončení streamu pokračovat další epizodou.</string>
@@ -1443,7 +1442,6 @@
     <string name="collections_paste_clipboard">Vložit ze schránky</string>
     <string name="collections_validate">Ověřit</string>
     <string name="collections_paste_hint">Vložte JSON kolekcí sem…</string>
-    <string name="collections_file_description">Čte soubor nuvio-collections.json ze složky Stahování.</string>
     <string name="collections_load_file">Načíst soubor</string>
     <string name="collections_file_loaded">Soubor načten (%1$d znaků)</string>
     <string name="collections_fetch_url">Načíst URL</string>
@@ -1538,7 +1536,6 @@
     <string name="collections_editor_tmdb_help_discover">Vytvořte živý řádek TMDB pomocí volitelných filtrů. Ponechte pole prázdná, pokud daný filtr nepotřebujete.</string>
     <string name="collections_editor_tmdb_search_helper">Příklady: Marvel Studios, 420, nebo https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Příklad: Star Wars kolekce, Harry Potter kolekce, nebo URL kolekce.</string>
-    <string name="collections_editor_tmdb_network_helper">Příklady ID: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Příklad: https://www.themoviedb.org/list/8504994 nebo 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID osoby</string>
     <string name="collections_editor_tmdb_person_helper">Příklad: https://www.themoviedb.org/person/31-tom-hanks nebo 31.</string>
@@ -1568,7 +1565,6 @@
     <string name="collections_editor_tmdb_companies">ID společností</string>
     <string name="collections_editor_tmdb_companies_helper">Použijte ID studií/společností. Rychlé čipy vyplňují běžné příklady.</string>
     <string name="collections_editor_tmdb_networks">ID sítí</string>
-    <string name="collections_editor_tmdb_networks_helper">Pouze pro seriály. Použijte ID sítí jako Netflix 213 nebo HBO 49.</string>
     <string name="collections_editor_tmdb_year">Rok</string>
     <string name="collections_editor_tmdb_year_helper">Použijte čtyřmístný rok, například 2024.</string>
     <string name="collections_editor_sort_original">Původní</string>
@@ -1597,7 +1593,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 nebo 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 pro kolekci Star Wars</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, nebo URL společnosti</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 pro Netflix, 49 pro HBO, 2739 pro Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 pro Toma Hankse, nebo URL osoby</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 nebo 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1657,13 +1652,11 @@
     <string name="collection_editor_folder_count_other">%1$d položek</string>
     <string name="collections_editor_delete_folder_title">Odstranit složku?</string>
     <string name="collections_editor_delete_folder_subtitle">Toto trvale odstraní \"%1$s\" a její obsah.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel filmy, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Nejlepší akční filmy, Korejská dramata, Animace 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Filmy Toma Hankse, Oblíbení herci</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Filmy Christophera Nolana, Oblíbení režiséři</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 pro superhrdina</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 pro Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 pro Netflix</string>
     <string name="folder_detail_not_found">Složka nenalezena</string>
     <string name="cast_error_load_details_for">Nepodařilo se načíst podrobnosti pro %1$s</string>
     <string name="tmdb_entity_error_load_named">Nepodařilo se načíst %1$s</string>
@@ -1686,7 +1679,6 @@
     <string name="collections_editor_emoji_category_flags">Vlajky</string>
     <string name="collections_editor_emoji_category_symbols">Symboly</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 pro Netflix, 49 pro HBO, 2739 pro Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 pro kolekci Star Wars</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, nebo URL společnosti</string>
     <string name="collections_editor_tmdb_genre_action">Akční</string>
@@ -1717,8 +1709,6 @@
     <string name="playback_player_internal_desc">Použít vestavěný přehrávač Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seedů · %2$d peerů</string>
-    <string name="player_torrent_buffered_status">%1$s načteno v bufferu · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Zvuk %1$d</string>
     <string name="player_track_subtitle_fallback">Titulky %1$d</string>
 
@@ -1854,12 +1844,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">Vybrán %d</item>
-        <item quantity="few">Vybrány %d</item>
-        <item quantity="many">Vybráno %d</item>
-        <item quantity="other">Vybráno %d</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Neznámý</string>

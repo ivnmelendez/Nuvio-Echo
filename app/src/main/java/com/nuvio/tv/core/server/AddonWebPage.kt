@@ -1080,7 +1080,7 @@ ${tabButtons}
 <body>
 <div class="page">
   <div class="header">
-    <img src="/logo.png" alt="NuvioTV" class="header-logo">
+    <img src="/logo.png" alt="Tivistream" class="header-logo">
     <p>$pageSubtitle</p>
   </div>
 
@@ -1410,19 +1410,7 @@ function tmdbDefaultTitle(type) {
   return i18n.tmdbDefaultDiscover;
 }
 
-var TMDB_PRESETS = [
-  { title: 'Marvel Studios', source: { provider: 'tmdb', tmdbSourceType: 'COMPANY', title: 'Marvel Studios', tmdbId: 420, mediaType: 'MOVIE', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Walt Disney Pictures', source: { provider: 'tmdb', tmdbSourceType: 'COMPANY', title: 'Walt Disney Pictures', tmdbId: 2, mediaType: 'MOVIE', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Pixar', source: { provider: 'tmdb', tmdbSourceType: 'COMPANY', title: 'Pixar', tmdbId: 3, mediaType: 'MOVIE', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Lucasfilm', source: { provider: 'tmdb', tmdbSourceType: 'COMPANY', title: 'Lucasfilm', tmdbId: 1, mediaType: 'MOVIE', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Warner Bros.', source: { provider: 'tmdb', tmdbSourceType: 'COMPANY', title: 'Warner Bros.', tmdbId: 174, mediaType: 'MOVIE', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Netflix', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'Netflix', tmdbId: 213, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'HBO', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'HBO', tmdbId: 49, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Disney+', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'Disney+', tmdbId: 2739, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Prime Video', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'Prime Video', tmdbId: 1024, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Hulu', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'Hulu', tmdbId: 453, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } },
-  { title: 'Apple TV+', source: { provider: 'tmdb', tmdbSourceType: 'NETWORK', title: 'Apple TV+', tmdbId: 2552, mediaType: 'TV', sortBy: 'popularity.desc', filters: {} } }
-];
+var TMDB_PRESETS = [];
 
 function tmdbModeLabel(mode) {
   if (mode === 'PRESETS') return i18n.tmdbModePresets;
@@ -2805,27 +2793,9 @@ function tmdbQuickChipsHtml(ci, fi) {
     ['Time Travel', 'tmdb-keywords', '4379'],
     ['Space', 'tmdb-keywords', '9882']
   ], ci, fi) +
-  tmdbChipGroupHtml(i18n.tmdbQuickCompanies, [
-    ['Marvel', 'tmdb-companies', '420'],
-    ['Disney', 'tmdb-companies', '2'],
-    ['Pixar', 'tmdb-companies', '3'],
-    ['Lucasfilm', 'tmdb-companies', '1'],
-    ['Warner Bros.', 'tmdb-companies', '174']
-  ], ci, fi) +
-  tmdbChipGroupHtml(i18n.tmdbQuickNetworks, [
-    ['Netflix', 'tmdb-networks', '213'],
-    ['HBO', 'tmdb-networks', '49'],
-    ['Disney+', 'tmdb-networks', '2739'],
-    ['Prime Video', 'tmdb-networks', '1024'],
-    ['Hulu', 'tmdb-networks', '453']
-  ], ci, fi) +
-  tmdbChipGroupHtml(i18n.tmdbQuickWatchProviders, [
-    ['Netflix', 'tmdb-watch-providers', '8'],
-    ['Prime Video', 'tmdb-watch-providers', '119'],
-    ['Disney+', 'tmdb-watch-providers', '337'],
-    ['Apple TV+', 'tmdb-watch-providers', '350'],
-    ['Hulu', 'tmdb-watch-providers', '15']
-  ], ci, fi) +
+  tmdbChipGroupHtml(i18n.tmdbQuickCompanies, [], ci, fi) +
+  tmdbChipGroupHtml(i18n.tmdbQuickNetworks, [], ci, fi) +
+  tmdbChipGroupHtml(i18n.tmdbQuickWatchProviders, [], ci, fi) +
   tmdbChipGroupHtml(i18n.tmdbQuickWatchRegions, [
     ['US', 'tmdb-watch-region', 'US'],
     ['UK', 'tmdb-watch-region', 'GB'],
@@ -3206,7 +3176,7 @@ function exportCollections() {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = 'nuvio-collections.json';
+  a.download = 'collections.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

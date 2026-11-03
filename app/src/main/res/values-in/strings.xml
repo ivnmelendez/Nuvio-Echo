@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Lanjutkan Menonton</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Film</string>
@@ -354,7 +354,6 @@
     <string name="essential_audio_language">Bahasa audio</string>
     <string name="audio_lang_media_default">Bawaan media</string>
     <string name="essential_playback_header_title">Pemutaran</string>
-    <string name="essential_playback_header_subtitle">Preferensi pemutaran, subtitle, audio, dan P2P sederhana.</string>
     <string name="essential_stream_selection_subtitle">Pilih secara manual atau putar otomatis stream yang pertama tersedia.</string>
     <string name="essential_autoplay_next_episode">Putar otomatis episode berikutnya</string>
     <string name="essential_autoplay_next_episode_subtitle">Lanjutkan ke episode berikutnya setelah stream selesai.</string>
@@ -1333,7 +1332,6 @@
     <string name="collections_paste_clipboard">Tempel dari Clipboard</string>
     <string name="collections_validate">Validasi</string>
     <string name="collections_paste_hint">Tempel JSON koleksi di sini…</string>
-    <string name="collections_file_description">Membaca nuvio-collections.json dari folder Unduhan.</string>
     <string name="collections_load_file">Muat File</string>
     <string name="collections_file_loaded">File dimuat (%1$d karakter)</string>
     <string name="collections_fetch_url">Ambil URL</string>
@@ -1428,7 +1426,6 @@
     <string name="collections_editor_tmdb_help_discover">Bangun baris TMDB langsung menggunakan filter opsional. Biarkan kolom kosong jika Anda tidak memerlukan filter tersebut.</string>
     <string name="collections_editor_tmdb_search_helper">Contoh: Marvel Studios, 420, atau https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Contoh: Star Wars Collection, Harry Potter Collection, atau URL koleksi.</string>
-    <string name="collections_editor_tmdb_network_helper">Contoh ID: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Contoh: https://www.themoviedb.org/list/8504994 atau 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID Orang</string>
     <string name="collections_editor_tmdb_person_helper">Contoh: https://www.themoviedb.org/person/31-tom-hanks atau 31.</string>
@@ -1458,7 +1455,6 @@
     <string name="collections_editor_tmdb_companies">ID Perusahaan</string>
     <string name="collections_editor_tmdb_companies_helper">Gunakan ID studio/perusahaan. Chip cepat mengisi contoh umum.</string>
     <string name="collections_editor_tmdb_networks">ID Jaringan</string>
-    <string name="collections_editor_tmdb_networks_helper">Hanya untuk serial. Gunakan ID jaringan seperti Netflix 213 atau HBO 49.</string>
     <string name="collections_editor_tmdb_year">Tahun</string>
     <string name="collections_editor_tmdb_year_helper">Gunakan tahun empat digit, misalnya 2024.</string>
     <string name="collections_editor_sort_original">Asli</string>
@@ -1487,7 +1483,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 atau 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 untuk Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, atau URL perusahaan</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 untuk Netflix, 49 untuk HBO, 2739 untuk Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 untuk Tom Hanks, atau URL orang</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 atau 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1547,13 +1542,11 @@
     <string name="collection_editor_folder_count_other">%1$d item</string>
     <string name="collections_editor_delete_folder_title">Hapus Folder?</string>
     <string name="collections_editor_delete_folder_subtitle">Ini akan menghapus \"%1$s\" dan seluruh isinya secara permanen.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Film Marvel, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Film Aksi Terbaik, Drama Korea, Animasi 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Film Tom Hanks, Aktor Favorit</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Film Christopher Nolan, Sutradara Favorit</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 untuk superhero</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 untuk Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 untuk Netflix</string>
     <string name="folder_detail_not_found">Folder tidak ditemukan</string>
     <string name="cast_error_load_details_for">Tidak dapat memuat detail untuk %1$s</string>
     <string name="tmdb_entity_error_load_named">Tidak dapat memuat %1$s</string>
@@ -1576,7 +1569,6 @@
     <string name="collections_editor_emoji_category_flags">Bendera</string>
     <string name="collections_editor_emoji_category_symbols">Simbol</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 untuk Netflix, 49 untuk HBO, 2739 untuk Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 untuk Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, atau URL perusahaan</string>
     <string name="collections_editor_tmdb_genre_action">Aksi</string>
@@ -1607,8 +1599,6 @@
     <string name="playback_player_internal_desc">Gunakan pemutar bawaan Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seed · %2$d peer</string>
-    <string name="player_torrent_buffered_status">%1$s dibuffer · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Audio %1$d</string>
     <string name="player_track_subtitle_fallback">Subtitle %1$d</string>
 

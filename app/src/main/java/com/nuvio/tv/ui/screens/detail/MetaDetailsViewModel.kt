@@ -286,10 +286,14 @@ class MetaDetailsViewModel @Inject constructor(
         else tmdbApi.getMovieWatchProviders(tmdbId, apiKey)
         val region = java.util.Locale.getDefault().country.takeIf { it.length == 2 } ?: "MX"
         val found = response.body()?.results?.get(region) ?: return null
+        fun List<com.nuvio.tv.data.remote.api.TmdbWatchProvider>.shown() = mapNotNull { p ->
+            p.name?.let { WatchProvider(it, p.logoPath?.let { path -> "https://image.tmdb.org/t/p/w45$path" }) }
+        }.distinctBy { it.name }
         val result = WatchProviders(
-            stream = found.flatrate.mapNotNull { it.name }.distinct(),
-            rent = found.rent.mapNotNull { it.name }.distinct(),
-            buy = found.buy.mapNotNull { it.name }.distinct()
+            stream = found.flatrate.shown(),
+            rent = found.rent.shown(),
+            buy = found.buy.shown(),
+            link = found.link
         )
         return result.takeUnless { it.isEmpty }
     }

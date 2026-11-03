@@ -1012,7 +1012,7 @@
     <string name="genre_war_politics">Wojna i polityka</string>
     <string name="genre_western">Western</string>
 
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="type_unknown">Nieznany</string>
 
     <string name="cd_play">Odtwórz</string>
@@ -1180,7 +1180,6 @@
     <string name="collections_paste_clipboard">Wklej ze schowka</string>
     <string name="collections_validate">Sprawdź</string>
     <string name="collections_paste_hint">Wklej JSON kolekcji tutaj…</string>
-    <string name="collections_file_description">Odczytuje nuvio-collections.json z folderu Pobrane.</string>
     <string name="collections_load_file">Wczytaj plik</string>
     <string name="collections_file_loaded">Plik wczytany (%1$d znaków)</string>
     <string name="collections_fetch_url">Pobierz URL</string>
@@ -1348,10 +1347,8 @@
     <string name="collections_editor_tmdb_language">Język oryginału</string>
     <string name="collections_editor_tmdb_language_helper">Użyj dwuliterowych kodów języków, np. en, ko, ja, hi.</string>
     <string name="collections_editor_tmdb_list_helper">Przykład: https://www.themoviedb.org/list/8504994 lub 8504994.</string>
-    <string name="collections_editor_tmdb_network_helper">Przykładowe ID: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_network_id">ID sieci</string>
     <string name="collections_editor_tmdb_networks">ID sieci</string>
-    <string name="collections_editor_tmdb_networks_helper">Tylko dla seriali. Użyj ID sieci, np. Netflix 213 lub HBO 49.</string>
     <string name="collections_editor_tmdb_public_list">Publiczna lista TMDB</string>
     <string name="collections_editor_tmdb_quick_companies">Szybkie studia</string>
     <string name="collections_editor_tmdb_quick_countries">Szybkie kraje</string>
@@ -1468,13 +1465,10 @@
     <string name="collections_editor_tmdb_mode_production">Produkcja</string>
     <string name="collections_editor_tmdb_mode_public_list">Lista publiczna</string>
     <string name="collections_editor_tmdb_movie_collection">Kolekcja filmów TMDB</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 dla Netflix</string>
     <string name="collections_editor_tmdb_person_credits">Filmografia osoby</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 dla Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 lub URL firmy</string>
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 lub 8504994</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 dla Netflix, 49 dla HBO, 2739 dla Disney+</string>
     <string name="collections_editor_tmdb_rating_max_placeholder">10</string>
     <string name="collections_editor_tmdb_rating_min_placeholder">7.0</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Best Action Movies, Korean Dramas, 2024 Animation</string>
@@ -1678,7 +1672,6 @@
     <string name="collections_editor_tmdb_genre_horror">Horror</string>
     <string name="collections_editor_tmdb_genre_reality">Reality</string>
     <string name="collections_editor_tmdb_genre_scifi">Sci-Fi</string>
-    <string name="collections_editor_tmdb_network_placeholder_example">213 dla Netflix, 49 dla HBO, 2739 dla Disney+</string>
     <string name="collections_import_error_empty_array">Pusta tablica: nie znaleziono kolekcji</string>
     <string name="collections_import_error_empty_input">Puste dane wejściowe</string>
     <string name="collections_import_error_expected_array">Nieprawidłowy format: oczekiwano tablicy</string>
@@ -1708,7 +1701,6 @@
     <string name="essential_autoplay_next_episode">Automatyczne odtwarzanie następnego odcinka</string>
     <string name="essential_autoplay_next_episode_subtitle">Kontynuuj do następnego odcinka po zakończeniu streamu.</string>
     <string name="essential_playback_basics">Podstawy odtwarzania</string>
-    <string name="essential_playback_header_subtitle">Proste ustawienia odtwarzania, napisów, audio i P2P.</string>
     <string name="essential_playback_header_title">Odtwarzanie</string>
     <string name="essential_stream_selection">Wybór streamu</string>
     <string name="essential_stream_selection_subtitle">Wybieraj ręcznie lub automatycznie odtwarzaj pierwszy dostępny stream.</string>
@@ -1771,8 +1763,6 @@
     <string name="player_error_stream_removed">\n\nLink do streamu wygasł lub został usunięty. Spróbuj innego źródła.</string>
     <string name="player_error_stream_unavailable">\n\nSerwer streamu jest obecnie niedostępny. Spróbuj innego źródła.</string>
     <string name="player_error_unsupported_format">Ten stream używa formatu, którego Twoje urządzenie może nie obsługiwać. Spróbuj innego źródła. [%1$s]</string>
-    <string name="player_torrent_buffered_status">%1$s zbuforowane · %2$s · %3$s</string>
-    <string name="player_torrent_peer_info">%1$d seedów · %2$d peerów</string>
     <string name="player_track_audio_fallback">Audio %1$d</string>
     <string name="player_track_subtitle_fallback">Napisy %1$d</string>
     <string name="poster_options_error_load_lists_failed">Nie udało się załadować list</string>
@@ -1861,12 +1851,6 @@
     <string name="video_section">Wideo</string>
 
 
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d wybrany</item>
-        <item quantity="few">%d wybrane</item>
-        <item quantity="many">%d wybranych</item>
-        <item quantity="other">%d wybranych</item>
-    </plurals>
     <string name="subtitle_language_unknown">Nieznany</string>
 
     <string name="debug_buffer_logs_title">Włącz logi BUFFER</string>

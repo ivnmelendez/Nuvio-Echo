@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Verder kijken</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Films</string>
@@ -423,7 +423,6 @@
     <string name="essential_audio_language">Audiotaal</string>
     <string name="audio_lang_media_default">Standaard van media</string>
     <string name="essential_playback_header_title">Afspelen</string>
-    <string name="essential_playback_header_subtitle">Eenvoudige voorkeuren voor afspelen, ondertiteling, audio en P2P.</string>
     <string name="essential_stream_selection_subtitle">Kies handmatig of speel automatisch de eerste beschikbare stream af.</string>
     <string name="essential_autoplay_next_episode">Volgende aflevering automatisch afspelen</string>
     <string name="essential_autoplay_next_episode_subtitle">Ga verder met de volgende aflevering nadat een stream is afgelopen.</string>
@@ -1572,7 +1571,6 @@
     <string name="collections_paste_clipboard">Plakken vanaf klembord</string>
     <string name="collections_validate">Valideren</string>
     <string name="collections_paste_hint">Plak hier de JSON met collecties…</string>
-    <string name="collections_file_description">Leest nuvio-collections.json uit de map Downloads.</string>
     <string name="collections_load_file">Bestand laden</string>
     <string name="collections_file_loaded">Bestand geladen (%1$d tekens)</string>
     <string name="collections_fetch_url">URL ophalen</string>
@@ -1667,7 +1665,6 @@
     <string name="collections_editor_tmdb_help_discover">Bouw een live TMDB-rij met optionele filters. Laat velden leeg als je dat filter niet nodig hebt.</string>
     <string name="collections_editor_tmdb_search_helper">Voorbeelden: Marvel Studios, 420 of https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Voorbeeld: Star Wars Collection, Harry Potter Collection of een collectie-URL.</string>
-    <string name="collections_editor_tmdb_network_helper">Voorbeeld-ID\'s: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Voorbeeld: https://www.themoviedb.org/list/8504994 of 8504994.</string>
     <string name="collections_editor_tmdb_person_id">Persoon-ID</string>
     <string name="collections_editor_tmdb_person_helper">Voorbeeld: https://www.themoviedb.org/person/31-tom-hanks of 31.</string>
@@ -1703,7 +1700,6 @@
     <string name="collections_editor_tmdb_without_companies">Uitgesloten bedrijfs-ID\'s</string>
     <string name="collections_editor_tmdb_without_companies_helper">Sluit titels uit die aan deze TMDB-bedrijfsnummers zijn gekoppeld.</string>
     <string name="collections_editor_tmdb_networks">Netwerk-ID\'s</string>
-    <string name="collections_editor_tmdb_networks_helper">Alleen voor series. Gebruik netwerk-ID\'s zoals Netflix 213 of HBO 49.</string>
     <string name="collections_editor_tmdb_year">Jaar</string>
     <string name="collections_editor_tmdb_year_helper">Gebruik een jaartal van vier cijfers, bijvoorbeeld 2024.</string>
     <string name="collections_editor_sort_original">Origineel</string>
@@ -1732,7 +1728,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 of 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 voor Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 of bedrijfs-URL</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 voor Netflix, 49 voor HBO, 2739 voor Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 voor Tom Hanks, of persoons-URL</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 of 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1793,7 +1788,6 @@
     <string name="collection_editor_folder_count_other">%1$d items</string>
     <string name="collections_editor_delete_folder_title">Map verwijderen?</string>
     <string name="collections_editor_delete_folder_subtitle">Hiermee worden \"%1$s\" en de inhoud ervan permanent verwijderd.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel-films, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Beste actiefilms, Koreaanse drama\'s, animatie 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Films van Tom Hanks, favoriete acteurs</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Films van Christopher Nolan, favoriete regisseurs</string>
@@ -1801,7 +1795,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 voor Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 voor Netflix</string>
     <string name="folder_detail_not_found">Map niet gevonden</string>
     <string name="cast_error_load_details_for">Kon de details voor %1$s niet laden</string>
     <string name="tmdb_entity_error_load_named">Kon %1$s niet laden</string>
@@ -1824,7 +1817,6 @@
     <string name="collections_editor_emoji_category_flags">Vlaggen</string>
     <string name="collections_editor_emoji_category_symbols">Symbolen</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 voor Netflix, 49 voor HBO, 2739 voor Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 voor Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420 of bedrijfs-URL</string>
     <string name="collections_editor_tmdb_genre_action">Actie</string>
@@ -1855,8 +1847,6 @@
     <string name="playback_player_internal_desc">Gebruik de ingebouwde speler van Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seeds · %2$d peers</string>
-    <string name="player_torrent_buffered_status">%1$s gebufferd · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Audio %1$d</string>
     <string name="player_track_subtitle_fallback">Ondertiteling %1$d</string>
 
@@ -2026,10 +2016,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d geselecteerd</item>
-        <item quantity="other">%d geselecteerd</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Onbekend</string>

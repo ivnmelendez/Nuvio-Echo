@@ -439,7 +439,7 @@
     <string name="essential_audio_language">Idioma de audio</string>
     <string name="audio_lang_media_default">Predeterminado del medio</string>
     <string name="essential_playback_header_title">Reproducción</string>
-    <string name="essential_playback_header_subtitle">Preferencias sencillas de reproducción, subtítulos, audio y P2P.</string>
+    <string name="essential_playback_header_subtitle">Preferencias sencillas de reproducción, subtítulos y audio.</string>
     <string name="essential_stream_selection_subtitle">Elige manualmente o reproduce automáticamente la primera transmisión disponible.</string>
     <string name="essential_autoplay_next_episode">Reproducción automática del siguiente episodio</string>
     <string name="essential_autoplay_next_episode_subtitle">Continúa con el siguiente episodio cuando termine una transmisión.</string>
@@ -1654,7 +1654,7 @@
     <string name="collections_paste_clipboard">Pegar desde el portapapeles</string>
     <string name="collections_validate">Validar</string>
     <string name="collections_paste_hint">Pega aquí el JSON de colecciones…</string>
-    <string name="collections_file_description">Lee nuvio-collections.json desde la carpeta Descargas.</string>
+    <string name="collections_file_description">Lee el archivo de colecciones desde la carpeta Descargas.</string>
     <string name="collections_load_file">Cargar archivo</string>
     <string name="collections_file_loaded">Archivo cargado (%1$d caracteres)</string>
     <string name="collections_fetch_url">Obtener URL</string>
@@ -1749,7 +1749,7 @@
     <string name="collections_editor_tmdb_help_discover">Crea una fila dinámica de TMDB usando filtros opcionales. Deja los campos vacíos cuando no necesites ese filtro.</string>
     <string name="collections_editor_tmdb_search_helper">Ejemplos: Marvel Studios, 420, o https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Ejemplo: Star Wars Collection, Harry Potter Collection, o una URL de colección.</string>
-    <string name="collections_editor_tmdb_network_helper">IDs de ejemplo: Netflix 213, HBO 49, Disney+ 2739.</string>
+    <string name="collections_editor_tmdb_network_helper">Usa el ID de una cadena de TMDB.</string>
     <string name="collections_editor_tmdb_list_helper">Ejemplo: https://www.themoviedb.org/list/8504994 o 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID de persona</string>
     <string name="collections_editor_tmdb_person_helper">Ejemplo: https://www.themoviedb.org/person/31-tom-hanks o 31.</string>
@@ -1785,7 +1785,7 @@
     <string name="collections_editor_tmdb_without_companies">IDs de productoras excluidas</string>
     <string name="collections_editor_tmdb_without_companies_helper">Excluye títulos asociados con estos números de productora de TMDB.</string>
     <string name="collections_editor_tmdb_networks">IDs de redes</string>
-    <string name="collections_editor_tmdb_networks_helper">Solo para series. Usa IDs de red como Netflix 213 o HBO 49.</string>
+    <string name="collections_editor_tmdb_networks_helper">Solo para series. Usa IDs de cadenas de TMDB.</string>
     <string name="collections_editor_tmdb_year">Año</string>
     <string name="collections_editor_tmdb_year_helper">Usa un año de cuatro dígitos, por ejemplo 2024.</string>
     <string name="collections_editor_sort_original">Original</string>
@@ -1814,7 +1814,7 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 o 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 para Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, o URL de la productora</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 para Netflix, 49 para HBO, 2739 para Disney+</string>
+    <string name="collections_editor_tmdb_placeholder_network">ID de una cadena de TMDB</string>
     <string name="collections_editor_tmdb_person_placeholder">31 para Tom Hanks, o URL de persona</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 o 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1875,7 +1875,7 @@
     <string name="collection_editor_folder_count_other">%1$d elementos</string>
     <string name="collections_editor_delete_folder_title">¿Eliminar carpeta?</string>
     <string name="collections_editor_delete_folder_subtitle">Esto eliminará permanentemente \"%1$s\" y su contenido.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
+    <string name="collections_editor_tmdb_movie_title_placeholder">Películas de acción, Noche en familia</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Best Action Movies, Korean Dramas, 2024 Animation</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Tom Hanks Movies, Favorite Actors</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Christopher Nolan Movies, Favorite Directors</string>
@@ -1883,7 +1883,7 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 para Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 para Netflix</string>
+    <string name="collections_editor_tmdb_networks_placeholder">IDs de cadenas de TMDB</string>
     <string name="folder_detail_not_found">Carpeta no encontrada</string>
     <string name="cast_error_load_details_for">No se pudieron cargar los detalles de %1$s</string>
     <string name="tmdb_entity_error_load_named">No se pudo cargar %1$s</string>
@@ -1906,7 +1906,7 @@
     <string name="collections_editor_emoji_category_flags">Banderas</string>
     <string name="collections_editor_emoji_category_symbols">Símbolos</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 para Netflix, 49 para HBO, 2739 para Disney+</string>
+    <string name="collections_editor_tmdb_network_placeholder_example">ID de una cadena de TMDB</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 para Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, o URL de la productora</string>
     <string name="collections_editor_tmdb_genre_action">Acción</string>
@@ -1937,8 +1937,6 @@
     <string name="playback_player_internal_desc">Usa el reproductor integrado de Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d semillas · %2$d pares</string>
-    <string name="player_torrent_buffered_status">%1$s almacenado en búfer · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Audio %1$d</string>
     <string name="player_track_subtitle_fallback">Subtítulo %1$d</string>
 
@@ -2108,10 +2106,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d seleccionado</item>
-        <item quantity="other">%d seleccionados</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Desconocido</string>
@@ -2290,7 +2284,7 @@
     <string name="activation_error_invalid">Ese código no es válido. Revísalo e inténtalo de nuevo.</string>
     <string name="activation_error_network">No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="update_forced_title">Actualización obligatoria</string>
-    <string name="update_forced_message">La versión %1$s está lista. Actualiza para seguir usando tivilatino.</string>
+    <string name="update_forced_message">La versión %1$s está lista. Actualiza para seguir usando Tivistream.</string>
     <string name="update_forced_button">Actualizar ahora</string>
     <string name="update_forced_retry">Reintentar</string>
     <string name="first_launch_notice_title">Te damos la bienvenida a Tivistream</string>

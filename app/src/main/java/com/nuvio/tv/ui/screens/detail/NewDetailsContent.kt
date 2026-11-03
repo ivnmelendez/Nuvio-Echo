@@ -1304,20 +1304,56 @@ internal fun shortReleaseDate(date: java.time.LocalDate): String {
     return date.format(java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.getDefault()))
 }
 
-/** Where the title is offered in the region (TMDB's watch providers, which are JustWatch's data). */
+/**
+ * Where the title is offered in the region (TMDB's watch providers, which are JustWatch's data), with each provider's
+ * logo. Selecting it opens TMDB's page for the title, which links to each provider.
+ */
 @Composable
 private fun NdWhereToWatch(providers: WatchProviders) {
-    Column(Modifier.width(256.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    val context = LocalContext.current
+    var focused by remember { mutableStateOf(false) }
+    val link = providers.link
+    Column(
+        Modifier
+            .width(256.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (focused) Color.White.copy(alpha = 0.12f) else Color.Transparent)
+            .then(
+                if (link == null) Modifier else Modifier.ndClickable(
+                    onFocusChanged = { focused = it },
+                    onClick = {
+                        runCatching {
+                            context.startActivity(
+                                android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(link))
+                                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                            )
+                        }
+                    }
+                )
+            )
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
         Text(stringResource(R.string.detail_where_to_watch), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
         listOf(
             R.string.detail_watch_stream to providers.stream,
             R.string.detail_watch_rent to providers.rent,
             R.string.detail_watch_buy to providers.buy
-        ).filter { it.second.isNotEmpty() }.forEach { (label, names) ->
-            Text(
-                "${stringResource(label)}: ${names.take(6).joinToString(", ")}",
-                color = NdText2, fontSize = 11.sp, maxLines = 2
-            )
+        ).filter { it.second.isNotEmpty() }.forEach { (label, shown) ->
+            Text(stringResource(label), color = NdText2, fontSize = 11.sp)
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                shown.take(6).forEach { provider ->
+                    if (provider.logoUrl != null) {
+                        AsyncImage(
+                            model = provider.logoUrl,
+                            contentDescription = provider.name,
+                            modifier = Modifier.size(24.dp).clip(RoundedCornerShape(5.dp))
+                        )
+                    } else {
+                        Text(provider.name, color = NdText2, fontSize = 11.sp, maxLines = 1)
+                    }
+                }
+            }
         }
         Text(stringResource(R.string.detail_watch_justwatch), color = NdText3, fontSize = 10.sp)
     }

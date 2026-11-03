@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">দেখা চালিয়ে যান</string>
     <string name="type_movie">মুভি</string>
     <string name="type_movies">সিনেমা</string>
@@ -415,7 +415,6 @@
     <string name="essential_audio_language">অডিওর ভাষা</string>
     <string name="audio_lang_media_default">মিডিয়া ডিফল্ট</string>
     <string name="essential_playback_header_title">প্লেব্যাক</string>
-    <string name="essential_playback_header_subtitle">সাধারণ প্লেব্যাক, সাবটাইটেল, অডিও এবং P2P প্রেফারেন্স।</string>
     <string name="essential_stream_selection_subtitle">ম্যানুয়ালি বেছে নিন অথবা প্রথম অ্যাভেইলেবল স্ট্রিমটি অটোপ্লে করুন।</string>
     <string name="essential_autoplay_next_episode">অটো-প্লে পরবর্তী এপিসোড</string>
     <string name="essential_autoplay_next_episode_subtitle">একটি স্ট্রিম শেষ হওয়ার পর পরবর্তী এপিসোডে চালিয়ে যান।</string>
@@ -1556,7 +1555,6 @@
     <string name="collections_paste_clipboard">ক্লিপবোর্ড থেকে পেস্ট করুন</string>
     <string name="collections_validate">যাচাই করুন</string>
     <string name="collections_paste_hint">এখানে কালেকশন JSON পেস্ট করুন…</string>
-    <string name="collections_file_description">Downloads ফোল্ডার থেকে nuvio-collections.json পড়ে।</string>
     <string name="collections_load_file">ফাইল লোড করুন</string>
     <string name="collections_file_loaded">ফাইল লোড হয়েছে (%1$d ক্যারেক্টার)</string>
     <string name="collections_fetch_url">URL ফেচ করুন</string>
@@ -1650,7 +1648,6 @@
     <string name="collections_editor_tmdb_help_discover">ঐচ্ছিক ফিল্টার ব্যবহার করে একটি লাইভ TMDB সারি তৈরি করুন। আপনার যখন ফিল্টারের প্রয়োজন নেই তখন ক্ষেত্রগুলি খালি রাখুন।</string>
     <string name="collections_editor_tmdb_search_helper">উদাহরণ: Marvel Studios, 420 বা https://www.themoviedb.org/company/420।</string>
     <string name="collections_editor_tmdb_collection_helper">উদাহরণ: স্টার ওয়ারস কালেকশন, হ্যারি পটার কালেকশন, বা একটি কালেকশন URL।</string>
-    <string name="collections_editor_tmdb_network_helper">উদাহরণ ID: Netflix 213, HBO 49, Disney+ 2739।</string>
     <string name="collections_editor_tmdb_list_helper">উদাহরণ: https://www.themoviedb.org/list/8504994 বা 8504994।</string>
     <string name="collections_editor_tmdb_person_id">ব্যক্তি আইডি</string>
     <string name="collections_editor_tmdb_person_helper">উদাহরণ: https://www.themoviedb.org/person/31-tom-hanks অথবা 31।</string>
@@ -1686,7 +1683,6 @@
     <string name="collections_editor_tmdb_without_companies">কোম্পানির আইডি বাদ দেওয়া হয়েছে</string>
     <string name="collections_editor_tmdb_without_companies_helper">এই TMDB কোম্পানি নম্বরগুলির সাথে সম্পর্কিত শিরোনাম বাদ দিন।</string>
     <string name="collections_editor_tmdb_networks">নেটওয়ার্ক আইডি</string>
-    <string name="collections_editor_tmdb_networks_helper">শুধুমাত্র সিরিজের জন্য। Netflix 213 বা HBO 49-এর মতো নেটওয়ার্ক আইডি ব্যবহার করুন।</string>
     <string name="collections_editor_tmdb_year">বছর</string>
     <string name="collections_editor_tmdb_year_helper">একটি চার-সংখ্যার বছর ব্যবহার করুন, উদাহরণস্বরূপ 2024।</string>
     <string name="collections_editor_sort_original">অরিজিনাল</string>
@@ -1715,7 +1711,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 বা 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">স্টার ওয়ারস কালেকশনের জন্য 10</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, বা কোম্পানি URL</string>
-    <string name="collections_editor_tmdb_placeholder_network">Netflix-এর জন্য 213, HBO-এর জন্য 49, Disney+-এর জন্য 2739</string>
     <string name="collections_editor_tmdb_person_placeholder">টম হ্যাঙ্কস বা ব্যক্তির URL-এর জন্য 31</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 অথবা 123456</string>
     <string name="collections_editor_url_short_placeholder">https://…</string>
@@ -1776,7 +1771,6 @@
     <string name="collection_editor_folder_count_other">%1$dটি আইটেম</string>
     <string name="collections_editor_delete_folder_title">ফোল্ডার ডিলিট করবেন?</string>
     <string name="collections_editor_delete_folder_subtitle">এটি স্থায়ীভাবে \"%1$s\" এবং এর কনটেন্ট ডিলিট করবে।</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">মার্ভেল মুভিজ, নেটফ্লিক্স অরিজিনালস, পিক্সার</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">সেরা অ্যাকশন মুভি, কোরিয়ান নাটক, 2024 অ্যানিমেশন</string>
     <string name="collections_editor_tmdb_person_title_placeholder">টম হ্যাঙ্কস মুভি, প্রিয় অভিনেতা</string>
     <string name="collections_editor_tmdb_director_title_placeholder">ক্রিস্টোফার নোলান মুভিজ, প্রিয় পরিচালক</string>
@@ -1784,7 +1778,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">মার্ভেল স্টুডিওর জন্য 420</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">Netflix-এর জন্য 213</string>
     <string name="folder_detail_not_found">ফোল্ডার পাওয়া যায়নি</string>
     <string name="cast_error_load_details_for">%1$s-এর বিস্তারিত লোড করা যায়নি</string>
     <string name="tmdb_entity_error_load_named">%1$s লোড করা যায়নি</string>
@@ -1802,7 +1795,6 @@
     <string name="collections_editor_emoji_category_objects">অবজেক্ট</string>
     <string name="collections_editor_emoji_category_flags">ফ্ল্যাগ</string>
     <string name="collections_editor_emoji_category_symbols">সিম্বল</string>
-    <string name="collections_editor_tmdb_network_placeholder_example">Netflix-এর জন্য 213, HBO-এর জন্য 49, Disney+-এর জন্য 2739</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">স্টার ওয়ারস কালেকশনের জন্য 10</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, বা কোম্পানি URL</string>
     <string name="collections_editor_tmdb_genre_action">অ্যাকশন</string>
@@ -1828,8 +1820,6 @@
     <string name="autoplay_regex_preset_no_cam_ts">CAM/TS নেই</string>
     <string name="autoplay_regex_preset_no_remux_hdr">REMUX/HDR নেই</string>
     <string name="playback_player_internal_desc">NuvioTV-এর বিল্ট-ইন প্লেয়ার ব্যবহার করুন</string>
-    <string name="player_torrent_peer_info">%1$d সিডস · %2$d পিয়ার্স</string>
-    <string name="player_torrent_buffered_status">%1$s বাফার করা হয়েছে · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">অডিও %1$d</string>
     <string name="player_track_subtitle_fallback">সাবটাইটেল %1$d</string>
     <string name="player_error_stream_blocked">\n\nস্ট্রীম সোর্সটি ব্লক বা রেস্ট্রিক্ট করা আছে। অন্য একটি সোর্স ট্রাই করুন।</string>
@@ -2116,10 +2106,6 @@
     <plurals name="player_report_loading_issue_prompt">
         <item quantity="one">%1$d সেকেন্ড পরও লোড হচ্ছে</item>
         <item quantity="other">%1$d সেকেন্ড পরও লোড হচ্ছে</item>
-    </plurals>
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%dটি নির্বাচিত</item>
-        <item quantity="other">%dটি নির্বাচিত</item>
     </plurals>
         <string name="collections_editor_view_mode">দেখুন মোড</string>
     <string name="collections_editor_view_mode_tabs">ট্যাব</string>

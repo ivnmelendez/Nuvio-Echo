@@ -299,7 +299,7 @@ class CollectionManagementViewModel @Inject constructor(
         val uri = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
         val projection = arrayOf(android.provider.MediaStore.Downloads._ID)
         val selection = "${android.provider.MediaStore.Downloads.DISPLAY_NAME} = ?"
-        val selectionArgs = arrayOf("nuvio-collections.json")
+        val selectionArgs = arrayOf("collections.json")
         return resolver.query(uri, projection, selection, selectionArgs, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val id = cursor.getLong(cursor.getColumnIndexOrThrow(android.provider.MediaStore.Downloads._ID))
@@ -313,7 +313,7 @@ class CollectionManagementViewModel @Inject constructor(
         val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
             android.os.Environment.DIRECTORY_DOWNLOADS
         )
-        val file = java.io.File(downloadsDir, "nuvio-collections.json")
+        val file = java.io.File(downloadsDir, "collections.json")
         return if (file.exists()) file.readText() else null
     }
 }

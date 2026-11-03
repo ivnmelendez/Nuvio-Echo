@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Continuar a ver</string>
     <string name="type_movie">Filme</string>
     <string name="type_movies">Filmes</string>
@@ -331,7 +331,6 @@
     <string name="essential_audio_language">Idioma do áudio</string>
     <string name="audio_lang_media_default">Predefinição do conteúdo</string>
     <string name="essential_playback_header_title">Reprodução</string>
-    <string name="essential_playback_header_subtitle">Preferências simples de reprodução, legendas, áudio e P2P.</string>
     <string name="essential_stream_selection_subtitle">Escolhe manualmente ou reproduz automaticamente o primeiro stream disponível.</string>
     <string name="essential_autoplay_next_episode">Reproduzir episódio seguinte automaticamente</string>
     <string name="essential_autoplay_next_episode_subtitle">Continua para o episódio seguinte após o término de um stream.</string>
@@ -1277,7 +1276,6 @@
     <string name="collections_paste_clipboard">Colar da Área de Transferência</string>
     <string name="collections_validate">Validar</string>
     <string name="collections_paste_hint">Cola o JSON das coleções aqui…</string>
-    <string name="collections_file_description">Lê o ficheiro nuvio-collections.json da pasta de Transferências (Downloads).</string>
     <string name="collections_load_file">Carregar ficheiro</string>
     <string name="collections_file_loaded">Ficheiro carregado (%1$d caracteres)</string>
     <string name="collections_fetch_url">Obter URL</string>
@@ -1371,7 +1369,6 @@
     <string name="collections_editor_tmdb_help_discover">Cria uma linha dinâmica do TMDB com filtros opcionais. Deixa os campos vazios se não precisares do filtro.</string>
     <string name="collections_editor_tmdb_search_helper">Exemplos: Marvel Studios, 420, ou https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Exemplo: Star Wars Collection, Harry Potter Collection, ou o URL de uma coleção.</string>
-    <string name="collections_editor_tmdb_network_helper">Exemplos de IDs: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Exemplo: https://www.themoviedb.org/list/8504994 ou 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID da pessoa</string>
     <string name="collections_editor_tmdb_person_helper">Exemplo: https://www.themoviedb.org/person/31-tom-hanks ou 31.</string>
@@ -1401,7 +1398,6 @@
     <string name="collections_editor_tmdb_companies">IDs das produtoras</string>
     <string name="collections_editor_tmdb_companies_helper">Utiliza os IDs de estúdios/produtoras. Os botões rápidos preenchem exemplos comuns.</string>
     <string name="collections_editor_tmdb_networks">IDs dos canais/plataformas</string>
-    <string name="collections_editor_tmdb_networks_helper">Apenas para séries. Utiliza IDs como Netflix 213 ou HBO 49.</string>
     <string name="collections_editor_tmdb_year">Ano</string>
     <string name="collections_editor_tmdb_year_helper">Utiliza um ano com quatro dígitos, por exemplo, 2024.</string>
     <string name="collections_editor_sort_original">Original</string>
@@ -1430,7 +1426,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 ou 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 para a Coleção Star Wars</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, ou URL da empresa</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 para Netflix, 49 para HBO, 2739 para Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 para Tom Hanks ou URL da pessoa</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 ou 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1490,13 +1485,11 @@
     <string name="collection_editor_folder_count_other">%1$d itens</string>
     <string name="collections_editor_delete_folder_title">Eliminar Pasta?</string>
     <string name="collections_editor_delete_folder_subtitle">Isto irá eliminar permanentemente \"%1$s\" e o seu conteúdo.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Filmes da Marvel, Originais Netflix, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Melhores Filmes de Ação, Dramas Coreanos, Animação de 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Filmes com Tom Hanks, Atores favoritos</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Filmes de Christopher Nolan, Realizadores favoritos</string>
     <string name="collections_editor_tmdb_keywords_placeholder">9715 para super-herói</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 para Marvel Studios</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 para Netflix</string>
     <string name="folder_detail_not_found">Pasta não encontrada</string>
     <string name="cast_error_load_details_for">Não foi possível carregar os detalhes de %1$s</string>
     <string name="tmdb_entity_error_load_named">Não foi possível carregar %1$s</string>
@@ -1517,7 +1510,6 @@
     <string name="collections_editor_emoji_category_flags">Bandeiras</string>
     <string name="collections_editor_emoji_category_symbols">Símbolos</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 para Netflix, 49 para HBO, 2739 para Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 para a Coleção Star Wars</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, ou URL da empresa</string>
     <string name="collections_editor_tmdb_genre_action">Ação</string>
@@ -1546,8 +1538,6 @@
     <!-- Playback settings sections -->
     <string name="playback_player_internal_desc">Utilizar o leitor interno do Tivistream</string>
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seeds · %2$d peers</string>
-    <string name="player_torrent_buffered_status">%1$s em buffer · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Áudio %1$d</string>
     <string name="player_track_subtitle_fallback">Legenda %1$d</string>
     <!-- Player runtime: error recovery -->
@@ -1660,10 +1650,6 @@
     <string name="trakt_library_error_fetch_list_items">Falha ao obter os itens da lista</string>
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d selecionado</item>
-        <item quantity="other">%d selecionados</item>
-    </plurals>
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Desconhecido</string>
     <!-- External playback keep-alive service -->

@@ -125,11 +125,15 @@ sealed class MetaDetailsEvent {
     data object OnLifecyclePause : MetaDetailsEvent()
 }
 
-/** Provider names by how the title is offered in the region. */
+/** One provider: its name and TMDB's small logo, when it has one. */
+data class WatchProvider(val name: String, val logoUrl: String? = null)
+
+/** Providers by how the title is offered in the region, and the page that lists them with links. */
 data class WatchProviders(
-    val stream: List<String> = emptyList(),
-    val rent: List<String> = emptyList(),
-    val buy: List<String> = emptyList()
+    val stream: List<WatchProvider> = emptyList(),
+    val rent: List<WatchProvider> = emptyList(),
+    val buy: List<WatchProvider> = emptyList(),
+    val link: String? = null
 ) {
     val isEmpty: Boolean get() = stream.isEmpty() && rent.isEmpty() && buy.isEmpty()
 }

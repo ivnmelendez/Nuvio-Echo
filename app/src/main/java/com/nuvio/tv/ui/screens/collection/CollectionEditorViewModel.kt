@@ -1041,19 +1041,7 @@ class CollectionEditorViewModel @Inject constructor(
         TmdbCollectionSourceType.DIRECTOR
     )
 
-    fun tmdbPresets(): List<TmdbPresetSource> = listOf(
-        TmdbPresetSource("Marvel Studios", TmdbCollectionSource(TmdbCollectionSourceType.COMPANY, "Marvel Studios", 420, TmdbCollectionMediaType.MOVIE)),
-        TmdbPresetSource("Walt Disney Pictures", TmdbCollectionSource(TmdbCollectionSourceType.COMPANY, "Walt Disney Pictures", 2, TmdbCollectionMediaType.MOVIE)),
-        TmdbPresetSource("Pixar", TmdbCollectionSource(TmdbCollectionSourceType.COMPANY, "Pixar", 3, TmdbCollectionMediaType.MOVIE)),
-        TmdbPresetSource("Lucasfilm", TmdbCollectionSource(TmdbCollectionSourceType.COMPANY, "Lucasfilm", 1, TmdbCollectionMediaType.MOVIE)),
-        TmdbPresetSource("Warner Bros.", TmdbCollectionSource(TmdbCollectionSourceType.COMPANY, "Warner Bros.", 174, TmdbCollectionMediaType.MOVIE)),
-        TmdbPresetSource("Netflix", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "Netflix", 213, TmdbCollectionMediaType.TV)),
-        TmdbPresetSource("HBO", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "HBO", 49, TmdbCollectionMediaType.TV)),
-        TmdbPresetSource("Disney+", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "Disney+", 2739, TmdbCollectionMediaType.TV)),
-        TmdbPresetSource("Prime Video", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "Prime Video", 1024, TmdbCollectionMediaType.TV)),
-        TmdbPresetSource("Hulu", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "Hulu", 453, TmdbCollectionMediaType.TV)),
-        TmdbPresetSource("Apple TV+", TmdbCollectionSource(TmdbCollectionSourceType.NETWORK, "Apple TV+", 2552, TmdbCollectionMediaType.TV))
-    )
+    fun tmdbPresets(): List<TmdbPresetSource> = emptyList()
 
     fun showGenrePicker(index: Int) {
         _uiState.update { state ->

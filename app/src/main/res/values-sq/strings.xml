@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Vazhdo shikimin</string>
     <string name="type_movie">Film</string>
     <string name="type_movies">Filma</string>
@@ -377,7 +377,6 @@
     <string name="essential_audio_language">Gjuha e audios</string>
     <string name="audio_lang_media_default">Parazgjedhja e medias</string>
     <string name="essential_playback_header_title">Riprodhimi</string>
-    <string name="essential_playback_header_subtitle">Preferenca të thjeshta për riprodhimin, titrat, audion dhe P2P.</string>
     <string name="essential_stream_selection_subtitle">Zgjidh manualisht ose luaj automatikisht transmetimin e parë të disponueshëm.</string>
     <string name="essential_autoplay_next_episode">Luaj automatikisht episodin tjetër</string>
     <string name="essential_autoplay_next_episode_subtitle">Vazhdo te episodi tjetër pasi të përfundojë transmetimi.</string>
@@ -1424,7 +1423,6 @@
     <string name="collections_paste_clipboard">Ngjit nga clipboard-i</string>
     <string name="collections_validate">Vërteto</string>
     <string name="collections_paste_hint">Ngjit JSON-in e koleksioneve këtu…</string>
-    <string name="collections_file_description">Lexon nuvio-collections.json nga dosja Shkarkimet.</string>
     <string name="collections_load_file">Ngarko skedarin</string>
     <string name="collections_file_loaded">Skedari u ngarkua (%1$d karaktere)</string>
     <string name="collections_fetch_url">Merr URL-në</string>
@@ -1518,7 +1516,6 @@
     <string name="collections_editor_tmdb_help_discover">Ndërto një rresht TMDB dinamik duke përdorur filtra opsionalë. Lëri fushat bosh kur nuk të duhet ai filtër.</string>
     <string name="collections_editor_tmdb_search_helper">Shembuj: Marvel Studios, 420, ose https://www.themoviedb.org/company/420.</string>
     <string name="collections_editor_tmdb_collection_helper">Shembull: Star Wars Collection, Harry Potter Collection, ose një URL koleksioni.</string>
-    <string name="collections_editor_tmdb_network_helper">Shembuj ID-sh: Netflix 213, HBO 49, Disney+ 2739.</string>
     <string name="collections_editor_tmdb_list_helper">Shembull: https://www.themoviedb.org/list/8504994 ose 8504994.</string>
     <string name="collections_editor_tmdb_person_id">ID-ja e personit</string>
     <string name="collections_editor_tmdb_person_helper">Shembull: https://www.themoviedb.org/person/31-tom-hanks ose 31.</string>
@@ -1554,7 +1551,6 @@
     <string name="collections_editor_tmdb_without_companies">ID-të e përjashtuara të kompanive</string>
     <string name="collections_editor_tmdb_without_companies_helper">Përjashto titujt e lidhur me këta numra kompanish TMDB.</string>
     <string name="collections_editor_tmdb_networks">ID-të e rrjeteve</string>
-    <string name="collections_editor_tmdb_networks_helper">Vetëm për seriale. Përdor ID rrjeti si Netflix 213 ose HBO 49.</string>
     <string name="collections_editor_tmdb_year">Viti</string>
     <string name="collections_editor_tmdb_year_helper">Përdor një vit me katër shifra, për shembull 2024.</string>
     <string name="collections_editor_sort_original">Origjinal</string>
@@ -1583,7 +1579,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 ose 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 për Star Wars Collection</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420, ose URL e kompanisë</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 për Netflix, 49 për HBO, 2739 për Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 për Tom Hanks, ose URL e personit</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 ose 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1644,7 +1639,6 @@
     <string name="collection_editor_folder_count_other">%1$d artikuj</string>
     <string name="collections_editor_delete_folder_title">Të fshihet dosja?</string>
     <string name="collections_editor_delete_folder_subtitle">Kjo do ta fshijë përgjithmonë \"%1$s\" dhe përmbajtjen e saj.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Marvel Movies, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Best Action Movies, Korean Dramas, 2024 Animation</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Tom Hanks Movies, Favorite Actors</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Christopher Nolan Movies, Favorite Directors</string>
@@ -1652,7 +1646,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 për Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 për Netflix</string>
     <string name="folder_detail_not_found">Dosja nuk u gjet</string>
     <string name="cast_error_load_details_for">Nuk mund të ngarkohen detajet për %1$s</string>
     <string name="tmdb_entity_error_load_named">Nuk mund të ngarkohet %1$s</string>
@@ -1673,7 +1666,6 @@
     <string name="collections_editor_emoji_category_flags">Flamuj</string>
     <string name="collections_editor_emoji_category_symbols">Simbole</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 për Netflix, 49 për HBO, 2739 për Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 për Star Wars Collection</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420, ose URL e kompanisë</string>
     <string name="collections_editor_tmdb_genre_action">Aksion</string>
@@ -1702,8 +1694,6 @@
     <!-- Playback settings sections -->
     <string name="playback_player_internal_desc">Përdor luajtësin e integruar të Tivistream</string>
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seed · %2$d peer</string>
-    <string name="player_torrent_buffered_status">%1$s në buffer · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Audio %1$d</string>
     <string name="player_track_subtitle_fallback">Titra %1$d</string>
     <!-- Player runtime: error recovery -->
@@ -1850,10 +1840,6 @@
     <string name="trakt_library_error_fetch_list_items">Marrja e artikujve të listës dështoi</string>
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d të zgjedhura</item>
-        <item quantity="other">%d të zgjedhura</item>
-    </plurals>
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">E panjohur</string>
     <!-- External playback keep-alive service -->

@@ -186,6 +186,8 @@ android {
             buildConfigField("String", "REMOTE_CONFIG_URL", "\"\"")
             // No crash reporting service in the Play build: Play Console already has crash and ANR reports.
             buildConfigField("String", "SENTRY_DSN", "\"\"")
+            // No activation server in the Play build.
+            buildConfigField("String", "ACTIVATION_BASE_URL", "\"\"")
             buildConfigField("boolean", "FEATURE_PLUGINS_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_UPDATES_ENABLED", "false")
             buildConfigField("boolean", "FEATURE_IN_APP_TRAILERS_ENABLED", "false")

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">tivilatino</string>
+    <string name="app_name">Tivistream</string>
     <string name="tv_channel_continue_watching">Tiếp tục xem</string>
     <string name="type_movie">Phim</string>
     <string name="type_movies">Phim</string>
@@ -436,7 +436,6 @@
     <string name="essential_audio_language">Ngôn ngữ âm thanh</string>
     <string name="audio_lang_media_default">Mặc định phương tiện</string>
     <string name="essential_playback_header_title">Phát lại</string>
-    <string name="essential_playback_header_subtitle">Tùy chọn cơ bản về phát lại, phụ đề, âm thanh và P2P.</string>
     <string name="essential_stream_selection_subtitle">Chọn thủ công hoặc tự động phát luồng đầu tiên có sẵn.</string>
     <string name="essential_autoplay_next_episode">Tự động phát tập tiếp theo</string>
     <string name="essential_autoplay_next_episode_subtitle">Tiếp tục phát tập tiếp theo sau khi luồng kết thúc.</string>
@@ -1707,7 +1706,6 @@
     <string name="collections_paste_clipboard">Dán từ bảng nhớ tạm</string>
     <string name="collections_validate">Xác minh</string>
     <string name="collections_paste_hint">Dán JSON bộ sưu tập vào đây…</string>
-    <string name="collections_file_description">Đọc tệp nuvio-collections.json từ thư mục Tải xuống.</string>
     <string name="collections_load_file">Tải tệp</string>
     <string name="collections_file_loaded">Đã tải tệp (%1$d ký tự)</string>
     <string name="collections_fetch_url">Truy xuất URL</string>
@@ -1803,7 +1801,6 @@
     <string name="collections_editor_tmdb_help_discover">Tạo một hàng TMDB trực tiếp bằng bộ lọc tùy chọn. Để trống những trường bạn không cần lọc.</string>
     <string name="collections_editor_tmdb_search_helper">Ví dụ: Marvel Studios, 420 hoặc https://www.themoviedb.org/company/420</string>
     <string name="collections_editor_tmdb_collection_helper">Ví dụ: Star Wars Collection, Harry Potter Collection hoặc URL bộ sưu tập</string>
-    <string name="collections_editor_tmdb_network_helper">Ví dụ: Netflix 213, HBO 49, Disney+ 2739</string>
     <string name="collections_editor_tmdb_list_helper">Ví dụ: https://www.themoviedb.org/list/8504994 hoặc 8504994</string>
     <string name="collections_editor_tmdb_person_id">ID cá nhân</string>
     <string name="collections_editor_tmdb_person_helper">Ví dụ: https://www.themoviedb.org/person/31-tom-hanks hoặc 31</string>
@@ -1839,7 +1836,6 @@
     <string name="collections_editor_tmdb_without_companies">ID hãng sản xuất loại trừ</string>
     <string name="collections_editor_tmdb_without_companies_helper">Loại trừ các tên liên quan đến những mã số hãng sản xuất TMDB này.</string>
     <string name="collections_editor_tmdb_networks">ID đơn vị phát sóng</string>
-    <string name="collections_editor_tmdb_networks_helper">Chỉ áp dụng cho loạt phim. Dùng cho ID đơn vị phát sóng như Netflix 213 hoặc HBO 49.</string>
     <string name="collections_editor_tmdb_year">Năm</string>
     <string name="collections_editor_tmdb_year_helper">Nhập năm gồm 4 chữ số, ví dụ 2024</string>
     <string name="collections_editor_sort_original">Gốc</string>
@@ -1868,7 +1864,6 @@
     <string name="collections_editor_tmdb_placeholder_list">https://www.themoviedb.org/list/8504994 hoặc 8504994</string>
     <string name="collections_editor_tmdb_placeholder_collection">10 cho Bộ sưu tập Star Wars</string>
     <string name="collections_editor_tmdb_placeholder_company">Marvel Studios, 420 hoặc URL hãng sản xuất</string>
-    <string name="collections_editor_tmdb_placeholder_network">213 cho Netflix, 49 cho HBO, 2739 cho Disney+</string>
     <string name="collections_editor_tmdb_person_placeholder">31 cho Tom Hanks hoặc URL cá nhân</string>
     <string name="collections_editor_trakt_id_placeholder">https://trakt.tv/lists/123456 or 123456</string>
     <string name="collections_editor_url_short_placeholder">https://...</string>
@@ -1929,7 +1924,6 @@
     <string name="collection_editor_folder_count_other">%1$d mục</string>
     <string name="collections_editor_delete_folder_title">Xóa thư mục?</string>
     <string name="collections_editor_delete_folder_subtitle">Thao tác này sẽ xóa vĩnh viễn \"%1$s\" và nội dung của nó.</string>
-    <string name="collections_editor_tmdb_movie_title_placeholder">Phim Marvel, Netflix Originals, Pixar</string>
     <string name="collections_editor_tmdb_tv_title_placeholder">Phim hành động hay nhất, Phim Hàn Quốc, Hoạt hình 2024</string>
     <string name="collections_editor_tmdb_person_title_placeholder">Phim Tom Hanks, Diễn viên yêu thích</string>
     <string name="collections_editor_tmdb_director_title_placeholder">Phim Christopher Nolan, Đạo diễn yêu thích</string>
@@ -1937,7 +1931,6 @@
     <string name="collections_editor_tmdb_without_keywords_placeholder">9715</string>
     <string name="collections_editor_tmdb_companies_placeholder">420 cho Marvel Studios</string>
     <string name="collections_editor_tmdb_without_companies_placeholder">420</string>
-    <string name="collections_editor_tmdb_networks_placeholder">213 cho Netflix</string>
     <string name="folder_detail_not_found">Không tìm thấy thư mục</string>
     <string name="cast_error_load_details_for">Không thể tải chi tiết của %1$s</string>
     <string name="tmdb_entity_error_load_named">Không thể tải %1$s</string>
@@ -1960,7 +1953,6 @@
     <string name="collections_editor_emoji_category_flags">Cờ</string>
     <string name="collections_editor_emoji_category_symbols">Ký hiệu</string>
     <!-- Collection editor: TMDB picker placeholders + genres -->
-    <string name="collections_editor_tmdb_network_placeholder_example">213 cho Netflix, 49 cho HBO, 2739 cho Disney+</string>
     <string name="collections_editor_tmdb_collection_placeholder_example">10 cho Bộ sưu tập Star Wars</string>
     <string name="collections_editor_tmdb_company_placeholder_example">Marvel Studios, 420 hoặc URL hãng sản xuất</string>
     <string name="collections_editor_tmdb_genre_action">Hành động</string>
@@ -1991,8 +1983,6 @@
     <string name="playback_player_internal_desc">Sử dụng trình phát tích hợp của Tivistream</string>
 
     <!-- Player runtime: torrent overlay + tracks -->
-    <string name="player_torrent_peer_info">%1$d seed · %2$d peer</string>
-    <string name="player_torrent_buffered_status">Đã đệm %1$s · %2$s · %3$s</string>
     <string name="player_track_audio_fallback">Âm thanh %1$d</string>
     <string name="player_track_subtitle_fallback">Phụ đề %1$d</string>
 
@@ -2162,10 +2152,6 @@
     <!-- Debrid: filter rule rows (title + subtitle pairs) -->
 
     <!-- Debrid: selection count + size range labels -->
-    <plurals name="debrid_selection_count_value">
-        <item quantity="one">%d đã chọn</item>
-        <item quantity="other">%d đã chọn</item>
-    </plurals>
 
     <!-- Subtitle selection: unknown language fallback -->
     <string name="subtitle_language_unknown">Không xác định</string>

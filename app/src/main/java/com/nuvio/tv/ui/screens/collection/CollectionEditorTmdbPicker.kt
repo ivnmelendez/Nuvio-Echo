@@ -574,7 +574,7 @@ private fun TmdbDiscoverForm(
         }
         TmdbQuickChips(
             label = stringResource(R.string.collections_editor_tmdb_quick_companies),
-            chips = listOf("Marvel" to "420", "Disney" to "2", "Pixar" to "3", "Lucasfilm" to "1", "Warner Bros." to "174"),
+            chips = emptyList(),
             onSelect = { onFiltersChange(filters.copy(withCompanies = it)) }
         )
         TmdbFilterField(
@@ -595,7 +595,7 @@ private fun TmdbDiscoverForm(
         }
         TmdbQuickChips(
             label = stringResource(R.string.collections_editor_tmdb_quick_networks),
-            chips = listOf("Netflix" to "213", "HBO" to "49", "Disney+" to "2739", "Prime Video" to "1024", "Hulu" to "453"),
+            chips = emptyList(),
             onSelect = { onFiltersChange(filters.copy(withNetworks = it)) }
         )
         TmdbFilterField(
@@ -616,13 +616,7 @@ private fun TmdbDiscoverForm(
         }
         TmdbQuickChips(
             label = stringResource(R.string.collections_editor_tmdb_quick_watch_providers),
-            chips = listOf(
-                "Netflix" to "8",
-                "Prime Video" to "119",
-                "Disney+" to "337",
-                "Apple TV+" to "350",
-                "Hulu" to "15"
-            ),
+            chips = emptyList(),
             onSelect = { onFiltersChange(filters.copy(withWatchProviders = it)) }
         )
         TmdbFilterField(

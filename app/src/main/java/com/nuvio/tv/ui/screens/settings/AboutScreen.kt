@@ -120,7 +120,7 @@ fun AboutSettingsContent(
                             Spacer(modifier = Modifier.height(NuvioTheme.spacing.xs))
 
                             Image(
-                                painter = painterResource(id = R.drawable.ic_tivilatino_mark),
+                                painter = painterResource(id = R.drawable.ic_tivistream_mark),
                                 contentDescription = stringResource(R.string.app_name),
                                 modifier = Modifier.size(72.dp)
                             )
