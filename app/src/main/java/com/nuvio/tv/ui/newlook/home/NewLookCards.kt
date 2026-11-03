@@ -389,7 +389,7 @@ internal fun PosterCard(
         // A row's resting card keeps its frame when the row has no focus: the same width, in a dim gray.
         ringWidth = if (isOpen) 2.dp else 1.dp,
         ringColor = if (activeOpen) Color.White else null,
-        idleRingColor = if (restingOpen && !activeOpen) Color.White.copy(alpha = 0.28f) else null
+        idleRingColor = if (isOpen) Color.White.copy(alpha = 0.28f) else null
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
