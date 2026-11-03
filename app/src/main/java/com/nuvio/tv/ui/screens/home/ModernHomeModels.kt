@@ -339,7 +339,16 @@ internal fun buildContinueWatchingItem(
         },
         imageUrl = imageUrl,
         heroPreview = heroPreview.copy(imageUrl = imageUrl ?: heroPreview.imageUrl),
-        payload = ModernPayload.ContinueWatching(item)
+        payload = ModernPayload.ContinueWatching(item),
+        // So the row's details (rating, length, genres) are fetched for the focused title like any other card.
+        metaPreview = when (item) {
+            is ContinueWatchingItem.InProgress -> item.progress.let {
+                continueWatchingMetaPreview(it.contentId, it.contentType, it.name, it.poster, it.backdrop)
+            }
+            is ContinueWatchingItem.NextUp -> item.info.let {
+                continueWatchingMetaPreview(it.contentId, "series", it.name, it.poster, it.backdrop)
+            }
+        }
     )
 }
 
@@ -590,3 +599,25 @@ internal fun ContinueWatchingItem.episode(): Int? {
         is ContinueWatchingItem.NextUp -> info.seedEpisode
     }
 }
+
+private fun continueWatchingMetaPreview(
+    contentId: String,
+    contentType: String,
+    name: String,
+    poster: String?,
+    backdrop: String?
+): MetaPreview = MetaPreview(
+    id = contentId,
+    type = ContentType.fromString(contentType),
+    rawType = contentType,
+    name = name,
+    poster = poster,
+    posterShape = PosterShape.POSTER,
+    background = backdrop,
+    logo = null,
+    description = null,
+    releaseInfo = null,
+    imdbRating = null,
+    genres = emptyList(),
+    imdbId = contentId.takeIf { it.startsWith("tt") }
+)

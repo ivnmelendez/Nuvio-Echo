@@ -1927,6 +1927,13 @@ private fun RowCard(
             } ?: preview.poster ?: item.imageUrl,
             progress = ((item.payload as? ModernPayload.ContinueWatching)?.item as? ContinueWatchingItem.InProgress)
                 ?.progress?.progressPercentage,
+            badge = when (val cw = (item.payload as? ModernPayload.ContinueWatching)?.item) {
+                is ContinueWatchingItem.InProgress -> cw.progress.let { p ->
+                    if (p.season != null && p.episode != null) "S${p.season}:E${p.episode}" else null
+                }
+                is ContinueWatchingItem.NextUp -> "S${cw.info.season}:E${cw.info.episode}"
+                null -> null
+            },
             posterFallback = item.metaPreview?.rawPosterUrl,
             // Never the poster: an opened card is wide, so until a real backdrop is known it stays black.
             backdrop = preview.backdrop ?: details?.backdrop,

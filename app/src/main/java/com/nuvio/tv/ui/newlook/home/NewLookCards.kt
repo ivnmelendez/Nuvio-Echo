@@ -362,7 +362,9 @@ internal fun PosterCard(
     trailerAudioUrl: String? = null,
     muted: Boolean = true,
     /** How far in a Continue Watching title is (0 to 1); a bar along the bottom, or nothing when null. */
-    progress: Float? = null
+    progress: Float? = null,
+    /** "S3:E3" for a series title in Continue Watching: a small label at the bottom right, open or closed. */
+    badge: String? = null
 ) {
     // A regular row stays on its card when the trailer ends: the backdrop comes back.
     var ended by remember(trailerUrl) { mutableStateOf(false) }
@@ -422,6 +424,21 @@ internal fun PosterCard(
             }
         }
         if (watched) WatchedMark(Modifier.align(Alignment.TopEnd).padding(8.dp))
+        if (badge != null) {
+            Text(
+                badge,
+                color = Color.White,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 12.dp, bottom = 12.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .padding(horizontal = 8.dp, vertical = 3.dp)
+            )
+        }
         if (progress != null && progress > 0f) {
             Box(
                 modifier = Modifier
