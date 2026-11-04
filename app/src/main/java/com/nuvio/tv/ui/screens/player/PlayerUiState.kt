@@ -74,6 +74,10 @@ data class PlayerUiState(
     val backdrop: String? = null,
     val logo: String? = null,
     val description: String? = null,
+    /** For the pause screen: the first genre, the score (0-10) and the age rating of the title. */
+    val metaGenre: String? = null,
+    val metaScore: Float? = null,
+    val metaAgeRating: String? = null,
     val castMembers: List<MetaCastMember> = emptyList(),
     val showControls: Boolean = true,
     val showSeekOverlay: Boolean = false,

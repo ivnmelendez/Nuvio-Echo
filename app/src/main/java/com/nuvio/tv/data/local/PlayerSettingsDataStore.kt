@@ -239,7 +239,7 @@ data class PlayerSettings(
     val loadingOverlayEnabled: Boolean = false,
     val showPlayerLoadingStatus: Boolean = false,
     val playbackIssueReportsEnabled: Boolean = false,
-    val pauseOverlayEnabled: Boolean = false,
+    val pauseOverlayEnabled: Boolean = true,
     val osdClockEnabled: Boolean = true,
     val skipIntroEnabled: Boolean = true,
     val parentalGuideEnabled: Boolean = false,
@@ -915,7 +915,7 @@ class PlayerSettingsDataStore @Inject constructor(
                 showPlayerLoadingStatus = prefs[showPlayerLoadingStatusKey] ?: false,
                 // There is no report upload in this app, so the switch can never be on.
                 playbackIssueReportsEnabled = false,
-                pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: false,
+                pauseOverlayEnabled = prefs[pauseOverlayEnabledKey] ?: true,
                 osdClockEnabled = prefs[osdClockEnabledKey] ?: true,
                 skipIntroEnabled = prefs[skipIntroEnabledKey] ?: true,
                 parentalGuideEnabled = com.nuvio.tv.core.build.AppFeaturePolicy.parentalGuideAvailable &&

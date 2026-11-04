@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -87,6 +88,8 @@ private val LikeGreen = Color(0xFF2ECC71)
 private val OpenCardFoot = Brush.verticalGradient(
     0f to Color.Transparent, 0.45f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.88f)
 )
+internal val NoBackdropShift: () -> Float = { 0f }
+
 /** The one fixed dark veil shared by closed posters and the row below the focused one. */
 internal const val ClosedVeilAlpha = 0.28f
 private val LikeOrange = Color(0xFFF5A623)
@@ -378,7 +381,12 @@ internal fun PosterCard(
     /** How far in a Continue Watching title is (0 to 1); a bar along the bottom, or nothing when null. */
     progress: Float? = null,
     /** "S3:E3" for a series title in Continue Watching: a small label at the bottom right, open or closed. */
-    badge: String? = null
+    badge: String? = null,
+    /** Px the opened card's backdrop sits off to the side while it settles after a step (read while drawing). */
+    backdropShift: () -> Float = NoBackdropShift,
+    /** The backdrop of the card the focus just left, drawn [ghostShift] px off: it shows in the gap the push opens. */
+    ghostBackdrop: String? = null,
+    ghostShift: () -> Float = NoBackdropShift
 ) {
     // A regular row stays on its card when the trailer ends: the backdrop comes back.
     var ended by remember(trailerUrl) { mutableStateOf(false) }
@@ -405,7 +413,7 @@ internal fun PosterCard(
         // A row's open card keeps its frame when it has no focus: the same width, in a solid gray (a see-through one vanished over bright artwork).
         ringWidth = if (isOpen) 2.dp else 1.dp,
         ringColor = if (activeOpen) Color.White else null,
-        idleRingColor = if (isOpen) Color(0xFF7A7A7A) else null
+        idleRingColor = if (isOpen) Color(0xFF1F1F1F) else null
     ) {
         Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
@@ -414,8 +422,14 @@ internal fun PosterCard(
         // Closed posters wear one fixed dark veil (lighter than the reference's measured 40%, by eye); only the opened card is undimmed.
         if (!isOpen) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
         if (showOpen) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-                Artwork(backdrop, Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize().clipToBounds().background(Color.Black)) {
+                // Pushed to the side while it settles, the black behind showing at the edge: the logo and foot stay put.
+                if (ghostBackdrop != null) Artwork(
+                    ghostBackdrop,
+                    // Hidden once the push has settled (a full card width away, it falls outside the clip anyway).
+                    Modifier.fillMaxSize().graphicsLayer { translationX = ghostShift() }
+                )
+                Artwork(backdrop, Modifier.fillMaxSize().graphicsLayer { translationX = backdropShift() })
                 HeldTrailer(active = playing, key = trailerUrl) { onFirstFrame ->
                     TrailerPlayer(
                         trailerUrl = trailerUrl,

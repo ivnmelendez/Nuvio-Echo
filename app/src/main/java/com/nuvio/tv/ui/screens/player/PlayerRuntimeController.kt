@@ -620,7 +620,7 @@ class PlayerRuntimeController(
     internal var delayMpvResumeSeekUntilVideoTrack: Boolean = false
     internal var mpvDelayStartAfterAfrSwitch: Boolean = false
     internal var pauseOverlayJob: Job? = null
-    internal val pauseOverlayDelayMs = 5000L
+    internal val pauseOverlayDelayMs = 3000L
     internal val seekProgressSyncDebounceMs = 700L
     internal val audioDelayUs = AtomicLong(0L)
     internal val subtitleDelayUs = AtomicLong(0L)

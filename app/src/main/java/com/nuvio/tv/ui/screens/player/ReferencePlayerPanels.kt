@@ -68,14 +68,17 @@ private fun ReferencePanel(
                 .align(Alignment.CenterEnd)
                 .width(width)
                 .fillMaxHeight()
-                .background(Color.Black.copy(alpha = 0.82f))
-                .padding(start = 14.dp, end = 14.dp, top = 14.dp)
+                .background(Color.Black.copy(alpha = 0.81f))
+                .padding(start = 14.dp, end = 14.dp, top = 14.75.dp)
         ) {
+            // Measured off the reference (2x): Montserrat 14 sp, level with the rows' left edge, rows from 44 dp down.
             Text(
                 text = title,
-                color = Color.White.copy(alpha = 0.92f),
-                fontSize = 15.sp,
-                modifier = Modifier.padding(start = 6.dp, bottom = 12.dp)
+                color = Color.White.copy(alpha = 0.82f),
+                fontSize = 14.sp,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                letterSpacing = 0.sp,
+                modifier = Modifier.padding(bottom = 10.7.dp)
             )
             content()
         }
@@ -99,8 +102,8 @@ private fun ReferenceRow(
             .clip(PanelRowShape)
             .then(
                 if (focused) Modifier
-                    .background(Color.White.copy(alpha = 0.2f))
-                    .border(1.dp, Color.White.copy(alpha = 0.45f), PanelRowShape)
+                    .background(Color.White.copy(alpha = 0.23f))
+                    .border(1.dp, Color.White.copy(alpha = 0.11f), PanelRowShape)
                 else Modifier
             )
             .focusRequester(focusRequester)
@@ -110,13 +113,30 @@ private fun ReferenceRow(
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 10.dp),
+            .padding(start = 11.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(modifier = Modifier.weight(1f)) { content(focused) }
-        if (selected) {
-            Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.padding(start = 8.dp).width(16.dp).height(16.dp))
+        if (selected) HeavyCheck(width = 12.dp, height = 8.5.dp, stroke = 2.4.dp, modifier = Modifier.padding(start = 8.dp))
+    }
+}
+
+/** The reference's check: a heavier stroke than Material's. */
+@Composable
+private fun HeavyCheck(width: Dp, height: Dp, stroke: Dp, modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier.width(width).height(height)) {
+        val s = stroke.toPx()
+        val path = androidx.compose.ui.graphics.Path().apply {
+            moveTo(s / 2f, size.height * 0.55f)
+            lineTo(size.width * 0.36f, size.height - s / 2f)
+            lineTo(size.width - s / 2f, s / 2f)
         }
+        drawPath(
+            path, Color.White,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = s, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round
+            )
+        )
     }
 }
 
@@ -148,7 +168,7 @@ internal fun ReferenceAudioPanel(
     val initial = tracks.indexOfFirst { it.index == selectedIndex || (selectedIndex < 0 && it.isSelected) }.coerceAtLeast(0)
     val requesters = rememberRowFocus(visible, tracks.size, initial)
     ReferencePanel(width = 400.dp, title = stringResource(R.string.player_panel_audio), onDismiss = onDismiss, modifier = modifier) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        LazyColumn {
             itemsIndexed(tracks, key = { i, t -> "${t.index}:$i" }) { i, track ->
                 ReferenceRow(
                     selected = track.index == selectedIndex || (selectedIndex < 0 && track.isSelected),
@@ -157,8 +177,10 @@ internal fun ReferenceAudioPanel(
                 ) { focused ->
                     Text(
                         text = shortAudioLabel(track, fallback),
-                        color = Color.White.copy(alpha = if (focused) 1f else 0.82f),
-                        fontSize = 13.sp,
+                        color = Color.White.copy(alpha = if (focused) 1f else 0.65f),
+                        fontSize = 12.5.sp,
+                        fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                        letterSpacing = 0.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -192,10 +214,10 @@ internal fun ReferenceSubtitlePanel(
     }
     val requesters = rememberRowFocus(visible, count, initial)
     ReferencePanel(width = 400.dp, title = stringResource(R.string.player_panel_subtitles), onDismiss = onDismiss, modifier = modifier) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        LazyColumn {
             item(key = "none") {
                 ReferenceRow(selected = offSelected, focusRequester = requesters[0], onClick = onDisable) { focused ->
-                    Text(none, color = Color.White.copy(alpha = if (focused) 1f else 0.82f), fontSize = 13.sp)
+                    Text(none, color = Color.White.copy(alpha = if (focused) 1f else 0.65f), fontSize = 12.5.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp)
                 }
             }
             itemsIndexed(internalTracks, key = { i, t -> "in:${t.index}:$i" }) { i, track ->
@@ -205,8 +227,8 @@ internal fun ReferenceSubtitlePanel(
                     onClick = { onInternalSelected(track.index) }
                 ) { focused ->
                     SubtitleRowText(
-                        name = track.name.ifBlank { track.language.orEmpty() },
-                        tag = track.codec?.substringAfterLast('/')?.uppercase()?.takeIf { it.length in 2..5 },
+                        name = subtitleTrackName(track),
+                        tag = subtitleFormatTag(track.codec),
                         focused = focused
                     )
                 }
@@ -219,7 +241,7 @@ internal fun ReferenceSubtitlePanel(
                 ) { focused ->
                     SubtitleRowText(
                         name = subtitle.getDisplayLanguage(),
-                        tag = subtitle.url.substringBefore('?').substringAfterLast('.', "").uppercase().takeIf { it.length in 2..4 },
+                        tag = subtitleFormatTag(subtitle.url.substringBefore('?').substringAfterLast('.', "")),
                         focused = focused
                     )
                 }
@@ -228,18 +250,45 @@ internal fun ReferenceSubtitlePanel(
     }
 }
 
+/** "English - SDH": the language spelled out, then SDH when the track is one. */
+private fun subtitleTrackName(track: TrackInfo): String {
+    val language = track.language?.takeIf { it.isNotBlank() && !it.equals("und", true) }
+        ?.let { Subtitle.languageCodeToName(it) }?.takeIf { it.isNotBlank() }
+    val sdh = track.name.contains("sdh", true) || track.name.contains("hearing", true)
+    return when {
+        language != null && sdh -> "$language - SDH"
+        language != null -> language
+        else -> track.name.ifBlank { track.language.orEmpty() }
+    }
+}
+
+/** The short format tag beside a subtitle: SRT, VTT, ASS... */
+private fun subtitleFormatTag(raw: String?): String? {
+    val key = raw?.substringAfterLast('/')?.lowercase()?.trim() ?: return null
+    return when {
+        key.contains("subrip") || key == "srt" -> "SRT"
+        key.contains("vtt") -> "VTT"
+        key.contains("ssa") || key == "ass" -> "ASS"
+        key.contains("ttml") || key == "xml" -> "TTML"
+        key.length in 2..4 -> key.uppercase()
+        else -> null
+    }
+}
+
 @Composable
 private fun SubtitleRowText(name: String, tag: String?, focused: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = name,
-            color = Color.White.copy(alpha = if (focused) 1f else 0.82f),
-            fontSize = 13.sp,
+            color = Color.White.copy(alpha = if (focused) 1f else 0.65f),
+            fontSize = 12.5.sp,
+            fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+            letterSpacing = 0.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f, fill = false)
         )
-        if (tag != null) Text(text = tag, color = Color.White.copy(alpha = 0.5f), fontSize = 9.sp)
+        if (tag != null) Text(text = tag, color = Color.White.copy(alpha = 0.5f), fontSize = 9.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp)
     }
 }
 
@@ -261,45 +310,54 @@ internal fun ReferenceLinksPanel(
             Text(
                 text = error ?: stringResource(if (loading) R.string.player_panel_links_loading else R.string.player_panel_links_none),
                 color = Color.White.copy(alpha = 0.7f),
-                fontSize = 13.sp,
-                modifier = Modifier.padding(start = 6.dp)
+                fontSize = 12.5.sp,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                letterSpacing = 0.sp,
+                modifier = Modifier.padding(start = 11.dp)
             )
             return@ReferencePanel
         }
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(5.dp)) {
             itemsIndexed(streams, key = { i, s -> s.stableKey(i) }) { i, stream ->
                 val isCurrent = stream.getStreamUrl() != null && stream.getStreamUrl() == currentUrl
                 ReferenceRow(
                     selected = false,
                     focusRequester = requesters[i],
                     onClick = { onSelected(stream) },
-                    height = 52.dp
+                    height = 46.dp
                 ) { focused ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.width(26.dp)) {
-                            if (isCurrent) Icon(Icons.Filled.Check, null, tint = Color.White, modifier = Modifier.width(16.dp).height(16.dp))
+                    val text = Color.White.copy(alpha = if (focused) 1f else 0.65f)
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 3.dp)) {
+                        Box(modifier = Modifier.width(16.dp), contentAlignment = Alignment.Center) {
+                            if (isCurrent) HeavyCheck(width = 16.dp, height = 12.dp, stroke = 2.6.dp)
                         }
+                        Spacer(modifier = Modifier.width(9.dp))
                         Text(
                             text = streamQualityLabel(stream),
-                            color = Color.White.copy(alpha = if (focused) 1f else 0.82f),
-                            fontSize = 22.sp,
+                            color = text,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
+                            fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                            letterSpacing = 0.sp,
                             maxLines = 1,
-                            modifier = Modifier.width(78.dp)
+                            modifier = Modifier.width(51.dp)
                         )
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = streamFileName(stream),
-                                color = Color.White.copy(alpha = if (focused) 1f else 0.82f),
-                                fontSize = 12.sp,
+                                color = text,
+                                fontSize = 11.5.sp,
+                                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                                letterSpacing = 0.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Spacer(modifier = Modifier.height(1.4.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 stream.behaviorHints?.videoSize?.takeIf { it > 0L }?.let {
-                                    Text(formatStreamSize(it), color = Color(0xFFC8B26A), fontSize = 10.sp)
+                                    Text(formatStreamSize(it), color = Color(0xFFC8B26A), fontSize = 10.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp)
                                 }
-                                Text(stream.addonName, color = Color.White.copy(alpha = 0.5f), fontSize = 10.sp, maxLines = 1)
+                                Text(stream.addonName, color = Color.White.copy(alpha = 0.5f), fontSize = 10.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp, maxLines = 1)
                             }
                         }
                     }
@@ -310,9 +368,18 @@ internal fun ReferenceLinksPanel(
 }
 
 private fun streamQualityLabel(stream: Stream): String {
-    val height = stream.qualityValue.takeIf { it > 0 } ?: Regex("(\\d{3,4})p", RegexOption.IGNORE_CASE)
-        .find(stream.quality.orEmpty() + " " + stream.name.orEmpty() + " " + stream.title.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
-        ?: if (stream.quality.orEmpty().contains("4k", true) || stream.name.orEmpty().contains("4k", true)) 2160 else 0
+    // Everything the addon says about the file: the quality field, the names, the file name and the description.
+    val text = listOf(
+        stream.quality, stream.name, stream.title, stream.description, stream.behaviorHints?.filename
+    ).joinToString(" ") { it.orEmpty() }
+    val height = stream.qualityValue.takeIf { it > 0 }
+        ?: Regex("(\\d{3,4})p", RegexOption.IGNORE_CASE).findAll(text).mapNotNull { it.groupValues[1].toIntOrNull() }
+            .filter { it in 240..4320 }.maxOrNull()
+        ?: when {
+            Regex("\\b(4k|uhd)\\b", RegexOption.IGNORE_CASE).containsMatchIn(text) -> 2160
+            Regex("\\b(fhd|full ?hd)\\b", RegexOption.IGNORE_CASE).containsMatchIn(text) -> 1080
+            else -> 0
+        }
     return when {
         height >= 2160 -> "4K"
         height >= 1440 -> "QHD"

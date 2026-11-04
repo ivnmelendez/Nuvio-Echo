@@ -61,6 +61,9 @@ internal fun PlayerRuntimeController.applyMetaDetails(meta: Meta) {
     _uiState.update { state ->
         state.copy(
             description = description ?: state.description,
+            metaGenre = meta.genres.firstOrNull(),
+            metaScore = meta.imdbRating?.takeIf { it > 0f },
+            metaAgeRating = meta.ageRating?.trim()?.takeIf { it.isNotBlank() },
             castMembers = if (meta.castMembers.isNotEmpty()) meta.castMembers else state.castMembers,
             isNextEpisodeMetadataResolved = true
         )

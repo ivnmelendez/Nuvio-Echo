@@ -419,7 +419,7 @@ fun StreamScreen(
             // whether direct autoplay is active — prevents single-frame flash.
         } else if (showOverlay) {
             Box(
-                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)),
+                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.65f)),
                 contentAlignment = Alignment.Center
             ) {
                 LoadingIndicator()

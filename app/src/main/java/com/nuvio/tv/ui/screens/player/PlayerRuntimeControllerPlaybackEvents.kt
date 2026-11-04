@@ -1008,7 +1008,8 @@ internal fun PlayerRuntimeController.schedulePauseOverlay() {
             s.showSourcesPanel || s.showAudioOverlay || s.showQualityOverlay || s.showStreamInfoOverlay ||
             s.showSubtitleTimingDialog || s.showSubtitleDelayOverlay
         if (!s.isPlaying && s.pauseOverlayEnabled && s.error == null && !anyPanelOpen) {
-            _uiState.update { it.copy(showPauseOverlay = true, showControls = false) }
+            // The controls stay: the pause screen is the title's details over a dimmed picture, with the bar and buttons on top.
+            _uiState.update { it.copy(showPauseOverlay = true, showControls = true) }
         }
     }
 }

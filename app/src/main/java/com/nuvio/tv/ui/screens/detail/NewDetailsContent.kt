@@ -48,6 +48,7 @@ import androidx.compose.material.icons.outlined.VideoLibrary
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -388,6 +389,16 @@ internal fun NewDetailsContent(
             runCatching { playFocus.requestFocus() }
         }
     }
+    // The item that opened the panel takes the focus back in the very pass the panel goes, so Play never shows as
+    // focused for the few frames in between.
+    val panelWasOpen = remember { booleanArrayOf(false) }
+    SideEffect {
+        if (panel != null) panelWasOpen[0] = true
+        else if (panelWasOpen[0]) {
+            panelWasOpen[0] = false
+            returnFocusTo?.let { runCatching { it.requestFocus() } }
+        }
+    }
     LaunchedEffect(panel) {
         if (panel == null) {
             returnFocusTo?.let { requester ->
@@ -618,7 +629,8 @@ internal fun NewDetailsContent(
                 onToggleReminder = { video -> upcomingReminder(meta, video)?.let(extras::toggleReminder) },
                 episodeRatings = episodeRatings,
                 episodeReviews = episodeReviews,
-                onPlayEpisode = { video -> panel = null; playEpisodeOrWhere(video) },
+                // The panel stays open under the dim veil and spinner, as in the reference.
+                onPlayEpisode = { video -> playEpisodeOrWhere(video) },
                 onToggleEpisodeWatched = onToggleEpisodeWatched,
                 onRateEpisode = { video, rating -> extras.toggleEpisodeRating(meta, video, rating) },
                 onLoadEpisodeReviews = { video -> extras.loadEpisodeReviews(meta, video) },

@@ -901,7 +901,8 @@ private fun isSelectOrMenuKey(keyCode: Int): Boolean {
 
 internal fun formatYearRange(releaseInfo: String?): String? {
     if (releaseInfo.isNullOrBlank()) return null
-    return releaseInfo.trim()
+    // A show still running is "1997–": the year alone, never the dangling dash.
+    return releaseInfo.trim().trimEnd('–', '-', '—', ' ').takeIf { it.isNotEmpty() }
 }
 
 /**

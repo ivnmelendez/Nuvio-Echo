@@ -58,7 +58,6 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -1536,6 +1535,13 @@ private class RowSlide(var prevCol: Int) {
     /** Px the cards still sit from their place when [progress] is 0 (positive: to the right). */
     var from by androidx.compose.runtime.mutableFloatStateOf(0f)
     var progress by androidx.compose.runtime.mutableFloatStateOf(1f)
+
+    /** Px the opened card's backdrop still sits to the side at [imageProgress] 0: pushed against the step, then settling. */
+    var imageFrom by androidx.compose.runtime.mutableFloatStateOf(0f)
+    var imageProgress by androidx.compose.runtime.mutableFloatStateOf(1f)
+    /** The card the focus just left (its backdrop shows in the gap) and the step's direction; read in the draw phase only. */
+    var ghostCol = -1
+    var dir = 0
 }
 
 /** Rows pin the focused card to their start, so a row always starts with its focused card. */
@@ -1763,11 +1769,13 @@ private fun NewLookRowView(
         // A ranked card sits rankPad into its item, so the item itself goes to the start.
         val lastCol = (row.items.size - 1).coerceAtLeast(0)
         SideEffect { listState.requestScrollToItem(col.coerceIn(0, lastCol)) }
-        // Measured off the reference app (24 fps capture): one poster plus its gap, 300 ms, cubic-bezier(.2,0,0,1) (fit over four steps of two captures). Set here, in
+        // Measured off the reference app (24 fps capture): one poster plus its gap, 290 ms, FastOutSlowIn. Set here, in
         // the apply phase, so the cards are already at their old place in the very frame the layout changes.
         val slide = remember { RowSlide(col) }
         val slideEnabled = row.kind == RowKind.POSTER && !row.isPlaceholder
         val stepPx = with(density) { (row.cardWidth(dims) + dims.gap).toPx() }
+        val imageShiftPx = with(density) { 44.dp.toPx() }
+        val openWidthPx = with(density) { dims.posterOpenWidth.toPx() }
         SideEffect {
             val step = col - slide.prevCol
             if (step != 0) {
@@ -1777,42 +1785,37 @@ private fun NewLookRowView(
                     val left = slide.from * (1f - slide.progress)
                     slide.from = (left + step * stepPx).coerceIn(-2f * stepPx, 2f * stepPx)
                     slide.progress = 0f
+                    // The backdrop starts ~44 dp off along the step (the viewport slides over a strip: old card behind, new one entering) and
+                    // settles: the capture's 88 px, gone in ~170 ms.
+                    slide.ghostCol = col - step
+                    slide.dir = step
+                    val imageLeft = slide.imageFrom * (1f - slide.imageProgress)
+                    slide.imageFrom = (imageLeft + step * imageShiftPx).coerceIn(-imageShiftPx, imageShiftPx)
+                    slide.imageProgress = 0f
                 } else {
                     slide.from = 0f
                     slide.progress = 1f
+                    slide.imageFrom = 0f
+                    slide.imageProgress = 1f
                 }
             }
         }
         LaunchedEffect(col) {
-            if (slide.progress < 1f) {
-                // Keys in quick succession: a shorter, front-loaded glide, or the slow start of each one piles up.
-                val chained = abs(slide.from) > stepPx * 1.2f
-                androidx.compose.animation.core.animate(
-                    0f, 1f,
-                    animationSpec = if (chained) tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
-                    else tween(300, easing = androidx.compose.animation.core.CubicBezierEasing(0.2f, 0f, 0f, 1f))
-                ) { v, _ -> slide.progress = v }
-            }
-        }
-        // Stepping right, the card that takes focus was a closed poster a moment ago: it slides left behind the opened
-        // card as the others follow it, so no gap opens at the opened card's edge (the reference does the same). Drawn
-        // under the row, only while the glide runs; their alpha is read while drawing, so nothing recomposes per frame.
-        if (slideEnabled && rowActive) {
-            val gapDp = dims.gap
-            for (k in 0..1) {
-                val ghost = row.items.getOrNull(col - k) ?: continue
-                Box(
-                    modifier = Modifier
-                        .offset(x = contentStart + dims.posterOpenWidth + gapDp - (row.cardWidth(dims) + gapDp) * (1 + k), y = cardTop)
-                        .size(row.cardWidth(dims), row.cardHeight(dims))
-                        .graphicsLayer {
-                            translationX = slide.from * (1f - slide.progress)
-                            alpha = if (slide.from > 0f && slide.progress < 1f) 1f else 0f
-                        }
-                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(dims.cardRadius))
-                ) {
-                    Artwork(ghost.heroPreview.poster ?: ghost.imageUrl, Modifier.fillMaxSize())
-                    Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
+            kotlinx.coroutines.coroutineScope {
+                if (slide.progress < 1f) launch {
+                    // Keys in quick succession: a shorter, front-loaded glide, or the slow start of each one piles up.
+                    val chained = abs(slide.from) > stepPx * 1.2f
+                    androidx.compose.animation.core.animate(
+                        0f, 1f,
+                        animationSpec = if (chained) tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
+                        else tween(290, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                    ) { v, _ -> slide.progress = v }
+                }
+                if (slide.imageProgress < 1f) launch {
+                    androidx.compose.animation.core.animate(
+                        0f, 1f,
+                        animationSpec = tween(170, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
+                    ) { v, _ -> slide.imageProgress = v }
                 }
             }
         }
@@ -1825,7 +1828,15 @@ private fun NewLookRowView(
                 horizontalArrangement = Arrangement.spacedBy(dims.gap),
                 userScrollEnabled = false,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    // Two cards wider than the screen, off its right edge: a card the row glides out past the edge must stay
+                    // composed until it is out of sight, not vanish in the frame the layout changes.
+                    .layout { measurable, constraints ->
+                        val width = constraints.maxWidth
+                        val placeable = measurable.measure(
+                            constraints.copy(minWidth = width + 2 * stepPx.toInt(), maxWidth = width + 2 * stepPx.toInt())
+                        )
+                        layout(width, placeable.height) { placeable.place(0, 0) }
+                    }
                     .offset(y = cardTop)
                     .height(row.cardHeight(dims))
                     .focusRestorer(focusRequester)
@@ -1869,7 +1880,13 @@ private fun NewLookRowView(
                         open = item.key == focusedItemKey && item.key == openItemKey,
                         openAtOnce = openAtOnce,
                         holdOpen = holdOpen,
-                        resting = row.kind == RowKind.POSTER && !row.isPlaceholder && index == focusCol
+                        resting = row.kind == RowKind.POSTER && !row.isPlaceholder && index == focusCol,
+                        backdropShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) }) else NoBackdropShift,
+                        // The old card's backdrop sits one card width behind the entering one, moving with it.
+                        ghostBackdrop = if (index == col) (if (col != slide.prevCol) slide.prevCol else slide.ghostCol).let { g ->
+                            row.items.getOrNull(g)?.let { it.heroPreview.backdrop ?: it.metaPreview?.id?.let { id -> details[id] }?.backdrop }
+                        } else null,
+                        ghostShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) - slide.dir * openWidthPx }) else NoBackdropShift
                     )
                 }
             }
@@ -1913,7 +1930,10 @@ private fun RowCard(
     open: Boolean,
     openAtOnce: Boolean,
     holdOpen: Boolean,
-    resting: Boolean
+    resting: Boolean,
+    backdropShift: () -> Float = NoBackdropShift,
+    ghostBackdrop: String? = null,
+    ghostShift: () -> Float = NoBackdropShift
 ) {
     val preview = item.heroPreview
     val backdrop = preview.backdrop ?: details?.backdrop ?: item.imageUrl
@@ -2011,6 +2031,9 @@ private fun RowCard(
             holdOpen = holdOpen,
             // Wide only once its backdrop is known: until then a wide card would be black.
             restingOpen = resting && (preview.backdrop ?: details?.backdrop) != null,
+            backdropShift = backdropShift,
+            ghostBackdrop = ghostBackdrop,
+            ghostShift = ghostShift,
             dims = dims,
             onClick = onClick,
             onLongClick = onLongClick,

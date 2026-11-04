@@ -69,6 +69,12 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.OpenInFull
+import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
@@ -223,21 +229,13 @@ private fun PlayerScreenContent(
         }
     }
     val betaSettings by rememberBetaPerformanceSettings()
-    // Audio, subtitles and links hold the picture still behind them, and let it go again when they close.
-    var pausedBySelectionPanel by remember { mutableStateOf(false) }
+    // Audio, subtitles and links open over the controls and never pause the picture. Paused already, the long-pause
+    // screen stays away while they are open, so the layout behind them stays.
     val selectionPanelOpen = uiState.showAudioOverlay || uiState.showSubtitleOverlay || uiState.showSourcesPanel
     LaunchedEffect(selectionPanelOpen) {
-        if (selectionPanelOpen) {
-            if (viewModel.uiState.value.isPlaying) {
-                pausedBySelectionPanel = true
-                viewModel.onEvent(PlayerEvent.OnPlayPause)
-                delay(60)
-                // The long-pause screen has no place under a menu.
-                runCatching { viewModel.controller.cancelPauseOverlay() }
-            }
-        } else if (pausedBySelectionPanel) {
-            pausedBySelectionPanel = false
-            if (!viewModel.uiState.value.isPlaying) viewModel.onEvent(PlayerEvent.OnPlayPause)
+        while (selectionPanelOpen) {
+            if (viewModel.uiState.value.showPauseOverlay) runCatching { viewModel.controller.cancelPauseOverlay() }
+            delay(200)
         }
     }
     val postPlayRecommendationState by viewModel.postPlayRecommendationUiState.collectAsState()
@@ -363,6 +361,15 @@ private fun PlayerScreenContent(
         }
     }
 
+    // Leaving takes two Backs: the first shows "Press back again to exit" over everything, the second leaves.
+    var exitHintAt by remember { mutableStateOf(0L) }
+    var exitHintVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(exitHintAt) {
+        if (exitHintAt > 0L) {
+            delay(2500)
+            exitHintVisible = false
+        }
+    }
     val handleBackPress = handleBackPress@{
         if (externalHandoffInProgress) return@handleBackPress
         if (viewModel.controller.previewCommitPending) {
@@ -396,7 +403,9 @@ private fun PlayerScreenContent(
         } else if (uiState.showStreamInfoOverlay) {
             dismissStreamInfoOverlay()
         } else if (uiState.showPauseOverlay) {
-            viewModel.onEvent(PlayerEvent.OnDismissPauseOverlay)
+            // The pause screen stays; the hint shows in front of it.
+            val now = android.os.SystemClock.elapsedRealtime()
+            if (exitHintVisible && now - exitHintAt < 2500L) exitPlayer() else { exitHintAt = now; exitHintVisible = true }
         } else if (uiState.showMoreDialog) {
             focusPlayAfterMoreBack = true
             viewModel.onEvent(PlayerEvent.OnDismissMoreDialog)
@@ -430,10 +439,9 @@ private fun PlayerScreenContent(
             viewModel.onEvent(PlayerEvent.OnDismissSkipIntro)
         } else if (uiState.postPlayMode is PostPlayMode.StillWatching) {
             viewModel.onEvent(PlayerEvent.OnDismissStillWatchingPrompt)
-        } else if (uiState.showControls) {
-            viewModel.hideControls()
         } else {
-            exitPlayer()
+            val now = android.os.SystemClock.elapsedRealtime()
+            if (exitHintVisible && now - exitHintAt < 2500L) exitPlayer() else { exitHintAt = now; exitHintVisible = true }
         }
     }
 
@@ -1238,20 +1246,20 @@ private fun PlayerScreenContent(
             visible = uiState.showPauseOverlay && uiState.error == null &&
                 !uiState.showLoadingOverlay && !postPlayRecommendationState.isVisible,
             onClose = { viewModel.onEvent(PlayerEvent.OnDismissPauseOverlay) },
-            title = uiState.title,
+            title = uiState.contentName ?: uiState.title,
             logo = uiState.logo,
             episodeTitle = uiState.currentEpisodeTitle,
             season = uiState.currentSeason,
             episode = uiState.currentEpisode,
-            year = uiState.releaseYear,
             type = uiState.contentType,
             description = uiState.description,
-            positionMs = pauseTimeline.currentPosition,
-            durationMs = if (pauseTimeline.isLive) 0L else pauseTimeline.duration,
-            showClock = !pauseTimeline.isLive,
+            score = uiState.metaScore,
+            genre = uiState.metaGenre,
+            ageRating = uiState.metaAgeRating,
+            // Under the controls, which stay bright on top of it.
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2.5f)
+                .zIndex(1f)
         )
 
         StreamInfoOverlay(
@@ -1431,11 +1439,8 @@ private fun PlayerScreenContent(
             uiState.osdClockEnabled &&
             uiState.error == null &&
             !uiState.showLoadingOverlay &&
-            !uiState.showPauseOverlay &&
             !uiState.showEpisodesPanel &&
-            !uiState.showSourcesPanel &&
-            !uiState.showAudioOverlay && !uiState.showQualityOverlay &&
-            !uiState.showSubtitleOverlay &&
+            // Audio, subtitles and links open over the controls: playback goes on and the layout stays, dimmed behind.
             !uiState.showSubtitleStylePanel &&
             !uiState.showSpeedDialog &&
             !uiState.showMoreDialog &&
@@ -1457,22 +1462,24 @@ private fun PlayerScreenContent(
             )
         }
 
+        if (exitHintVisible) {
+            ExitHintToast(Modifier.align(Alignment.BottomCenter).zIndex(6f))
+        }
+
         // Controls overlay
         AnimatedVisibility(
             visible = uiState.showControls && uiState.error == null &&
-                !uiState.showLoadingOverlay && !uiState.showPauseOverlay &&
+                !uiState.showLoadingOverlay &&
                 !uiState.showStreamInfoOverlay &&
                 !uiState.showSubtitleStylePanel &&
                 !uiState.showSubtitleDelayOverlay &&
                 !uiState.showEpisodesPanel &&
-                !uiState.showSourcesPanel &&
-                !uiState.showAudioOverlay && !uiState.showQualityOverlay &&
-                !uiState.showSubtitleOverlay &&
                 !uiState.showSpeedDialog &&
                 !postPlayRecommendationState.isVisible &&
                 uiState.postPlayMode !is PostPlayMode.StillWatching,
             enter = fadeIn(animationSpec = tween(200)),
-            exit = fadeOut(animationSpec = tween(200))
+            exit = fadeOut(animationSpec = tween(200)),
+            modifier = Modifier.zIndex(1.5f)
         ) {
             val context = LocalContext.current
             PlayerControlsOverlay(
@@ -1677,17 +1684,6 @@ private fun PlayerScreenContent(
         }
 
         // Sources panel scrim
-        AnimatedVisibility(
-            visible = uiState.showSourcesPanel && uiState.error == null,
-            enter = androidx.compose.animation.EnterTransition.None,
-            exit = androidx.compose.animation.ExitTransition.None
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.45f))
-            )
-        }
 
         // Sources panel (slides in from right)
         AnimatedVisibility(
@@ -1695,7 +1691,8 @@ private fun PlayerScreenContent(
             enter = androidx.compose.animation.EnterTransition.None,
             exit = androidx.compose.animation.ExitTransition.None
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            // Over the clock and the controls, which stay in view behind it, and no scrim: the picture is left as it is.
+            Box(modifier = Modifier.fillMaxSize().zIndex(2.6f)) {
                 ReferenceLinksPanel(
                     streams = uiState.sourceFilteredStreams,
                     currentUrl = uiState.currentStreamUrl,
@@ -2424,15 +2421,24 @@ private fun PlayerControlsOverlay(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // The state of playback, not a button: on the bar, OK plays or pauses.
-                    Icon(
-                        painter = if (uiState.isPlaying) customPausePainter else customPlayPainter,
-                        contentDescription = if (uiState.isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
+                    Spacer(modifier = Modifier.width(2.5.dp))
+                    if (uiState.isPlaying) Icon(
+                        painter = customPausePainter,
+                        contentDescription = stringResource(R.string.cd_pause),
                         tint = Color.White,
                         modifier = Modifier.size(26.dp)
-                    )
-                    Spacer(modifier = Modifier.width(46.dp))
+                    ) else androidx.compose.foundation.Canvas(Modifier.size(width = 24.5.dp, height = 31.5.dp)) {
+                        // The reference's play: a sharp triangle, 49 x 63 px.
+                        drawPath(
+                            androidx.compose.ui.graphics.Path().apply {
+                                moveTo(0f, 0f); lineTo(size.width, size.height / 2f); lineTo(0f, size.height); close()
+                            },
+                            Color.White
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(47.dp))
                     PlayerTimeSide(viewModel = viewModel, duration = false)
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(11.dp))
                     // Asking this box for focus lands on the bar, the one thing on this row that takes it.
                     Box(modifier = Modifier.weight(1f).focusRequester(playPauseFocusRequester).focusGroup()) {
                         if (!isLivePlayback) {
@@ -2454,7 +2460,7 @@ private fun PlayerControlsOverlay(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(11.dp))
                     PlayerTimeSide(viewModel = viewModel, duration = true)
                 }
             }
@@ -2486,8 +2492,7 @@ private fun PlayerControlsOverlay(
                                 alwaysLabel = true
                             )
                             PlayerButton.SUBTITLES -> ControlButton(
-                                icon = Icons.Default.ClosedCaption,
-                                iconPainter = customSubtitlePainter,
+                                icon = Icons.Filled.Subtitles,
                                 contentDescription = stringResource(R.string.cd_subtitles),
                                 onClick = onShowSubtitleDialog,
                                 upFocusRequester = progressUpTarget,
@@ -2500,8 +2505,7 @@ private fun PlayerControlsOverlay(
                                 alwaysLabel = true
                             )
                             PlayerButton.AUDIO -> ControlButton(
-                                icon = Icons.AutoMirrored.Filled.VolumeUp,
-                                iconPainter = customAudioPainter,
+                                icon = Icons.Filled.MusicNote,
                                 contentDescription = stringResource(R.string.player_btn_audio_quality),
                                 // The merged panel opens on audio (or on quality when the file has no tracks to list).
                                 onClick = if (!hasAudioControl) onShowQualityOverlay else onShowAudioDialog,
@@ -2515,8 +2519,7 @@ private fun PlayerControlsOverlay(
                                 alwaysLabel = true
                             )
                             PlayerButton.SOURCES -> ControlButton(
-                                icon = Icons.Default.SwapHoriz,
-                                iconPainter = customSourcePainter,
+                                icon = Icons.Filled.Link,
                                 contentDescription = stringResource(R.string.cd_sources),
                                 onClick = onShowSourcesPanel,
                                 upFocusRequester = progressUpTarget,
@@ -2546,8 +2549,7 @@ private fun PlayerControlsOverlay(
                                 label = stringResource(R.string.player_btn_switch_player)
                             )
                             PlayerButton.EPISODES -> ControlButton(
-                                icon = Icons.AutoMirrored.Filled.List,
-                                iconPainter = customEpisodesPainter,
+                                icon = Icons.AutoMirrored.Filled.ViewList,
                                 contentDescription = stringResource(R.string.cd_episodes),
                                 onClick = onShowEpisodesPanel,
                                 upFocusRequester = progressUpTarget,
@@ -2615,7 +2617,7 @@ private fun PlayerControlsOverlay(
                     }
 
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(34.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(27.5.dp), verticalAlignment = Alignment.CenterVertically) {
                         mainButtons.forEach { button -> key(button) { renderButton(button) } }
                     }
                 }
@@ -2645,39 +2647,66 @@ private fun PlayerTitleBlock(uiState: PlayerUiState, modifier: Modifier = Modifi
     val isEpisode = uiState.currentSeason != null && uiState.currentEpisode != null
     val displayName = if (isEpisode) uiState.contentName ?: uiState.title else uiState.title
     if (displayName.isBlank()) return
-    Column(modifier = modifier.padding(start = 80.dp, top = 28.dp, end = 280.dp)) {
+    val streamInfo = uiState.streamInfoData
+    // Measured off the reference (1920x1080 at 2x): Montserrat throughout.
+    Column(modifier = modifier.padding(start = 80.dp, top = 29.5.dp, end = 280.dp)) {
         Text(
             text = displayName,
             color = Color.White,
-            fontSize = 19.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+            letterSpacing = 0.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         if (isEpisode) {
             val episodeTitle = uiState.currentEpisodeTitle?.takeIf { it.isNotBlank() }?.localizeEpisodeTitle(appContext)
+            Spacer(modifier = Modifier.height(2.6.dp))
             Text(
                 text = "S${uiState.currentSeason}:E${uiState.currentEpisode}" + (episodeTitle?.let { " - $it" } ?: ""),
                 color = Color.White.copy(alpha = 0.72f),
-                fontSize = 12.sp,
+                fontSize = 12.8.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                letterSpacing = 0.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
         val quality = uiState.currentStreamQuality?.label
-        if (quality != null) {
-            Spacer(modifier = Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        val size = streamInfo?.fileSize?.takeIf { it > 0 }?.let { bytes ->
+            if (bytes >= 1_000_000_000L) String.format(java.util.Locale.US, "%.1f GB", bytes / 1_000_000_000.0)
+            else String.format(java.util.Locale.US, "%d MB", bytes / 1_000_000L)
+        }
+        val decoder = if (uiState.internalPlayerEngine == com.nuvio.tv.data.local.InternalPlayerEngine.EXOPLAYER) "hw" else "sw"
+        if (quality != null || size != null) {
+            Spacer(modifier = Modifier.height(3.3.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 if (quality != null) {
                     Text(
                         text = quality,
                         color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                        letterSpacing = 0.sp,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color.White.copy(alpha = 0.28f))
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                            .background(Color.White.copy(alpha = 0.24f))
+                            .padding(horizontal = 6.5.dp, vertical = 2.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                if (size != null) {
+                    Text(
+                        text = size, color = Color(0xFFC4B27F), fontSize = 11.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp,
+                        fontWeight = FontWeight.Medium, maxLines = 1
+                    )
+                    Spacer(modifier = Modifier.width(53.dp))
+                    Text(
+                        text = decoder, color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                        letterSpacing = 0.sp, fontWeight = FontWeight.Medium, maxLines = 1
                     )
                 }
             }
@@ -2761,7 +2790,10 @@ private fun PlayerTimeSide(viewModel: PlayerViewModel, duration: Boolean) {
         )
         return
     }
-    Text(text = formatTime(millis), fontSize = 11.sp, color = Color.White.copy(alpha = 0.9f))
+    Text(
+        text = formatTimeBar(millis), fontSize = 11.4.sp, fontWeight = FontWeight.Medium,
+        fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp, color = Color.White.copy(alpha = 0.9f)
+    )
 }
 
 @Composable
@@ -2825,10 +2857,11 @@ private fun ControlButton(
     /** Left from this button goes here (the play button beside the bar). */
     leftFocusRequester: FocusRequester? = null,
     /** The player's small named buttons: a short pill with a small icon and 11 sp text. */
-    compact: Boolean = false
+    compact: Boolean = false,
+    iconSize: androidx.compose.ui.unit.Dp = 16.dp
 ) {
     if (label != null) {
-        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused, alwaysLabel, leftFocusRequester, compact)
+        NamedControlButton(icon, iconPainter, label, onClick, focusRequester, upFocusRequester, enabled, onDownKey, onFocused, alwaysLabel, leftFocusRequester, compact, iconSize)
         return
     }
     var isFocused by remember { mutableStateOf(false) }
@@ -2915,7 +2948,8 @@ private fun NamedControlButton(
     onFocused: (() -> Unit)?,
     alwaysLabel: Boolean = false,
     leftFocusRequester: FocusRequester? = null,
-    compact: Boolean = false
+    compact: Boolean = false,
+    iconSize: androidx.compose.ui.unit.Dp = 16.dp
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val content = if (isFocused) Color.Black else Color.White.copy(alpha = if (enabled) 1f else 0.4f)
@@ -2955,23 +2989,24 @@ private fun NamedControlButton(
                 onClick = onClick
             )
             .then(if (compact) Modifier else Modifier.animateContentSize(animationSpec = tween(240)))
-            .padding(horizontal = if (compact) 9.dp else 12.dp),
+            .padding(horizontal = if (compact) 8.dp else 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (iconPainter != null) {
             Icon(painter = iconPainter, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) 14.dp else NuvioTheme.spacing.xl))
         } else {
-            Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) 14.dp else 24.dp))
+            Icon(imageVector = icon, contentDescription = label, tint = content, modifier = Modifier.size(if (compact) iconSize else 24.dp))
         }
         if (if (compact) alwaysLabel else (isFocused || alwaysLabel)) {
-            Spacer(modifier = Modifier.width(if (compact) 6.dp else 8.dp))
+            Spacer(modifier = Modifier.width(if (compact) 7.5.dp else 8.dp))
             Text(
                 text = label,
-                color = if (isFocused) Color.Black else Color.White.copy(alpha = 0.92f),
-                fontSize = if (compact) 11.sp else 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                modifier = Modifier.padding(end = 4.dp)
+                color = if (isFocused) Color.Black else Color.White,
+                fontSize = if (compact) 11.4.sp else 14.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                letterSpacing = 0.sp,
+                maxLines = 1
             )
         }
     }
@@ -3114,31 +3149,21 @@ private fun ProgressBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(if (isFocused) 6.dp else 4.dp)
-                .clip(RoundedCornerShape(3.dp))
-                .background(Color.White.copy(alpha = if (isFocused) 0.24f else 0.18f))
+                .height(3.dp)
+                .clip(RoundedCornerShape(1.5.dp))
+                .background(Color.White.copy(alpha = 0.19f))
         ) {
-            // Buffered-ahead overlay: the played fill's colour, faded so it reads under it.
-            if (animatedBufferedProgress > 0f) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(trackWidth * animatedBufferedProgress)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(NuvioTheme.colors.Secondary.copy(alpha = 0.35f))
-                )
-            }
-            // Played fill.
+            // Played fill: the reference's blue, 3 dp, with no buffered streak ahead of it.
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(trackWidth * animatedProgress)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(accentBrush)
+                    .clip(RoundedCornerShape(1.5.dp))
+                    .background(Color(0xFF1498FE))
             )
             if (loading) LoadingStreak(color = NuvioTheme.colors.Secondary)
         }
-        if (isFocused && !loading) {
+        if (!loading) {
             Box(
                 modifier = Modifier
                     .offset(x = trackWidth * animatedProgress - ProgressThumbSize / 2)
@@ -3150,7 +3175,7 @@ private fun ProgressBar(
     }
 }
 
-private val ProgressThumbSize = 14.dp
+private val ProgressThumbSize = 12.dp
 
 /** A soft band of [color] sweeping along the bar, left to right, while a new source loads. */
 @Composable
@@ -3298,7 +3323,8 @@ private fun PlayerClockOverlay(
 
     Column(
         modifier = Modifier
-            .padding(horizontal = NuvioTheme.spacing.xxs, vertical = NuvioTheme.spacing.xxs),
+            .padding(horizontal = NuvioTheme.spacing.xxs, vertical = NuvioTheme.spacing.xxs)
+            .offset(x = 4.dp, y = 15.5.dp),
         horizontalAlignment = Alignment.End
     ) {
         val clockText = timeFormatter.format(Date(nowMs))
@@ -3307,21 +3333,55 @@ private fun PlayerClockOverlay(
         Text(
             text = if (clockSplit > 0) androidx.compose.ui.text.buildAnnotatedString {
                 append(clockText.substring(0, clockSplit))
-                withStyle(androidx.compose.ui.text.SpanStyle(fontSize = 12.sp)) { append(clockText.substring(clockSplit)) }
+                withStyle(androidx.compose.ui.text.SpanStyle(fontSize = 11.5.sp)) { append(clockText.substring(clockSplit)) }
             } else androidx.compose.ui.text.AnnotatedString(clockText),
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 19.5.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+                letterSpacing = 0.sp
             ),
             color = Color.White
         )
         if (!isLive) {
+            Spacer(modifier = Modifier.height(3.5.dp))
             Text(
                 text = stringResource(R.string.player_ends_at, endTimeText),
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.2.sp, fontWeight = FontWeight.Medium, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp),
                 color = Color.White.copy(alpha = 0.85f)
             )
         }
+    }
+}
+
+/** "Press back again to exit": a white card at the bottom centre, 198 x 34 dp, over everything (measured off the reference). */
+@Composable
+private fun ExitHintToast(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .padding(bottom = 12.dp)
+            .height(34.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(Color(0xFFEDECED))
+            .padding(start = 13.5.dp, end = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = androidx.compose.material.icons.Icons.Outlined.Info,
+            contentDescription = null,
+            tint = Color(0xFF1498FE),
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = stringResource(R.string.confirm_exit_toast),
+            color = Color(0xFF232323),
+            fontSize = 11.8.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+            letterSpacing = 0.sp,
+            maxLines = 1
+        )
     }
 }
 
@@ -4127,6 +4187,15 @@ internal fun DialogButton(
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+/** The bar's own format: "03:06", "1:02:03". */
+private fun formatTimeBar(millis: Long): String {
+    if (millis <= 0) return "00:00"
+    val hours = TimeUnit.MILLISECONDS.toHours(millis)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+    return if (hours > 0) String.format("%d:%02d:%02d", hours, minutes, seconds) else String.format("%02d:%02d", minutes, seconds)
 }
 
 private fun formatTime(millis: Long): String {

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -47,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -124,7 +126,38 @@ private fun PanelLogo(meta: Meta) {
     }
 }
 
+private val PanelFont = androidx.compose.ui.text.font.FontFamily.Default
+private val PanelText = Color(0xFFDEDEDE)
+
+/** "👍 83%  ·  1997  ·  29 Seasons", as the reference sets it under the title. */
+@Composable
+private fun PanelMetaRow(meta: Meta, seasonCount: Int) {
+    val score = meta.imdbRating?.takeIf { it > 0f }
+    val percent = score?.let { Math.round(it * 10f) }
+    val year = remember(meta) { formatYearRange(meta.releaseInfo) }
+    @Composable
+    fun Dot() = Text("·", color = PanelText, fontSize = 15.sp, fontFamily = PanelFont, letterSpacing = 0.sp, modifier = Modifier.padding(horizontal = 8.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (percent != null) {
+            val like = com.nuvio.tv.ui.newlook.home.ratingPercentColor(percent)
+            DetailGlyphIcon(DetailGlyph.THUMB_UP, true, like, 17.dp)
+            Spacer(Modifier.width(10.dp))
+            Text("$percent%", color = like, fontSize = 15.sp, fontFamily = PanelFont, letterSpacing = 0.sp, maxLines = 1)
+            Dot()
+        }
+        if (year != null) {
+            Text(year, color = PanelText, fontSize = 15.sp, fontFamily = PanelFont, letterSpacing = 0.sp, maxLines = 1)
+            Dot()
+        }
+        Text(
+            pluralStringResource(R.plurals.nd_seasons_title, seasonCount, seasonCount),
+            color = PanelText, fontSize = 15.sp, fontFamily = PanelFont, letterSpacing = 0.sp, maxLines = 1
+        )
+    }
+}
+
 private val RowShape = RoundedCornerShape(10.dp)
+private val SeasonPill = RoundedCornerShape(50)
 private val EpisodeShape = RoundedCornerShape(12.dp)
 
 /** The Trailers tab's place in the season list (after the seasons and Specials). */
@@ -267,24 +300,20 @@ internal fun EpisodesPanel(
 
     PanelFrame {
         Row(Modifier.fillMaxSize().alpha(if (menuFor != null) 0.3f else 1f)) {
+            // Measured off the reference (1920x1080 at 2x): pills 48 dp in and 260 dp wide, the episodes 356 dp in.
             Column(
-                modifier = Modifier.width(272.dp).fillMaxHeight().padding(start = 32.dp, top = 36.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.width(308.dp).fillMaxHeight().padding(start = 48.dp, top = 40.dp),
+                horizontalAlignment = Alignment.Start
             ) {
-                PanelLogo(meta)
-                Spacer(Modifier.height(16.dp))
                 Text(
-                    stringResource(
-                        R.string.nd_panel_seasons_episodes,
-                        pluralStringResource(R.plurals.nd_seasons_title, seasonCount, seasonCount),
-                        totalEpisodes
-                    ),
-                    color = NdText2, fontSize = 13.sp
+                    meta.name, color = PanelText, fontSize = 28.sp, fontWeight = FontWeight.Bold,
+                    fontFamily = PanelFont, letterSpacing = 0.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(13.5.dp))
+                PanelMetaRow(meta, seasonCount)
+                Spacer(Modifier.height(39.dp))
                 LazyColumn(
                     state = seasonListState,
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     contentPadding = PaddingValues(bottom = 24.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -294,11 +323,12 @@ internal fun EpisodesPanel(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(38.dp)
+                                
+                                .height(36.dp)
                                 .then(
                                     when {
-                                        focused -> Modifier.clip(RowShape).background(Color.White)
-                                        selected -> Modifier.clip(RowShape).background(Color(0xFF1C1C1C))
+                                        focused -> Modifier.clip(SeasonPill).background(Color.White)
+                                        selected -> Modifier.clip(SeasonPill).background(Color(0xFF4A4A4A))
                                         else -> Modifier
                                     }
                                 )
@@ -314,7 +344,7 @@ internal fun EpisodesPanel(
                                         first?.let { runCatching { requesterFor(it).requestFocus() } }
                                     }
                                 )
-                                .padding(horizontal = 14.dp),
+                                .padding(start = 14.dp, end = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -323,21 +353,22 @@ internal fun EpisodesPanel(
                                     0 -> stringResource(R.string.nd_panel_specials)
                                     else -> stringResource(R.string.nd_panel_season, s)
                                 },
-                                color = if (focused) Color.Black else if (selected) Color.White else Color.White.copy(alpha = 0.85f),
-                                fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f)
+                                color = if (focused) Color.Black else if (selected) Color(0xFFDBDBDB) else Color(0xFFCECECE),
+                                fontSize = 14.sp, fontWeight = FontWeight.Medium, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp,
+                                maxLines = 1, modifier = Modifier.weight(1f)
                             )
                             if (s == TRAILERS_TAB) {
-                                Text(pluralStringResource(R.plurals.nd_panel_videos_count, trailers.size, trailers.size), color = if (focused) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 12.sp)
+                                Text(pluralStringResource(R.plurals.nd_panel_videos_count, trailers.size, trailers.size), color = if (focused) Color.Black.copy(alpha = 0.6f) else if (selected) Color(0xFFC0C0C0) else Color(0xFFA8A8A8), fontSize = 14.sp, fontWeight = FontWeight.Medium, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp, maxLines = 1)
                             } else {
                                 val count = bySeason[s].orEmpty().size
-                                Text(pluralStringResource(R.plurals.nd_panel_episodes_count, count, count), color = if (focused) Color.Black.copy(alpha = 0.6f) else NdText2, fontSize = 12.sp)
+                                Text(pluralStringResource(R.plurals.nd_panel_episodes_count, count, count), color = if (focused) Color.Black.copy(alpha = 0.6f) else if (selected) Color(0xFFC0C0C0) else Color(0xFFA8A8A8), fontSize = 14.sp, fontWeight = FontWeight.Medium, fontFamily = com.nuvio.tv.ui.theme.MontserratFamily, letterSpacing = 0.sp, maxLines = 1)
                             }
                         }
                     }
                 }
             }
-            Spacer(Modifier.width(32.dp))
-            Box(Modifier.weight(1f).fillMaxHeight().padding(end = 32.dp)) {
+            Spacer(Modifier.width(48.dp))
+            Box(Modifier.weight(1f).fillMaxHeight().padding(end = 48.dp)) {
                 val showing = reviewsFor
                 if (showing == null && season == TRAILERS_TAB) {
                     TrailerList(
@@ -427,11 +458,18 @@ private fun EpisodeList(
 ) {
     val ratings = episodes.mapNotNull { v -> episodeRating(state, v) }
     val average = if (ratings.isEmpty()) null else ratings.average()
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically) {
+    Column(Modifier.fillMaxSize().padding(top = 39.5.dp)) {
+        Row(Modifier.fillMaxWidth().height(33.dp)) {
             Text(
                 if (season == 0) stringResource(R.string.nd_panel_specials) else stringResource(R.string.nd_panel_season, season),
-                color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold
+                color = PanelText, fontSize = 28.sp, fontWeight = FontWeight.Bold, fontFamily = PanelFont, letterSpacing = 0.sp,
+                modifier = Modifier.alignByBaseline()
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                pluralStringResource(R.plurals.nd_panel_episodes_count, episodes.size, episodes.size).split(" ").joinToString(" ") { w -> w.replaceFirstChar { it.uppercase() } },
+                color = Color(0xFFB5B5B5), fontSize = 14.5.sp, fontFamily = PanelFont, letterSpacing = 0.sp,
+                modifier = Modifier.alignByBaseline()
             )
             Spacer(Modifier.weight(1f))
             if (average != null) {
@@ -442,8 +480,8 @@ private fun EpisodeList(
         }
         LazyColumn(
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(bottom = 24.dp, top = 2.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 24.dp, top = 10.dp)
         ) {
             itemsIndexed(episodes, key = { _, v -> v.id }) { index, video ->
                 val upcoming = upcomingReminder(meta, video)
@@ -464,8 +502,9 @@ private fun EpisodeList(
                         val native = event.nativeKeyEvent
                         if (native.action != android.view.KeyEvent.ACTION_DOWN) return@onPreviewKeyEvent false
                         when (native.keyCode) {
-                            android.view.KeyEvent.KEYCODE_DPAD_DOWN -> index == episodes.lastIndex && onPastEnd(true)
-                            android.view.KeyEvent.KEYCODE_DPAD_UP -> index == 0 && onPastEnd(false)
+                            // The season stays put: the ends don't spill into the next or previous one (Left goes to the seasons).
+                            android.view.KeyEvent.KEYCODE_DPAD_DOWN -> index == episodes.lastIndex
+                            android.view.KeyEvent.KEYCODE_DPAD_UP -> index == 0
                             else -> false
                         }
                     }
@@ -486,14 +525,14 @@ private fun TrailerList(
     onPlay: (com.nuvio.tv.domain.model.MetaTrailer) -> Unit,
     onPastStart: () -> Boolean
 ) {
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.nd_panel_trailers), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+    Column(Modifier.fillMaxSize().padding(top = 39.5.dp)) {
+        Row(Modifier.fillMaxWidth().height(33.dp)) {
+            Text(stringResource(R.string.nd_panel_trailers), color = PanelText, fontSize = 28.sp, fontWeight = FontWeight.Bold, fontFamily = PanelFont, letterSpacing = 0.sp)
         }
         LazyColumn(
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(bottom = 24.dp, top = 2.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 24.dp, top = 10.dp)
         ) {
             itemsIndexed(trailers, key = { i, t -> "${t.ytId}|$i" }) { index, trailer ->
                 TrailerRow(
@@ -528,13 +567,13 @@ private fun TrailerRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (focused) Modifier.border(2.5.dp, Color.White, EpisodeShape) else Modifier)
-            .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onPlay)
-            .padding(6.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .ndClickable(focusRequester = requester, onFocusChanged = { focused = it }, onClick = onPlay),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(Modifier.width(192.dp).height(108.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF151515))) {
+        Box(Modifier.width(235.5.dp).height(132.5.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF151515))) {
+            // The selector is a frame on the thumbnail itself, not on the whole row.
+            if (focused) Box(Modifier.fillMaxSize().zIndex(1f).border(3.dp, Color.White, RoundedCornerShape(8.dp)))
             AsyncImage(
                 model = remember(thumb) { ImageRequest.Builder(context).data(thumb).crossfade(true).build() },
                 contentDescription = null,
@@ -643,17 +682,17 @@ private fun EpisodeRow(
         modifier = modifier
             .fillMaxWidth()
             .onGloballyPositioned { bounds = it.boundsInRoot() }
-            .then(if (focused) Modifier.border(2.5.dp, Color.White, EpisodeShape) else Modifier)
             .ndClickable(
                 focusRequester = requester,
                 onFocusChanged = { focused = it },
                 onLongClick = { onHold(bounds) },
                 onClick = onPlay
-            )
-            .padding(6.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ),
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Box(Modifier.width(192.dp).height(108.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF151515))) {
+        Box(Modifier.width(235.5.dp).height(132.5.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF151515))) {
+            // The selector is a frame on the thumbnail itself, not on the whole row.
+            if (focused) Box(Modifier.fillMaxSize().zIndex(1f).border(3.dp, Color.White, RoundedCornerShape(8.dp)))
             video.thumbnail?.let { thumb ->
                 AsyncImage(
                     model = remember(thumb) { ImageRequest.Builder(context).data(thumb).crossfade(true).build() },
@@ -664,14 +703,15 @@ private fun EpisodeRow(
             }
             video.episode?.let { n ->
                 Text(
-                    stringResource(R.string.nd_panel_episode_tag, n),
-                    color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold,
+                    n.toString(),
+                    color = Color.White, fontSize = 13.sp, fontFamily = PanelFont, letterSpacing = 0.sp,
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
+                        .align(Alignment.TopStart)
                         .padding(6.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .background(Color.Black.copy(alpha = 0.72f))
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                        .size(width = 20.dp, height = 19.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.Black.copy(alpha = 0.55f))
+                        .wrapContentSize(Alignment.Center)
                 )
             }
             if (upcomingDate != null) {
@@ -700,11 +740,11 @@ private fun EpisodeRow(
                 }
             }
         }
-        Column(Modifier.weight(1f).padding(top = 4.dp, end = 8.dp)) {
+        Column(Modifier.weight(1f).padding(top = 8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     video.title.ifBlank { stringResource(R.string.nd_panel_episode_tag, video.episode ?: 0) },
-                    color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold,
+                    color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold, fontFamily = PanelFont, letterSpacing = 0.sp,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false)
                 )
                 if (rated != null) {
@@ -719,14 +759,13 @@ private fun EpisodeRow(
                     )
                 }
             }
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val parts = listOfNotNull(
-                    video.runtime?.takeIf { it > 0 }?.let { stringResource(R.string.nd_panel_minutes, it) },
-                    if (upcomingDate != null) stringResource(R.string.nd_coming, shortReleaseDate(upcomingDate)) else shortDate(video.released),
-                    if (reminderOn) stringResource(R.string.nd_reminder_on) else null
-                )
-                Text(parts.joinToString(" · "), color = NdText2, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                // "7 Apr, 1999  (23m)": the date, then the length in brackets.
+                val date = if (upcomingDate != null) stringResource(R.string.nd_coming, shortReleaseDate(upcomingDate)) else shortDate(video.released)
+                val runtime = video.runtime?.takeIf { it > 0 }?.let { "(${it}m)" }
+                val line = listOfNotNull(date, runtime, if (reminderOn) stringResource(R.string.nd_reminder_on) else null).joinToString("  ")
+                Text(line, color = Color(0xFFE7E7E7), fontSize = 13.sp, fontFamily = PanelFont, letterSpacing = 0.sp, modifier = Modifier.weight(1f))
                 episodeRating(state, video)?.let {
                     Text("★", color = Color(0xFFF5C518), fontSize = 12.sp)
                     Spacer(Modifier.width(3.dp))
@@ -735,7 +774,7 @@ private fun EpisodeRow(
             }
             video.overview?.takeIf { it.isNotBlank() }?.let {
                 Spacer(Modifier.height(6.dp))
-                Text(it, color = Color.White.copy(alpha = 0.72f), fontSize = 12.sp, lineHeight = 17.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                Text(it, color = Color(0xFFADADAD), fontSize = 13.sp, fontFamily = PanelFont, letterSpacing = 0.sp, lineHeight = 15.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
             }
         }
     }
@@ -743,10 +782,10 @@ private fun EpisodeRow(
 
 private fun shortDate(raw: String?): String? {
     if (raw.isNullOrBlank()) return null
-    val date = runCatching { java.time.OffsetDateTime.parse(raw).toLocalDate() }.getOrNull()
+    val date = runCatching { java.time.OffsetDateTime.parse(raw).atZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalDate() }.getOrNull()
         ?: runCatching { java.time.LocalDate.parse(raw.take(10)) }.getOrNull()
         ?: return null
-    return date.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM))
+    return date.format(java.time.format.DateTimeFormatter.ofPattern("d MMM, yyyy", java.util.Locale.getDefault()))
 }
 
 /** Hold-OK menu for one episode: Play, the three ratings (a check on the current one), then Reviews. */
