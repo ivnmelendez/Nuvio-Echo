@@ -59,6 +59,8 @@ data class MetaDetailsUiState(
     val isMovieWatchedPending: Boolean = false,
     val watchedEpisodes: Set<Pair<Int, Int>> = emptySet(),
     val episodeWatchedPendingKeys: Set<String> = emptySet(),
+    /** Episodes just unmarked: shown unwatched at once, while the tracking service (which can take long) catches up. */
+    val episodeUnwatchedOptimistic: Set<Pair<Int, Int>> = emptySet(),
     val blurUnwatchedEpisodes: Boolean = false,
     val randomEpisodeEnabled: Boolean = false,
     val episodeShuffle: com.nuvio.tv.domain.model.EpisodeShuffleSettings = com.nuvio.tv.domain.model.EpisodeShuffleSettings(),

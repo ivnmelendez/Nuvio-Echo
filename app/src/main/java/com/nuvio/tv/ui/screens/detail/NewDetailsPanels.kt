@@ -412,7 +412,7 @@ internal fun EpisodesPanel(
         menuFor?.let { video ->
             val upcoming = upcomingReminder(meta, video)
             val key = (video.season ?: 0) to (video.episode ?: 0)
-            val watched = key in state.watchedEpisodes || state.episodeProgressMap[key]?.isCompleted() == true
+            val watched = key !in state.episodeUnwatchedOptimistic && (key in state.watchedEpisodes || state.episodeProgressMap[key]?.isCompleted() == true)
             val close = { refocusEpisode = video.id; menuFor = null }
             // As in the reference: one action, then Close.
             com.nuvio.tv.ui.newlook.ReferenceOptionsMenu(
@@ -673,7 +673,7 @@ private fun EpisodeRow(
     var bounds by remember { mutableStateOf(Rect.Zero) }
     val key = (video.season ?: 0) to (video.episode ?: 0)
     val progress = state.episodeProgressMap[key]
-    val watched = key in state.watchedEpisodes || progress?.isCompleted() == true
+    val watched = key !in state.episodeUnwatchedOptimistic && (key in state.watchedEpisodes || progress?.isCompleted() == true)
     Row(
         modifier = modifier
             .fillMaxWidth()

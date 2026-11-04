@@ -2265,6 +2265,15 @@ class MetaDetailsViewModel @Inject constructor(
         }
     }
 
+    /** Shows the episodes unwatched right away; after a while the real state (the tracking service's) takes over again. */
+    private fun showEpisodesUnwatchedNow(keys: Set<Pair<Int, Int>>) {
+        _uiState.update { it.copy(episodeUnwatchedOptimistic = it.episodeUnwatchedOptimistic + keys) }
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(60_000L)
+            _uiState.update { it.copy(episodeUnwatchedOptimistic = it.episodeUnwatchedOptimistic - keys) }
+        }
+    }
+
     private fun toggleEpisodeWatched(video: Video) {
         val meta = _uiState.value.meta ?: return
         val season = video.season ?: return
@@ -2283,11 +2292,13 @@ class MetaDetailsViewModel @Inject constructor(
                 if (isWatched) {
                     _optimisticMarks -= season to episode
                     _optimisticUnmarks += season to episode
+                    showEpisodesUnwatchedNow(setOf(season to episode))
                     watchProgressRepository.removeFromHistory(_effectiveContentId.value, videoId = video.id, season = season, episode = episode)
                     showMessage(localizedContext.getString(R.string.detail_episode_marked_unwatched))
                 } else {
                     _optimisticUnmarks -= season to episode
                     _optimisticMarks += season to episode
+                    _uiState.update { it.copy(episodeUnwatchedOptimistic = it.episodeUnwatchedOptimistic - (season to episode)) }
                     watchProgressRepository.markAsCompleted(buildCompletedEpisodeProgress(meta, video))
                     showMessage(localizedContext.getString(R.string.detail_episode_marked_watched))
                 }
@@ -2391,6 +2402,7 @@ class MetaDetailsViewModel @Inject constructor(
             val optimisticKeys = watched.map { it.season!! to it.episode!! }.toSet()
             _optimisticMarks -= optimisticKeys
             _optimisticUnmarks += optimisticKeys
+            showEpisodesUnwatchedNow(optimisticKeys)
 
             val pendingKeys = watched.map { episodePendingKey(it) }.toSet()
             _uiState.update {
