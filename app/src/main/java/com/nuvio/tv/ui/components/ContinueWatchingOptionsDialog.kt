@@ -30,19 +30,12 @@ fun ContinueWatchingOptionsDialog(
         is ContinueWatchingItem.InProgress -> item.progress.backdrop ?: item.progress.poster
         is ContinueWatchingItem.NextUp -> item.info.thumbnail ?: item.info.backdrop ?: item.info.poster
     }
-    NewLookOptionsMenu(
-        title = title,
-        subtitle = stringResource(R.string.cw_dialog_subtitle),
-        image = image,
-        options = listOfNotNull(
-            NewLookOption(stringResource(R.string.cw_action_go_to_details), onClick = onDetails),
-            if (showPlayManually && isPlayEnabled) NewLookOption(stringResource(R.string.play_manually), onClick = onPlayManually) else null,
-            if (item is ContinueWatchingItem.InProgress && isPlayEnabled) {
-                NewLookOption(stringResource(R.string.cw_action_start_from_beginning), onClick = onStartFromBeginning)
-            } else {
-                null
-            },
-            NewLookOption(stringResource(R.string.cw_action_remove), onClick = onRemove)
+    // As in the reference: View Details, Remove, Close.
+    com.nuvio.tv.ui.newlook.ReferenceOptionsMenu(
+        options = listOf(
+            NewLookOption(stringResource(R.string.cw_view_details), onClick = onDetails),
+            NewLookOption(stringResource(R.string.cw_action_remove), onClick = onRemove),
+            NewLookOption(stringResource(R.string.action_close), onClick = onDismiss)
         ),
         onDismiss = onDismiss
     )

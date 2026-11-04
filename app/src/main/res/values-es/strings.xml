@@ -157,6 +157,7 @@
     <!-- Short versions for compact card styles (wide/poster) -->
     <string name="cw_action_go_to_details">Ir a detalles</string>
     <string name="cw_action_start_from_beginning">Empezar desde el principio</string>
+    <string name="cw_view_details">Ver detalles</string>
     <string name="cw_action_remove">Eliminar</string>
     <string name="cw_dialog_subtitle">Elige qué hacer con este elemento.</string>
     <string name="home_poster_dialog_subtitle">Acciones del título</string>
