@@ -18,10 +18,10 @@ object AppFeaturePolicy {
     /** The parental guide overlay needs a third-party server; the Play build never asks it. */
     val parentalGuideAvailable: Boolean = false
     /**
-     * True: Home shows only the published rows and never the addons' catalogs. Off in the Play build, where Home
-     * starts on the installed addons' catalogs (Cinemeta's) until an addon names its own rows file.
+     * True: Home shows only the published rows (the default file, or the rows file of an addon that names one) and
+     * never loads the addons' catalogs (Cinemeta's included), the built-in rows or the Smart Highlights.
      */
-    val homeFromPublishedRowsOnly: Boolean = false
+    val homeFromPublishedRowsOnly: Boolean = true
     /** Without an installed addon that serves streams, a title's page has no Play button (trailer and info only). */
     val playNeedsStreamAddon: Boolean = true
     val essentialSettingsOnly: Boolean = true

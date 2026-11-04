@@ -181,9 +181,8 @@ android {
         create("playstore") {
             dimension = "distribution"
             applicationId = "com.tivistream.tv"
-            // No rows of the owner's own: Home shows the installed addons' catalogs (Cinemeta's at first), unless an
-            // addon names a rows file. (default-config.json in the config repository is a ready fallback if wanted.)
-            buildConfigField("String", "REMOTE_CONFIG_URL", "\"\"")
+            // REMOTE_CONFIG_URL is the default one from defaultConfig: Home's rows come from it until an addon names
+            // its own rows file in its manifest (HomeConfigUrlProvider); then that addon's rows are used instead.
             // No crash reporting service in the Play build: Play Console already has crash and ANR reports.
             buildConfigField("String", "SENTRY_DSN", "\"\"")
             // No activation server in the Play build.
