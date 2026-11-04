@@ -409,32 +409,26 @@ internal fun EpisodesPanel(
         }
         menuFor?.let { video ->
             val upcoming = upcomingReminder(meta, video)
-            EpisodeHoldMenu(
-                video = video,
-                anchor = menuAnchor,
-                current = episodeRatings[(video.season ?: 0) to (video.episode ?: 0)],
-                watched = ((video.season ?: 0) to (video.episode ?: 0)).let { key ->
-                    key in state.watchedEpisodes || state.episodeProgressMap[key]?.isCompleted() == true
-                },
-                onToggleWatched = { onToggleEpisodeWatched(video); refocusEpisode = video.id; menuFor = null },
-                upcoming = upcoming != null,
-                reminderOn = upcoming != null && upcoming.key in reminders,
-                onPlay = {
+            val key = (video.season ?: 0) to (video.episode ?: 0)
+            val watched = key in state.watchedEpisodes || state.episodeProgressMap[key]?.isCompleted() == true
+            val close = { refocusEpisode = video.id; menuFor = null }
+            // As in the reference: one action, then Close.
+            com.nuvio.tv.ui.newlook.ReferenceOptionsMenu(
+                options = listOfNotNull(
                     if (upcoming != null) {
-                        onToggleReminder(video)
-                        refocusEpisode = video.id
-                        menuFor = null
+                        com.nuvio.tv.ui.newlook.NewLookOption(
+                            stringResource(if (upcoming.key in reminders) R.string.nd_reminder_on else R.string.nd_remind_me),
+                            onClick = { onToggleReminder(video); close() }
+                        )
                     } else {
-                        menuFor = null
-                        onPlayEpisode(video)
-                    }
-                },
-                onRate = { rating -> onRateEpisode(video, rating); refocusEpisode = video.id; menuFor = null },
-                onReviews = {
-                    onLoadEpisodeReviews(video)
-                    menuFor = null
-                    reviewsFor = video
-                }
+                        com.nuvio.tv.ui.newlook.NewLookOption(
+                            stringResource(if (watched) R.string.nd_hold_mark_unwatched else R.string.nd_hold_mark_watched),
+                            onClick = { onToggleEpisodeWatched(video); close() }
+                        )
+                    },
+                    com.nuvio.tv.ui.newlook.NewLookOption(stringResource(R.string.action_close), onClick = close)
+                ),
+                onDismiss = close
             )
         }
     }
