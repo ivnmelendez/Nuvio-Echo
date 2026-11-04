@@ -35,9 +35,13 @@ class HomeConfigUrlProvider @Inject constructor(
         var lastKnown: String = BuildConfig.REMOTE_CONFIG_URL.trim()
             private set
 
-        /** The first enabled addon that names a rows file wins; otherwise the build's address. */
+        /** The owner's addon (Telegram-Stremio) names itself `telegram.media.<token>`; no other addon may name a rows file. */
+        const val OWN_ADDON_ID_PREFIX = "telegram.media."
+
+        /** The first enabled addon of the owner's that names a rows file wins; otherwise the build's address. */
         fun pick(addons: List<Addon>, fallback: String = BuildConfig.REMOTE_CONFIG_URL.trim()): String =
             addons.enabledAddons()
+                .filter { it.id.startsWith(OWN_ADDON_ID_PREFIX) }
                 .firstNotNullOfOrNull { addon ->
                     addon.behaviorHints?.homeConfigUrl?.trim()?.takeIf { it.startsWith("https://") }
                 }

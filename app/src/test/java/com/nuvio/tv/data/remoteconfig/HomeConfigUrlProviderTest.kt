@@ -23,25 +23,30 @@ class HomeConfigUrlProviderTest {
     @Test
     fun `an addon that names a rows file wins over the build address`() {
         val url = "https://rows.example/home-config.json"
-        assertEquals(url, HomeConfigUrlProvider.pick(listOf(addon("cinemeta"), addon("mine", url)), "https://build.example/c.json"))
+        assertEquals(url, HomeConfigUrlProvider.pick(listOf(addon("cinemeta"), addon("telegram.media.mine", url)), "https://build.example/c.json"))
+    }
+
+    @Test
+    fun `an addon that is not the owner's cannot name a rows file`() {
+        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("other", "https://rows.example/c.json")), fallback))
     }
 
     @Test
     fun `a disabled addon is ignored`() {
-        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("mine", "https://rows.example/c.json", enabled = false)), fallback))
+        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("telegram.media.mine", "https://rows.example/c.json", enabled = false)), fallback))
     }
 
     @Test
     fun `only https addresses are accepted`() {
-        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("mine", "http://rows.example/c.json")), fallback))
-        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("mine", "  ")), fallback))
+        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("telegram.media.mine", "http://rows.example/c.json")), fallback))
+        assertEquals(fallback, HomeConfigUrlProvider.pick(listOf(addon("telegram.media.mine", "  ")), fallback))
     }
 
     @Test
     fun `the first addon in order wins when several name one`() {
         assertEquals(
             "https://a.example/c.json",
-            HomeConfigUrlProvider.pick(listOf(addon("a", "https://a.example/c.json"), addon("b", "https://b.example/c.json")), fallback)
+            HomeConfigUrlProvider.pick(listOf(addon("telegram.media.a", "https://a.example/c.json"), addon("telegram.media.b", "https://b.example/c.json")), fallback)
         )
     }
 }
