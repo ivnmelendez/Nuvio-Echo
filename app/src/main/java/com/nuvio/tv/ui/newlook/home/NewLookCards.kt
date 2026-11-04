@@ -243,13 +243,33 @@ internal fun BoxScope.CardLogo(
     cardWidth: Dp,
     cardHeight: Dp,
     inset: Dp,
-    textSize: Float
+    textSize: Float,
+    /**
+     * The opened poster card's way (measured off the reference): the logo is fitted into a fixed box, 0.475 of the
+     * card's width by 0.214 of its height, at the bottom left, and sits centred in it. Wide logos fill the box's width,
+     * tall ones its height and come out narrower and more to the middle. The picture is decoded at the box's size.
+     */
+    fitted: Boolean = false
 ) {
     var failed by remember(logo) { mutableStateOf(false) }
     if (!logo.isNullOrBlank() && !failed) {
         val context = LocalContext.current
         val light = com.nuvio.tv.ui.newlook.LocalLightMode.current
         val request = remember(logo, light) { ImageRequest.Builder(context).data(logo).crossfade(!light).build() }
+        if (fitted) {
+            AsyncImage(
+                model = request,
+                contentDescription = title,
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.BottomCenter,
+                onError = { failed = true },
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 11.5.dp, bottom = 7.5.dp)
+                    .size(cardWidth * 0.475f, cardHeight * 0.214f)
+            )
+            return
+        }
         AsyncImage(
             model = request,
             contentDescription = title,
@@ -451,7 +471,7 @@ internal fun PosterCard(
                 }
                 // Fixed, never animated or recomputed: a darker foot behind the logo and the corner labels.
                 Box(modifier = Modifier.fillMaxSize().background(OpenCardFoot))
-                CardLogo(logo, title, 0.4f, 0.28f, dims.posterOpenWidth, dims.posterHeight, 14.dp, 20f)
+                CardLogo(logo, title, 0.4f, 0.28f, dims.posterOpenWidth, dims.posterHeight, 14.dp, 20f, fitted = true)
             }
         }
         if (watched) WatchedMark(Modifier.align(Alignment.TopEnd).padding(8.dp))
