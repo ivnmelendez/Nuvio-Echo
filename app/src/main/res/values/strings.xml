@@ -704,6 +704,8 @@
     <string name="sub_strip_sdh_desc">Hide sound descriptions and speaker labels from text subtitles</string>
     <string name="sub_size">Size</string>
     <string name="sub_vertical_offset">Vertical Offset</string>
+    <string name="sub_use_system_style">System caption style</string>
+    <string name="sub_use_system_style_desc">Use the size, colors and edge from the system caption settings</string>
     <string name="sub_bold">Bold</string>
     <string name="sub_bold_sub">Use bold font weight for subtitles</string>
     <string name="sub_text_color">Text Color</string>

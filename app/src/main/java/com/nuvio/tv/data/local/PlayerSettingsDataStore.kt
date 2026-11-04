@@ -151,7 +151,8 @@ data class SubtitleStyleSettings(
     val backgroundColor: Int = Color.Transparent.toArgb(),
     val outlineEnabled: Boolean = true,
     val outlineColor: Int = Color.Black.toArgb(),
-    val outlineWidth: Int = 2 // 1-5
+    val outlineWidth: Int = 2, // 1-5
+    val useSystemStyle: Boolean = true // Android captioning preferences (Google TV: Settings > Accessibility > Captions)
 )
 
 /**
@@ -609,6 +610,7 @@ class PlayerSettingsDataStore @Inject constructor(
     private val subtitleTextColorKey = intPreferencesKey("subtitle_text_color")
     private val subtitleBackgroundColorKey = intPreferencesKey("subtitle_background_color")
     private val subtitleOutlineEnabledKey = booleanPreferencesKey("subtitle_outline_enabled")
+    private val subtitleUseSystemStyleKey = booleanPreferencesKey("subtitle_use_system_style")
     private val subtitleOutlineColorKey = intPreferencesKey("subtitle_outline_color")
     private val subtitleOutlineWidthKey = intPreferencesKey("subtitle_outline_width")
 
@@ -1053,7 +1055,8 @@ class PlayerSettingsDataStore @Inject constructor(
                         backgroundColor = prefs[subtitleBackgroundColorKey] ?: Color.Transparent.toArgb(),
                         outlineEnabled = prefs[subtitleOutlineEnabledKey] ?: true,
                         outlineColor = prefs[subtitleOutlineColorKey] ?: Color.Black.toArgb(),
-                        outlineWidth = prefs[subtitleOutlineWidthKey] ?: 2
+                        outlineWidth = prefs[subtitleOutlineWidthKey] ?: 2,
+                        useSystemStyle = prefs[subtitleUseSystemStyleKey] ?: true
                     )
                 },
                 bufferSettings = BufferSettings(
@@ -1608,6 +1611,7 @@ class PlayerSettingsDataStore @Inject constructor(
     suspend fun setSubtitleTextColor(color: Int) { store().edit { it[subtitleTextColorKey] = color } }
     suspend fun setSubtitleBackgroundColor(color: Int) { store().edit { it[subtitleBackgroundColorKey] = color } }
     suspend fun setSubtitleOutlineEnabled(enabled: Boolean) { store().edit { it[subtitleOutlineEnabledKey] = enabled } }
+    suspend fun setSubtitleUseSystemStyle(enabled: Boolean) { store().edit { it[subtitleUseSystemStyleKey] = enabled } }
     suspend fun setSubtitleOutlineColor(color: Int) { store().edit { it[subtitleOutlineColorKey] = color } }
     suspend fun setSubtitleOutlineWidth(width: Int) { store().edit { it[subtitleOutlineWidthKey] = width.coerceIn(1, 5) } }
 

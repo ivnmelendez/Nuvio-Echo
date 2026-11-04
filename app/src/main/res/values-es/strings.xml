@@ -663,6 +663,8 @@
     <string name="sub_strip_sdh_desc">Oculta descripciones de sonido y etiquetas de hablante de los subtítulos de texto</string>
     <string name="sub_size">Tamaño</string>
     <string name="sub_vertical_offset">Desplazamiento vertical</string>
+    <string name="sub_use_system_style">Estilo de subtítulos del sistema</string>
+    <string name="sub_use_system_style_desc">Usa el tamaño, los colores y el borde de los ajustes de subtítulos del sistema</string>
     <string name="sub_bold">Negrita</string>
     <string name="sub_bold_sub">Usa fuente en negrita para subtítulos</string>
     <string name="sub_text_color">Color del texto</string>

@@ -410,8 +410,26 @@ class NuvioMpvSurfaceView @JvmOverloads constructor(
         postDelayed(aspectReapplyRunnable, delayMs)
     }
 
-    fun applySubtitleStyle(style: SubtitleStyleSettings) {
+    /** Maps the Android captioning preferences onto our style model; offset stays ours. */
+    private fun systemSubtitleStyle(base: SubtitleStyleSettings): SubtitleStyleSettings {
+        val manager = context.getSystemService(android.content.Context.CAPTIONING_SERVICE)
+            as? android.view.accessibility.CaptioningManager ?: return base
+        val user = manager.userStyle
+        val edge = user.edgeType
+        val bold = user.getTypeface()?.isBold == true
+        return base.copy(
+            size = (manager.fontScale * 100f).toInt().coerceIn(50, 300),
+            bold = bold,
+            textColor = if (user.hasForegroundColor()) user.foregroundColor else android.graphics.Color.WHITE,
+            backgroundColor = if (user.hasBackgroundColor()) user.backgroundColor else android.graphics.Color.TRANSPARENT,
+            outlineEnabled = edge != android.view.accessibility.CaptioningManager.CaptionStyle.EDGE_TYPE_NONE,
+            outlineColor = if (user.hasEdgeColor()) user.edgeColor else android.graphics.Color.BLACK
+        )
+    }
+
+    fun applySubtitleStyle(requested: SubtitleStyleSettings) {
         if (!initialized) return
+        val style = if (requested.useSystemStyle) systemSubtitleStyle(requested) else requested
         runCatching {
             val scale = (style.size / 100.0).coerceIn(0.5, 3.0)
             val clampedOffset = style.verticalOffset.coerceIn(

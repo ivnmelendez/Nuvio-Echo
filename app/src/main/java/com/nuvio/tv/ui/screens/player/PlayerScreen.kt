@@ -2181,6 +2181,16 @@ private fun PlayerView.applySubtitleStyleIfNeeded(
     }
     setTag(R.id.player_view_subtitle_style_tag, config)
     subView.apply {
+        if (subtitleStyle.useSystemStyle) {
+            setUserDefaultStyle()
+            setUserDefaultTextSize()
+            setApplyEmbeddedStyles(!isAss)
+            setApplyEmbeddedFontSizes(false)
+            val bottomPaddingFraction =
+                (0.06f + (subtitleStyle.verticalOffset / 250f)).coerceIn(0f, 0.4f)
+            setBottomPaddingFraction(bottomPaddingFraction)
+            return@apply
+        }
         val baseFontSize = 24f
         val scaledFontSize = baseFontSize * (subtitleStyle.size / 100f)
         setFixedTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, scaledFontSize)

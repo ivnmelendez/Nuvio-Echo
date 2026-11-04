@@ -272,6 +272,10 @@ class PlaybackSettingsViewModel @Inject constructor(
         playerSettingsDataStore.setSubtitleBackgroundColor(color)
     }
 
+    suspend fun setSubtitleUseSystemStyle(enabled: Boolean) {
+        playerSettingsDataStore.setSubtitleUseSystemStyle(enabled)
+    }
+
     suspend fun setSubtitleOutlineEnabled(enabled: Boolean) {
         playerSettingsDataStore.setSubtitleOutlineEnabled(enabled)
     }

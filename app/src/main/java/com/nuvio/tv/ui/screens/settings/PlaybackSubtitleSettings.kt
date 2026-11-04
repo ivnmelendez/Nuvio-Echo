@@ -93,16 +93,25 @@ internal fun PlaybackSubtitlesSection(
     )
 
     SettingsSectionLabel(text = stringResource(R.string.sub_style_label))
-    SliderSettingsItem(
-        title = stringResource(R.string.sub_size),
-        value = style.size,
-        valueText = "${style.size}%",
-        minValue = 50,
-        maxValue = 200,
-        step = 10,
-        onValueChange = { size -> onUpdate { setSubtitleSize(size) } },
+    SettingsToggleRow(
+        title = stringResource(R.string.sub_use_system_style),
+        subtitle = stringResource(R.string.sub_use_system_style_desc),
+        checked = style.useSystemStyle,
+        onToggle = { onUpdate { setSubtitleUseSystemStyle(!style.useSystemStyle) } },
         enabled = enabled
     )
+    if (!style.useSystemStyle) {
+        SliderSettingsItem(
+            title = stringResource(R.string.sub_size),
+            value = style.size,
+            valueText = "${style.size}%",
+            minValue = 50,
+            maxValue = 200,
+            step = 10,
+            onValueChange = { size -> onUpdate { setSubtitleSize(size) } },
+            enabled = enabled
+        )
+    }
     SliderSettingsItem(
         title = stringResource(R.string.sub_vertical_offset),
         value = style.verticalOffset,
@@ -113,6 +122,33 @@ internal fun PlaybackSubtitlesSection(
         onValueChange = { offset -> onUpdate { setSubtitleVerticalOffset(offset) } },
         enabled = enabled
     )
+    if (!style.useSystemStyle) SubtitleManualStyleRows(style, enabled, onUpdate, onOpenDialog)
+
+    SettingsSectionLabel(text = stringResource(R.string.sub_advanced_section))
+    SettingsToggleRow(
+        title = stringResource(R.string.sub_libass),
+        subtitle = stringResource(R.string.sub_libass_sub),
+        checked = settings.useLibass,
+        onToggle = { onUpdate { setUseLibass(!settings.useLibass) } },
+        enabled = enabled
+    )
+    if (settings.useLibass) {
+        SettingsActionRow(
+            title = stringResource(R.string.sub_libass_mode),
+            subtitle = null,
+            value = libassRenderTypeOptions().firstOrNull { it.value == settings.libassRenderType }?.title,
+            onClick = { onOpenDialog(PlaybackDialog.LIBASS_RENDER_TYPE) }
+        )
+    }
+}
+
+@Composable
+private fun SubtitleManualStyleRows(
+    style: SubtitleStyleSettings,
+    enabled: Boolean,
+    onUpdate: PlaybackSettingsUpdate,
+    onOpenDialog: (PlaybackDialog) -> Unit
+) {
     SettingsToggleRow(
         title = stringResource(R.string.sub_bold),
         subtitle = stringResource(R.string.sub_bold_sub),
@@ -146,23 +182,6 @@ internal fun PlaybackSubtitlesSection(
             currentColor = Color(style.outlineColor),
             onClick = { onOpenDialog(PlaybackDialog.SUBTITLE_OUTLINE_COLOR) },
             enabled = enabled
-        )
-    }
-
-    SettingsSectionLabel(text = stringResource(R.string.sub_advanced_section))
-    SettingsToggleRow(
-        title = stringResource(R.string.sub_libass),
-        subtitle = stringResource(R.string.sub_libass_sub),
-        checked = settings.useLibass,
-        onToggle = { onUpdate { setUseLibass(!settings.useLibass) } },
-        enabled = enabled
-    )
-    if (settings.useLibass) {
-        SettingsActionRow(
-            title = stringResource(R.string.sub_libass_mode),
-            subtitle = null,
-            value = libassRenderTypeOptions().firstOrNull { it.value == settings.libassRenderType }?.title,
-            onClick = { onOpenDialog(PlaybackDialog.LIBASS_RENDER_TYPE) }
         )
     }
 }
