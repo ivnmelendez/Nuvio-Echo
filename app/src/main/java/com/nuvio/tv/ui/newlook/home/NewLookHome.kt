@@ -907,22 +907,7 @@ internal fun NewLookHomeContent(
     // The page's speed when a glide is cut short by the next press, so the next one carries on from it.
     val pageVelocity = remember { floatArrayOf(0f) }
     val lightMode = com.nuvio.tv.ui.newlook.LocalLightMode.current
-    // Light mode: the page is put in place in the same layout pass that moves focus. Done from the effect below it
-    // ran a frame later, and on a slow box (100 to 200 ms a frame) the focus ring showed on the new row's old place
-    // before the page jumped under it.
-    val appliedScroll = remember { intArrayOf(Int.MIN_VALUE) }
-    if (lightMode) {
-        val savedRowPending = restoringRow && area == HomeArea.ROWS && rows.none { it.key == focusedRowKey }
-        SideEffect {
-            if (!savedRowPending && appliedScroll[0] != targetScroll) {
-                appliedScroll[0] = targetScroll
-                val (item, offset) = NewLookScroll.toItem(targetScroll, headerHeightPx, rowHeightsPx)
-                listState.requestScrollToItem(item, offset)
-            }
-        }
-    }
     LaunchedEffect(targetScroll) {
-        if (lightMode) return@LaunchedEffect
         // The saved row isn't built yet: stay where Home was left rather than gliding to the top and back.
         if (restoringRow && area == HomeArea.ROWS && rows.none { it.key == focusedRowKey }) return@LaunchedEffect
         val (index, offset) = NewLookScroll.toItem(targetScroll, headerHeightPx, rowHeightsPx)
@@ -946,7 +931,7 @@ internal fun NewLookHomeContent(
             var travelled = 0f
             val glide = AnimationState(initialValue = 0f, initialVelocity = pageVelocity[0])
             listState.scroll {
-                glide.animateTo(distance, Glide.scroll) {
+                glide.animateTo(distance, Glide.rows) {
                     travelled += scrollBy(value - travelled)
                     pageVelocity[0] = velocity
                 }
@@ -1996,7 +1981,14 @@ private fun NewLookRowView(
             }
         }
         if (row.kind != RowKind.WIDE && row.kind != RowKind.GRAND && shownItem != null && !shownItem.isViewMore) {
-            val metaAlpha = animateFloatAsState(if (rowShown) 1f else 0f, androidx.compose.animation.core.snap(), label = "rowMeta")
+            // Measured off the reference: the details of the row arrived at fade in over ~3 frames once the page is ~65% there;
+            // the ones of the row left go at once.
+            val metaAlpha = animateFloatAsState(
+                if (rowShown) 1f else 0f,
+                if (rowShown) tween(125, delayMillis = 80, easing = androidx.compose.animation.core.LinearEasing)
+                else androidx.compose.animation.core.snap(),
+                label = "rowMeta"
+            )
             // Only the focused row (and one fading out) has its details composed: rows coming on screen as the page
             // scrolls don't lay out a synopsis nobody sees.
             val fading by remember { derivedStateOf { metaAlpha.value > 0f } }
@@ -2233,8 +2225,10 @@ private fun RowMeta(row: NewLookRow, item: ModernCarouselItem, details: NewLookD
     val meta = item.metaPreview
     val isSeries = preview.isSeries
     val genres = preview.genres.list.ifEmpty { details?.genres.orEmpty() }
-    val rating = preview.imdbText ?: details?.rating?.takeIf { it > 0 }?.let { String.format(java.util.Locale.US, "%.1f", it) }
-    val ratingIsImdb = preview.imdbText != null && (meta?.id?.startsWith("tt") == true || meta?.imdbId != null)
+    // TMDB's score first (it comes with the details already fetched, so no extra request), the catalog's IMDb one when there are none yet.
+    val tmdbRating = details?.rating?.takeIf { it > 0 }?.let { String.format(java.util.Locale.US, "%.1f", it) }
+    val rating = tmdbRating ?: preview.imdbText
+    val ratingIsImdb = tmdbRating == null && preview.imdbText != null && (meta?.id?.startsWith("tt") == true || meta?.imdbId != null)
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         DetailsLine(
             type = stringResource(if (isSeries) R.string.home_type_show else R.string.home_type_movie),

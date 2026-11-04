@@ -84,7 +84,8 @@ import com.nuvio.tv.ui.newlook.focusRingColor
 
 internal val CardBackground = Color(0xFF222222)
 private val OpenEasing = CubicBezierEasing(0.2f, 0.8f, 0.2f, 1f)
-private val LikeGreen = Color(0xFF2ECC71)
+// Sampled off the reference's capture: its green is #09E88A and its orange #E79E0A.
+private val LikeGreen = Color(0xFF09E88A)
 private val OpenCardFoot = Brush.verticalGradient(
     0f to Color.Transparent, 0.45f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.88f)
 )
@@ -92,7 +93,7 @@ internal val NoBackdropShift: () -> Float = { 0f }
 
 /** The one fixed dark veil shared by closed posters and the row below the focused one. */
 internal const val ClosedVeilAlpha = 0.28f
-private val LikeOrange = Color(0xFFF5A623)
+private val LikeOrange = Color(0xFFE79E0A)
 private val LikeRed = Color(0xFFE74C3C)
 
 /** The colour of a rating shown as a percentage: green from 60, orange from 40, red below that. */
@@ -681,7 +682,7 @@ internal fun DetailsLine(
     rating: String?,
     ratingIsImdb: Boolean,
     modifier: Modifier = Modifier,
-    color: Color = Color(0xFFCFCFCF),
+    color: Color = Color.White,
     dotColor: Color = Color(0xFF777777)
 ) {
     val percent = rating?.trim()?.takeWhile { it.isDigit() || it == '.' }?.toFloatOrNull()
@@ -696,28 +697,45 @@ internal fun DetailsLine(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         if (percent != null) {
             val ratingColor = ratingPercentColor(percent)
-            com.nuvio.tv.ui.screens.detail.DetailGlyphIcon(
-                com.nuvio.tv.ui.screens.detail.DetailGlyph.THUMB_UP, true, ratingColor, 17.dp
-            )
+            LikeIcon(ratingColor, 18.dp)
             Text(
-                text = " $percent%",
+                text = "$percent%",
                 color = ratingColor,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
                 maxLines = 1,
-                modifier = Modifier.padding(end = 10.dp)
+                modifier = Modifier.padding(start = 5.dp, end = 15.dp)
             )
         }
         parts.forEachIndexed { index, part ->
             Text(
                 text = part,
                 color = color,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
                 maxLines = 1,
-                modifier = Modifier.padding(end = if (index < parts.lastIndex) 10.dp else 0.dp)
+                modifier = Modifier.padding(end = if (index < parts.lastIndex) 15.dp else 0.dp)
             )
         }
+    }
+}
+
+private const val LIKE_PATH =
+    "M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10" +
+        "c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"
+
+/** The thumb of a percentage rating: a filled thumb with its cuff apart, as in the reference (not the details page's outlined one). */
+@Composable
+private fun LikeIcon(color: Color, size: androidx.compose.ui.unit.Dp) {
+    val path = remember { androidx.compose.ui.graphics.vector.PathParser().parsePathString(LIKE_PATH).toPath() }
+    androidx.compose.foundation.Canvas(Modifier.size(size)) {
+        val unit = this.size.minDimension / 24f
+        drawContext.canvas.save()
+        drawContext.canvas.scale(unit, unit)
+        drawPath(path, color)
+        drawContext.canvas.restore()
     }
 }
 

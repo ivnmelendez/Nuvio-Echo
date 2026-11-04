@@ -14,4 +14,11 @@ object Glide {
     const val STIFFNESS = 900f
 
     val scroll: SpringSpec<Float> = spring(dampingRatio = 1f, stiffness = STIFFNESS)
+
+    /**
+     * The home page between rows, fitted to the reference's 24 fps capture (down and up alike): a critically damped spring of
+     * about 350 stiffness, ~10 frames to settle. The same fit run on this app's own recording gave back its real stiffness
+     * to within ~10%, which is how the 350 was checked.
+     */
+    val rows: SpringSpec<Float> = spring(dampingRatio = 1f, stiffness = 350f)
 }
