@@ -58,6 +58,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -1888,7 +1889,7 @@ private fun NewLookRowView(
                     .focusGroup()
             ) {
                 itemsIndexed(row.items, key = { _, item -> item.key }) { index, item ->
-                    val modifier = Modifier
+                    val layerModifier = Modifier
                         // Cards the row has scrolled past stay composed, so focus can go back to them, but aren't drawn,
                         // except the one just before the start: its right edge peeks out left of the focused card. This
                         // follows `col` directly (no animation in between), and the row scrolls to `col` in the same pass.
@@ -1898,6 +1899,7 @@ private fun NewLookRowView(
                         }
                         // The opened card stays over the cards gliding past its edge.
                         .zIndex(if (index == col) 1f else 0f)
+                    val modifier = Modifier
                         .then(
                             when (index) {
                                 focusCol -> Modifier.focusRequester(focusRequester)
@@ -1905,34 +1907,60 @@ private fun NewLookRowView(
                                 else -> Modifier
                             }
                         )
-                    RowCard(
-                        row = row,
-                        item = item,
-                        index = index,
-                        dims = dims,
-                        focused = item.key == focusedItemKey,
-                        grandButton = grandButton,
-                        details = item.metaPreview?.id?.let { details[it] },
-                        trailerUrl = if (item.key == focusedItemKey) trailerUrl else null,
-                        trailerAudioUrl = if (item.key == focusedItemKey) trailerAudioUrl else null,
-                        muted = muted,
-                        isWatched = isWatched,
-                        onTrailerEnded = onTrailerEnded,
-                        onFocusChanged = { onCardFocused(index, item, it) },
-                        onClick = { onClick(item) },
-                        onLongClick = { onLongClick(item) },
-                        modifier = modifier,
-                        open = item.key == focusedItemKey && item.key == openItemKey,
-                        openAtOnce = openAtOnce,
-                        holdOpen = holdOpen,
-                        resting = row.kind == RowKind.POSTER && !row.isPlaceholder && index == focusCol,
-                        backdropShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) }) else NoBackdropShift,
-                        // The old card's backdrop sits one card width behind the entering one, moving with it.
-                        ghostBackdrop = if (index == col) (if (col != slide.prevCol) slide.prevCol else slide.ghostCol).let { g ->
-                            row.items.getOrNull(g)?.let { it.heroPreview.backdrop ?: it.metaPreview?.id?.let { id -> details[id] }?.backdrop }
-                        } else null,
-                        ghostShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) - slide.dir * openWidthPx }) else NoBackdropShift
-                    )
+                    Box(layerModifier) {
+                        // A step to the right: the card that opens was a poster just right of the opened one's edge, and
+                        // that poster slides left behind the opened card (the reference), instead of leaving a gap.
+                        if (slideEnabled && index == col) {
+                            val closedPoster = (item.payload as? ModernPayload.ContinueWatching)?.item?.let { cw ->
+                                when (cw) {
+                                    is ContinueWatchingItem.InProgress -> cw.progress.poster
+                                    is ContinueWatchingItem.NextUp -> cw.info.poster
+                                }?.sharperPoster()
+                            } ?: item.heroPreview.poster ?: item.imageUrl
+                            val gapPx = with(density) { dims.gap.toPx() }
+                            Box(
+                                Modifier
+                                    .size(dims.posterWidth, dims.posterHeight)
+                                    .graphicsLayer {
+                                        val gliding = slide.dir > 0 && slide.from > 0f && slide.progress < 1f
+                                        alpha = if (gliding) 1f else 0f
+                                        translationX = openWidthPx + gapPx + slide.from * (1f - slide.progress) - stepPx
+                                    }
+                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(dims.cardRadius))
+                            ) {
+                                Artwork(closedPoster, Modifier.fillMaxSize(), fallbackTitle = item.title)
+                                Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
+                            }
+                        }
+                        RowCard(
+                            row = row,
+                            item = item,
+                            index = index,
+                            dims = dims,
+                            focused = item.key == focusedItemKey,
+                            grandButton = grandButton,
+                            details = item.metaPreview?.id?.let { details[it] },
+                            trailerUrl = if (item.key == focusedItemKey) trailerUrl else null,
+                            trailerAudioUrl = if (item.key == focusedItemKey) trailerAudioUrl else null,
+                            muted = muted,
+                            isWatched = isWatched,
+                            onTrailerEnded = onTrailerEnded,
+                            onFocusChanged = { onCardFocused(index, item, it) },
+                            onClick = { onClick(item) },
+                            onLongClick = { onLongClick(item) },
+                            modifier = modifier,
+                            open = item.key == focusedItemKey && item.key == openItemKey,
+                            openAtOnce = openAtOnce,
+                            holdOpen = holdOpen,
+                            resting = row.kind == RowKind.POSTER && !row.isPlaceholder && index == focusCol,
+                            backdropShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) }) else NoBackdropShift,
+                            // The old card's backdrop sits one card width behind the entering one, moving with it.
+                            ghostBackdrop = if (index == col) (if (col != slide.prevCol) slide.prevCol else slide.ghostCol).let { g ->
+                                row.items.getOrNull(g)?.let { it.heroPreview.backdrop ?: it.metaPreview?.id?.let { id -> details[id] }?.backdrop }
+                            } else null,
+                            ghostShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) - slide.dir * openWidthPx }) else NoBackdropShift
+                        )
+                    }
                 }
                 // After View More the row starts over: its first cards show again, only drawn (Right from View More
                 // goes to the real first card).
