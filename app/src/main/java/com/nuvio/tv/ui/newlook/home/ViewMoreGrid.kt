@@ -43,6 +43,12 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -80,6 +86,10 @@ internal fun ViewMoreGridScreen(
     var focusedKey by rememberSaveable(rowKey) { mutableStateOf<String?>(null) }
     var targetRow by remember { mutableIntStateOf(0) }
     val startFocus = remember { FocusRequester() }
+    // One requester per poster: Up and Down are moved by hand (see below), since the row to move to may not be composed yet.
+    val requesters = remember { HashMap<Int, FocusRequester>() }
+    var focusedIndex by remember { mutableIntStateOf(0) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val density = LocalDensity.current
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -134,14 +144,41 @@ internal fun ViewMoreGridScreen(
                 contentPadding = PaddingValues(start = 68.5.dp, end = 16.dp, bottom = 40.dp),
                 horizontalArrangement = Arrangement.spacedBy(gap),
                 verticalArrangement = Arrangement.spacedBy(gap),
-                modifier = Modifier.fillMaxSize().padding(top = 56.dp).clipToBounds()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 56.dp)
+                    .clipToBounds()
+                    .onPreviewKeyEvent { event ->
+                        if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                        val down = event.key == Key.DirectionDown
+                        if (!down && event.key != Key.DirectionUp) return@onPreviewKeyEvent false
+                        val target = if (down) {
+                            // A last row with fewer posters: Down lands on its last one.
+                            val next = focusedIndex + columns
+                            if (next < items.size) next else if (focusedIndex / columns < (items.size - 1) / columns) items.size - 1 else -1
+                        } else focusedIndex - columns
+                        if (target in items.indices) {
+                            targetRow = ((target / columns) - 1).coerceAtLeast(0)
+                            scope.launch {
+                                // The scroll brings the row in; focus it as soon as it is composed.
+                                repeat(30) {
+                                    if (runCatching { requesters.getOrPut(target) { FocusRequester() }.requestFocus() }.getOrDefault(false)) return@launch
+                                    androidx.compose.runtime.withFrameNanos { }
+                                }
+                            }
+                        }
+                        true
+                    }
             ) {
                 itemsIndexed(items, key = { _, item -> item.key }) { index, item ->
                     GridPoster(
                         item = item,
-                        modifier = if (index == restoreIndex) Modifier.focusRequester(startFocus) else Modifier,
+                        modifier = Modifier
+                            .focusRequester(requesters.getOrPut(index) { FocusRequester() })
+                            .then(if (index == restoreIndex) Modifier.focusRequester(startFocus) else Modifier),
                         onFocused = {
                             focusedKey = item.key
+                            focusedIndex = index
                             targetRow = ((index / columns) - 1).coerceAtLeast(0)
                         },
                         onClick = {
