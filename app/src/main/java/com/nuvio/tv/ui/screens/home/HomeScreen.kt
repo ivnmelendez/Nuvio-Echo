@@ -126,10 +126,14 @@ fun HomeScreen(
         initialValue = false
     )
     val hasCatalogContent = uiState.catalogRows.any { it.items.isNotEmpty() }
+    // Home from the published rows only: the addons' catalogs are never loaded, so their absence is not "no content";
+    // the rows come from the rows file inside the Home itself (which shows nothing until they are in).
+    val publishedRowsOnly = com.nuvio.tv.core.build.AppFeaturePolicy.homeFromPublishedRowsOnly && remoteTab != null
     val hasCollectionContent = uiState.homeRows.any { it is HomeRow.CollectionRow }
     val hasHeroContent = uiState.heroItems.isNotEmpty()
     val modernPresentationReady =
-        modernPresentation.rows.list.isNotEmpty() ||
+        publishedRowsOnly ||
+            modernPresentation.rows.list.isNotEmpty() ||
             (uiState.heroSectionEnabled && hasHeroContent && !hasCatalogContent && !hasCollectionContent)
     var showHomeContentWithAnimation by rememberSaveable { mutableStateOf(false) }
     var hasShownInitialHomeContent by rememberSaveable { mutableStateOf(false) }
@@ -188,7 +192,7 @@ fun HomeScreen(
             initialCwResolved &&
             modernPresentationReady &&
             // When addons are installed, require at least one catalog row.
-            (hasCatalogContent || uiState.installedAddonsCount == 0)
+            (hasCatalogContent || publishedRowsOnly || uiState.installedAddonsCount == 0)
         ) {
             Log.d("HomeGate", "RELEASE: catalogs=$hasCatalogContent cwResolved=$initialCwResolved cwItems=${uiState.continueWatchingItems.size} addons=${uiState.installedAddonsCount}")
             homeStableGateReleased = true
@@ -219,7 +223,7 @@ fun HomeScreen(
         }
     }
 
-    val hasAnyContent = uiState.catalogRows.isNotEmpty() ||
+    val hasAnyContent = publishedRowsOnly || uiState.catalogRows.isNotEmpty() ||
         (uiState.continueWatchingEnabled && uiState.continueWatchingItems.isNotEmpty()) ||
         uiState.heroItems.isNotEmpty() ||
         hasCollectionContent
