@@ -877,25 +877,17 @@ open class MainActivity : ComponentActivity() {
                     }?.route
 
                     val confirmExitEnabled by profileManager.confirmExitEnabled.collectAsState()
-                    var backPressedOnce by remember { mutableStateOf(false) }
-                    LaunchedEffect(backPressedOnce) {
-                        if (backPressedOnce) {
-                            delay(2000L)
-                            backPressedOnce = false
+                    var showExitDialog by remember { mutableStateOf(false) }
+                    val exitNow: () -> Unit = {
+                        finishAffinity()
+                        finishAndRemoveTask()
+                        if (confirmExitEnabled) {
+                            // Kill the process to free RAM on low-memory devices.
+                            android.os.Process.killProcess(android.os.Process.myPid())
                         }
                     }
                     val handleExitApp: () -> Unit = {
-                        if (!confirmExitEnabled || backPressedOnce) {
-                            finishAffinity()
-                            finishAndRemoveTask()
-                            if (confirmExitEnabled) {
-                                // Kill the process to free RAM on low-memory devices.
-                                android.os.Process.killProcess(android.os.Process.myPid())
-                            }
-                        } else {
-                            backPressedOnce = true
-                            Toast.makeText(this@MainActivity, getString(R.string.confirm_exit_toast), Toast.LENGTH_SHORT).show()
-                        }
+                        if (confirmExitEnabled) showExitDialog = true else exitNow()
                     }
 
                     val updateViewModel: UpdateViewModel = hiltViewModel(this@MainActivity)
@@ -964,7 +956,7 @@ open class MainActivity : ComponentActivity() {
                                 onNavigate = { optimisticRoute = it },
                                 onExitApp = handleExitApp,
                                 navigateToRoute = { target ->
-                                    navigateToDrawerRoute(navController, actualRoute, target)
+                                    navigateToDrawerRoute(navController, navController.currentBackStackEntry?.destination?.route, target)
                                 },
                                 drawerIcon = { item, tint, modifier ->
                                     DrawerItemIcon(iconRes = item.iconRes, icon = item.icon, tint = tint, modifier = modifier)
@@ -982,6 +974,12 @@ open class MainActivity : ComponentActivity() {
                                     message = ov.message ?: stringResource(R.string.external_auto_next_loading),
                                     progress = ov.progress,
                                     modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            if (showExitDialog) {
+                                com.nuvio.tv.ui.newlook.ExitConfirmDialog(
+                                    onExit = exitNow,
+                                    onCancel = { showExitDialog = false }
                                 )
                             }
                         }

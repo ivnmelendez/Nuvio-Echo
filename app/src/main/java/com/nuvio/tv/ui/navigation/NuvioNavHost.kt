@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import com.nuvio.tv.R
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -96,6 +97,13 @@ fun NuvioNavHost(
 internal const val FADE_OUT_MS = 110
 internal const val FADE_IN_MS = 170
 
+/**
+ * Opening a title (or any screen from another): the new screen fades in over the old one, which stays put underneath,
+ * ~150 ms. Going back: the screen on top fades away over the one beneath. Measured frame by frame from the reference.
+ */
+internal const val SCREEN_ENTER_MS = 150
+internal const val SCREEN_EXIT_MS = 110
+
 /** Opens the Speed Test screen; a no-op outside the nav host. */
 val LocalOpenSpeedTest = staticCompositionLocalOf<() -> Unit> { {} }
 
@@ -114,55 +122,63 @@ private fun PlaybackNavHost(
         return from.startsWith("player/") && to.startsWith("stream/")
     }
 
+    // Home, Movies, TV Shows and Watchlist swap in a single frame, as in the reference (only the menu animates).
+    val tabRoutes = setOf(Screen.Home.route, Screen.Movies.route, Screen.SeriesTab.route, Screen.Library.route)
+    fun isTabSwitch(from: String, to: String): Boolean = from in tabRoutes && to in tabRoutes
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
         enterTransition = {
             val from = initialState.destination.route.orEmpty()
             val to = targetState.destination.route.orEmpty()
+            if (isTabSwitch(from, to)) return@NavHost EnterTransition.None
             val isAutoPlayNav = targetState.arguments
                 ?.getString("autoPlayNav")
                 ?.toBooleanStrictOrNull() == true
             if (isStreamToPlayer(from, to) && isAutoPlayNav) {
                 EnterTransition.None
             } else {
-                fadeIn(animationSpec = tween(FADE_IN_MS, delayMillis = FADE_OUT_MS))
+                fadeIn(animationSpec = tween(SCREEN_ENTER_MS, easing = FastOutSlowInEasing))
             }
         },
         exitTransition = {
             val from = initialState.destination.route.orEmpty()
             val to = targetState.destination.route.orEmpty()
+            if (isTabSwitch(from, to)) return@NavHost ExitTransition.None
             val isAutoPlayNav = targetState.arguments
                 ?.getString("autoPlayNav")
                 ?.toBooleanStrictOrNull() == true
             if (isStreamToPlayer(from, to) && isAutoPlayNav) {
                 ExitTransition.None
             } else {
-                fadeOut(animationSpec = tween(FADE_OUT_MS))
+                ExitTransition.None
             }
         },
         popEnterTransition = {
             val from = initialState.destination.route.orEmpty()
             val to = targetState.destination.route.orEmpty()
+            if (isTabSwitch(from, to)) return@NavHost EnterTransition.None
             val isAutoPlayNav = initialState.arguments
                 ?.getString("autoPlayNav")
                 ?.toBooleanStrictOrNull() == true
             if (isPlayerToStream(from, to) && isAutoPlayNav) {
                 EnterTransition.None
             } else {
-                fadeIn(animationSpec = tween(FADE_IN_MS, delayMillis = FADE_OUT_MS))
+                EnterTransition.None
             }
         },
         popExitTransition = {
             val from = initialState.destination.route.orEmpty()
             val to = targetState.destination.route.orEmpty()
+            if (isTabSwitch(from, to)) return@NavHost ExitTransition.None
             val isAutoPlayNav = initialState.arguments
                 ?.getString("autoPlayNav")
                 ?.toBooleanStrictOrNull() == true
             if (isPlayerToStream(from, to) && isAutoPlayNav) {
                 ExitTransition.None
             } else {
-                fadeOut(animationSpec = tween(FADE_OUT_MS))
+                fadeOut(animationSpec = tween(SCREEN_EXIT_MS, easing = FastOutSlowInEasing))
             }
         }
     ) {

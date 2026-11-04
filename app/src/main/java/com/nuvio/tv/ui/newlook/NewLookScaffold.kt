@@ -46,6 +46,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -143,13 +145,17 @@ private val IconSlot = 40.dp
 private val IconGap = 22.dp
 private val IconSize = 22.dp
 internal val SidebarColumn = 96.dp
-private val AvatarSize = 36.dp
-internal val AvatarX = 30.dp
-internal val AvatarY = 12.dp
+private val AvatarSize = 37.dp
+private val AvatarImageSize = 25.dp
+internal val AvatarX = 33.5.dp
+internal val AvatarY = 11.dp
 private val BarHeight = 37.dp
 private val LensHeight = 25.dp
 private val BarTop = 12.dp
 private val BarEnd = 32.dp
+
+/** Bar and avatar grow 1.08 together: ~120 ms fast-out-slow-in, measured frame by frame from the reference recording. */
+private val MenuGrowSpec = androidx.compose.animation.core.tween<Float>(120, easing = androidx.compose.animation.core.FastOutSlowInEasing)
 
 /**
  * The new look's navigation: a liquid-glass pill of icons on the left (or a glass tab bar on top), the profile
@@ -485,12 +491,18 @@ internal fun NewLookScaffold(
                 animationSpec = androidx.compose.animation.core.snap(),
                 label = "avatarLift"
             )
+            // Grows with the menu (1.08, same as the bar) while the menu has focus.
+            val barGrow by animateFloatAsState(
+                targetValue = if (focusState.any) 1.08f else 1f,
+                animationSpec = MenuGrowSpec,
+                label = "avatarBarGrow"
+            )
             ProfileBubble(
                 name = activeProfileName,
                 colorHex = activeProfileColorHex,
                 avatarImageUrl = activeProfileAvatarImageUrl,
                 focusRequester = avatarFocus,
-                // The profile picture is hidden for now: invisible and never focused.
+                // Only shown, never focused.
                 canFocus = false,
                 onFocusChanged = { focusState.avatar = it },
                 onClick = { if (showProfileSelector) onSwitchProfile() },
@@ -501,8 +513,8 @@ internal fun NewLookScaffold(
                 modifier = Modifier
                     .offset { IntOffset(AvatarX.roundToPx(), AvatarY.roundToPx()) }
                     .graphicsLayer {
-                        alpha = 0f
-                        val s = (0.82f + 0.18f * avatarReveal) * (1f + 0.08f * lift)
+                        alpha = avatarReveal
+                        val s = (0.82f + 0.18f * avatarReveal) * (1f + 0.08f * lift) * barGrow
                         scaleX = s
                         scaleY = s
                         translationX = 6.dp.toPx() * lift
@@ -743,7 +755,7 @@ internal fun GlassTabBar(
             }
         }
     }
-    val grow by animateFloatAsState(if (hasFocus) 1.08f else 1f, androidx.compose.animation.core.snap(), label = "barGrow")
+    val grow by animateFloatAsState(if (hasFocus) 1.08f else 1f, MenuGrowSpec, label = "barGrow")
     Row(
         modifier = modifier
             .graphicsLayer {
@@ -862,23 +874,33 @@ internal fun ProfileBubble(
                 onClick = onClick
             )
     ) {
-        ProfileAvatarCircle(
-            name = name,
-            colorHex = colorHex,
-            size = AvatarSize,
-            avatarImageUrl = avatarImageUrl,
-            imageCrossfade = false,
-            // A 1 px ring (the Appearance colour) a little outside it while focused.
-            modifier = Modifier.drawWithContent {
-                drawContent()
-                if (focused) {
-                    drawCircle(
-                        color = ring,
-                        radius = size.minDimension / 2f + 3.dp.toPx(),
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx())
-                    )
-                }
-            }
-        )
+        Box(
+            modifier = Modifier
+                .size(AvatarSize)
+                .clip(CircleShape)
+                .background(Color(0xFF1F1F1F), CircleShape)
+                .drawWithContent {
+                    drawContent()
+                    if (focused) {
+                        drawCircle(
+                            color = ring,
+                            radius = size.minDimension / 2f + 3.dp.toPx(),
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx())
+                        )
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            androidx.compose.foundation.Image(
+                painter = coil3.compose.rememberAsyncImagePainter(
+                    model = coil3.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                        .data(com.nuvio.tv.R.raw.profile_main)
+                        .size(with(androidx.compose.ui.platform.LocalDensity.current) { AvatarImageSize.roundToPx() })
+                        .build()
+                ),
+                contentDescription = name,
+                modifier = Modifier.size(AvatarImageSize).clip(CircleShape)
+            )
+        }
     }
 }
