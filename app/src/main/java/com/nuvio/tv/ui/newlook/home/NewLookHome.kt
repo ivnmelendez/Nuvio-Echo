@@ -210,8 +210,8 @@ private const val TRAILER_MAX_MS = 180_000L
 /** With focus elsewhere, the hero shows each title's backdrop for this long. */
 private const val ROTATE_MS = 8_000L
 /** Home counts as settled once its row layout has held still this long after its sources came in. */
-/** Time between the steps of a row while Left or Right is held (measured off the reference app). */
-private const val HELD_STEP_MS = 247L
+/** Keys closer than this are one step: the glide starts a frame or two after the key, so the gate alone is not enough. */
+private const val MIN_STEP_GAP_MS = 60L
 private const val SETTLE_QUIET_MS = 350L
 /** The longest the first Home waits to settle (a slow network): it shows what it has then. */
 private const val SETTLE_CAP_MS = 4_500L
@@ -739,6 +739,7 @@ internal fun NewLookHomeContent(
     val rowStates = remember { HashMap<String, LazyListState>() }
 
     val lastHorizontalStepAt = remember { longArrayOf(0L) }
+    val rowSlides = remember { HashMap<String, RowSlide>() }
 
     fun tryFocus(requester: FocusRequester): Boolean = runCatching { requester.requestFocus() }.getOrDefault(false)
 
@@ -1176,13 +1177,12 @@ internal fun NewLookHomeContent(
             .onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                 if (chrome?.topBarFocused == true || cwOptions != null) return@onPreviewKeyEvent false
-                // Left or Right held down: a row takes one step per ~247 ms (a step every 5.7 frames of the reference's
-                // 24 fps capture), so each glide finishes before the next starts. The key's repeats in between are dropped.
+                // A row never starts a step while the last one is still gliding: Left and Right are dropped until it has
+                // finished, so every glide is seen to the end (the reference does the same under a held key).
                 if (event.key == Key.DirectionLeft || event.key == Key.DirectionRight) {
                     val now = android.os.SystemClock.uptimeMillis()
-                    if (event.nativeKeyEvent.repeatCount > 0 && now - lastHorizontalStepAt[0] < HELD_STEP_MS) {
-                        return@onPreviewKeyEvent true
-                    }
+                    val gliding = focusedRowKey?.let { rowSlides[it] }?.let { it.progress < 1f } == true
+                    if (gliding || now - lastHorizontalStepAt[0] < MIN_STEP_GAP_MS) return@onPreviewKeyEvent true
                     lastHorizontalStepAt[0] = now
                 }
                 if (heroHasFocus) {
@@ -1316,6 +1316,7 @@ internal fun NewLookHomeContent(
                         // Only the focused row sees it change, so moving between pills recomposes one row.
                         grandButton = if (focusedCard?.first == row.key) grandButton else 0,
                         focusRequester = rowRequester(row.key),
+                        slides = rowSlides,
                         leftFocusRequester = leftRequester(row.key),
                         details = details,
                         trailerUrl = if (focusedCard?.first == row.key) trailerUrl else null,
@@ -1558,7 +1559,7 @@ private val NoBringIntoView = object : BringIntoViewSpec {
  * (the opened card appears opened, the old one closes); the closed cards after the opened one then glide from where
  * they were. It lives in two floats read only while drawing, so a step costs no recomposition and no relayout.
  */
-private class RowSlide(var prevCol: Int) {
+internal class RowSlide(var prevCol: Int) {
     /** Px the cards still sit from their place when [progress] is 0 (positive: to the right). */
     var from by androidx.compose.runtime.mutableFloatStateOf(0f)
     var progress by androidx.compose.runtime.mutableFloatStateOf(1f)
@@ -1692,6 +1693,8 @@ private fun NewLookRowView(
     focusedItemKey: String?,
     grandButton: Int,
     focusRequester: FocusRequester,
+    /** Each row's glide, so Home can hold a key back while one is running. */
+    slides: MutableMap<String, RowSlide>,
     leftFocusRequester: FocusRequester,
     details: Map<String, NewLookDetails>,
     trailerUrl: String?,
@@ -1802,6 +1805,10 @@ private fun NewLookRowView(
         // Measured off the reference app (24 fps capture): one poster plus its gap, 290 ms, FastOutSlowIn. Set here, in
         // the apply phase, so the cards are already at their old place in the very frame the layout changes.
         val slide = remember { RowSlide(col) }
+        DisposableEffect(row.key, slide) {
+            slides[row.key] = slide
+            onDispose { if (slides[row.key] === slide) slides.remove(row.key) }
+        }
         val slideEnabled = row.kind == RowKind.POSTER && !row.isPlaceholder
         val stepPx = with(density) { (row.cardWidth(dims) + dims.gap).toPx() }
         val imageShiftPx = with(density) { 44.dp.toPx() }
@@ -1843,7 +1850,7 @@ private fun NewLookRowView(
                         animationSpec = when {
                             // A key held down: each glide takes the time between its steps (measured off the reference: ~240 ms,
                             // the whole ease in and out), so every one is seen to the end before the next begins.
-                            slide.sincePrevStep < 320L -> tween(240, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                            slide.sincePrevStep < 400L -> tween(240, easing = androidx.compose.animation.core.FastOutSlowInEasing)
                             chained -> tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
                             else -> tween(290, easing = androidx.compose.animation.core.FastOutSlowInEasing)
                         }
