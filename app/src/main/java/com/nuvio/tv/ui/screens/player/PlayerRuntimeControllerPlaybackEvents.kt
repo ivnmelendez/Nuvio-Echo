@@ -705,7 +705,7 @@ internal fun PlayerRuntimeController.emitScrobbleStart() {
     // watching something already marked as watched. If the user seeks back
     // below 80%, the next progress update will re-trigger scrobble start.
     val currentProgress = currentPlaybackProgressPercent()
-    if (currentProgress >= 80f) {
+    if (currentProgress >= SCROBBLE_COMPLETE_PERCENT) {
         logScrobbleDiagnostic("start_skipped", "reason=completion_threshold progress=$currentProgress")
         return
     }
@@ -759,7 +759,7 @@ internal fun PlayerRuntimeController.emitScrobbleStop(progressPercent: Float? = 
     }
 
     val provided = progressPercent
-    if (!hasRequestedScrobbleStartForCurrentItem && (provided ?: 0f) < 80f) {
+    if (!hasRequestedScrobbleStartForCurrentItem && (provided ?: 0f) < SCROBBLE_COMPLETE_PERCENT) {
         logScrobbleDiagnostic("stop_skipped", "reason=no_active_scrobble providedProgress=${provided ?: "none"}")
         return
     }
@@ -770,7 +770,7 @@ internal fun PlayerRuntimeController.emitScrobbleStop(progressPercent: Float? = 
         logScrobbleDiagnostic("stop_dispatching", "progress=$percent")
         val failures = trackingScrobbleCoordinator.scrobble(
             action = TrackingScrobbleAction.STOP,
-            event = TrackingScrobbleEvent(item, percent.toDouble())
+            event = TrackingScrobbleEvent(item, scrobblePercentToSend(percent).toDouble())
         )
         logScrobbleDiagnostic("stop_dispatched", "progress=$percent failures=${failures.map { it.providerId.storageId }}")
     }
@@ -805,7 +805,7 @@ internal fun PlayerRuntimeController.emitScrobblePause(progressPercent: Float? =
         logScrobbleDiagnostic("pause_dispatching", "progress=$percent")
         val failures = trackingScrobbleCoordinator.scrobble(
             action = TrackingScrobbleAction.PAUSE,
-            event = TrackingScrobbleEvent(item, percent.toDouble())
+            event = TrackingScrobbleEvent(item, scrobblePercentToSend(percent).toDouble())
         )
         logScrobbleDiagnostic("pause_dispatched", "progress=$percent failures=${failures.map { it.providerId.storageId }}")
     }
@@ -816,7 +816,7 @@ internal fun PlayerRuntimeController.emitScrobblePause(progressPercent: Float? =
 }
 
 internal fun PlayerRuntimeController.emitCompletionScrobbleStop(progressPercent: Float) {
-    if (progressPercent < 80f || hasSentCompletionScrobbleForCurrentItem) return
+    if (progressPercent < SCROBBLE_COMPLETE_PERCENT || hasSentCompletionScrobbleForCurrentItem) return
     hasSentCompletionScrobbleForCurrentItem = true
     emitScrobbleStop(progressPercent = progressPercent)
 }
@@ -830,7 +830,7 @@ internal fun PlayerRuntimeController.emitStopScrobbleForCurrentProgress() {
         )
         return
     }
-    if (progressPercent < 80f) {
+    if (progressPercent < SCROBBLE_COMPLETE_PERCENT) {
         emitScrobbleStop(progressPercent = progressPercent)
         return
     }
@@ -842,7 +842,7 @@ internal fun PlayerRuntimeController.emitPauseScrobbleForCurrentProgress() {
 }
 
 internal fun PlayerRuntimeController.emitSeekScrobbleRestart(progressPercent: Float) {
-    if (progressPercent < 1f || progressPercent >= 80f) return
+    if (progressPercent < 1f || progressPercent >= SCROBBLE_COMPLETE_PERCENT) return
     if (isShortPlaceholderStream()) return
     val item = currentScrobbleItem ?: return
     if (!hasRequestedScrobbleStartForCurrentItem) return
@@ -1791,3 +1791,10 @@ private fun formatTorrentSpeed(context: android.content.Context, bytesPerSec: Lo
         else -> context.getString(R.string.unit_speed_b_s, bytesPerSec)
     }
 }
+
+/** A title counts as watched from this much of it (percent), locally and for the tracking services. */
+internal const val SCROBBLE_COMPLETE_PERCENT = 95f
+
+/** The services mark a title watched from 80% on their own side; between 80% and 95% they are told 79.9%, so it is not. */
+internal fun scrobblePercentToSend(percent: Float): Float =
+    if (percent >= 80f && percent < SCROBBLE_COMPLETE_PERCENT) 79.9f else percent

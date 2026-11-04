@@ -123,6 +123,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -2334,8 +2336,8 @@ private fun PlayerControlsOverlay(
     minimalControls: Boolean = false,
     qualityLabel: String? = null
 ) {
-    val customPlayPainter = rememberRawSvgPainter(R.raw.ic_player_play)
-    val customPausePainter = rememberRawSvgPainter(R.raw.ic_player_pause)
+    val pauseDescription = stringResource(R.string.cd_pause)
+    val playDescription = stringResource(R.string.cd_play)
     val customSubtitlePainter = rememberRawSvgPainter(R.raw.ic_player_subtitles)
     val customAudioPainter = rememberRawSvgPainter(R.raw.ic_player_audio_filled)
     val customSourcePainter = rememberRawSvgPainter(R.raw.ic_player_source)
@@ -2422,19 +2424,28 @@ private fun PlayerControlsOverlay(
                 ) {
                     // The state of playback, not a button: on the bar, OK plays or pauses.
                     Spacer(modifier = Modifier.width(2.5.dp))
-                    if (uiState.isPlaying) Icon(
-                        painter = customPausePainter,
-                        contentDescription = stringResource(R.string.cd_pause),
-                        tint = Color.White,
-                        modifier = Modifier.size(26.dp)
-                    ) else androidx.compose.foundation.Canvas(Modifier.size(width = 24.5.dp, height = 31.5.dp)) {
-                        // The reference's play: a sharp triangle, 49 x 63 px.
-                        drawPath(
-                            androidx.compose.ui.graphics.Path().apply {
-                                moveTo(0f, 0f); lineTo(size.width, size.height / 2f); lineTo(0f, size.height); close()
-                            },
-                            Color.White
-                        )
+                    // One slot for both states, so the row (and the bar with it) never changes size when playback toggles.
+                    androidx.compose.foundation.Canvas(
+                        Modifier
+                            .size(width = 24.5.dp, height = 31.5.dp)
+                            .semantics { contentDescription = if (uiState.isPlaying) pauseDescription else playDescription }
+                    ) {
+                        if (uiState.isPlaying) {
+                            // The reference's pause: two square bars 18 x 56 px, 10 px apart, from the slot's left edge.
+                            val barW = 9.dp.toPx()
+                            val barH = 28.dp.toPx()
+                            val top = (size.height - barH) / 2f
+                            drawRect(Color.White, androidx.compose.ui.geometry.Offset(0f, top), androidx.compose.ui.geometry.Size(barW, barH))
+                            drawRect(Color.White, androidx.compose.ui.geometry.Offset(barW + 5.dp.toPx(), top), androidx.compose.ui.geometry.Size(barW, barH))
+                        } else {
+                            // The reference's play: a sharp triangle, 49 x 63 px.
+                            drawPath(
+                                androidx.compose.ui.graphics.Path().apply {
+                                    moveTo(0f, 0f); lineTo(size.width, size.height / 2f); lineTo(0f, size.height); close()
+                                },
+                                Color.White
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(47.dp))
                     PlayerTimeSide(viewModel = viewModel, duration = false)

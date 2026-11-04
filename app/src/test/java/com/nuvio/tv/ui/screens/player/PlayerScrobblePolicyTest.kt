@@ -55,7 +55,16 @@ class PlayerScrobblePolicyTest {
 
     @Test
     fun `completion stop remains eligible without an active session`() {
-        assertFalse(shouldSendStopScrobble(hasActiveScrobble = false, progressPercent = 79.99f))
-        assertTrue(shouldSendStopScrobble(hasActiveScrobble = false, progressPercent = 80f))
+        assertFalse(shouldSendStopScrobble(hasActiveScrobble = false, progressPercent = 94.99f))
+        assertTrue(shouldSendStopScrobble(hasActiveScrobble = false, progressPercent = 95f))
+    }
+
+    @Test
+    fun `between eighty and ninety five the services are told below eighty so the title is not marked watched`() {
+        assertEquals(50f, scrobblePercentToSend(50f))
+        assertEquals(79.9f, scrobblePercentToSend(80f))
+        assertEquals(79.9f, scrobblePercentToSend(94.9f))
+        assertEquals(95f, scrobblePercentToSend(95f))
+        assertEquals(100f, scrobblePercentToSend(100f))
     }
 }

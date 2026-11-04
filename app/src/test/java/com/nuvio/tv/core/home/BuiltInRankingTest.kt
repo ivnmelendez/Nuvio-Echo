@@ -58,7 +58,7 @@ class BuiltInRankingTest {
     @Test
     fun `a short title finished counts even under the minutes threshold`() {
         val seed = BuiltInRanking.mostRecentViewed(
-            listOf(progress("tt1", "Short film", positionMin = 12, durationMin = 13, at = 100)),
+            listOf(progress("tt1", "Short film", positionMin = 13, durationMin = 13, at = 100)),
             emptyList(), ViewedThresholdUnit.MINUTES, minutes = 20, percent = 50
         )
         assertEquals("tt1", seed?.id)

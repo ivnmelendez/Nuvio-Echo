@@ -46,7 +46,7 @@ data class WatchProgress(
         const val SOURCE_REMOTE_PLAYBACK = "remote_playback"
         const val SOURCE_REMOTE_HISTORY = "remote_history"
         const val STARTED_THRESHOLD = 0.02f
-        const val COMPLETED_THRESHOLD = 0.90f
+        const val COMPLETED_THRESHOLD = 0.95f
         const val SIMKL_COMPLETED_THRESHOLD = 0.80f
     }
 
@@ -62,7 +62,7 @@ data class WatchProgress(
         }
 
     /**
-     * Returns true if the content has been watched past the threshold (default 90%)
+     * Returns true if the content has been watched past the threshold (default 95%)
      */
     fun isCompleted(threshold: Float = completionThreshold()): Boolean = progressPercentage >= threshold
 

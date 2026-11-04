@@ -17,4 +17,4 @@ internal fun shouldSendPauseScrobble(
 internal fun shouldSendStopScrobble(
     hasActiveScrobble: Boolean,
     progressPercent: Float
-): Boolean = hasActiveScrobble || progressPercent >= 80f
+): Boolean = hasActiveScrobble || progressPercent >= SCROBBLE_COMPLETE_PERCENT

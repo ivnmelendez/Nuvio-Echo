@@ -109,6 +109,7 @@ internal class MdbListProgressProjection(snapshot: MdbListSyncSnapshot) {
     )
 
     companion object {
+        /** MDBList's own rule: a pause or stop from 80% on marks the title watched on its side. */
         const val COMPLETION_PERCENT = 80f
         val Empty = MdbListProgressProjection(MdbListSyncSnapshot(0))
     }
