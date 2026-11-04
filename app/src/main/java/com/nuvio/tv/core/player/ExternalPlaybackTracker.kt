@@ -896,12 +896,12 @@ class ExternalPlaybackTracker @Inject constructor(
     }
 
     // True on a natural end (end_by != "user"), or for players without end_by once the
-    // position reaches COMPLETED_THRESHOLD (95%).
+    // position reaches the completion threshold.
     private fun isPlaybackCompleted(result: ExternalPlayerResult): Boolean {
         if (!result.endedByUser) return true
         val duration = result.durationMs ?: 0L
         return duration > 0L &&
-            result.positionMs >= (WatchProgress.COMPLETED_THRESHOLD * duration).toLong()
+            result.positionMs >= (WatchProgress.defaultCompletedThreshold() * duration).toLong()
     }
 
     /**

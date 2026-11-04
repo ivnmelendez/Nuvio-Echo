@@ -48,6 +48,7 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
     @Inject lateinit var streamPrefetcher: dagger.Lazy<com.nuvio.tv.core.streams.StreamPrefetcher>
     @Inject lateinit var addonRepository: dagger.Lazy<com.nuvio.tv.domain.repository.AddonRepository>
     @Inject lateinit var addonProfile: com.nuvio.tv.core.addons.AddonProfile
+    @Inject lateinit var trackingProviders: com.nuvio.tv.core.tracking.TrackingProviderRegistry
     private val startupScope = kotlinx.coroutines.CoroutineScope(
         kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Default
     )
@@ -97,6 +98,13 @@ class NuvioApplication : Application(), SingletonImageLoader.Factory {
         }
         installDefaultAddonsOnce()
         addonProfile.start(startupScope)
+        // With MDBList or Trakt connected a title is watched where they say (see WatchProgress); without, from 95%.
+        startupScope.launch {
+            val flows = trackingProviders.providers().map { it.isAuthenticated }
+            if (flows.isEmpty()) return@launch
+            kotlinx.coroutines.flow.combine(flows) { states -> states.any { it } }
+                .collect { com.nuvio.tv.domain.model.WatchProgress.trackingConnected = it }
+        }
         // Load locale synchronously so it's available before Activity.attachBaseContext.
         // SharedPreferences reads are fast (cached in memory after first access).
         val tag = getSharedPreferences("app_locale", Context.MODE_PRIVATE)

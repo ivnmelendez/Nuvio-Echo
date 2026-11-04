@@ -281,7 +281,7 @@ private fun PlayerScreenContent(
         val completed = postPlayRecommendationState.isVisible || uiState.playbackEnded ||
             (!timeline.isLive &&
                 timeline.duration > 0L &&
-                (timeline.currentPosition.toFloat() / timeline.duration.toFloat()) >= WatchProgress.COMPLETED_THRESHOLD)
+                (timeline.currentPosition.toFloat() / timeline.duration.toFloat()) >= WatchProgress.defaultCompletedThreshold())
         val (focusSeason, focusEpisode) = uiState.returnFocusSeasonEpisode(completed)
         onBackPress(
             uiState.currentVideoId,
@@ -1528,7 +1528,7 @@ private fun PlayerScreenContent(
                         val timeline = viewModel.playbackTimeline.value
                         val completed = !timeline.isLive &&
                             timeline.duration > 0L &&
-                            (timeline.currentPosition.toFloat() / timeline.duration.toFloat()) >= WatchProgress.COMPLETED_THRESHOLD
+                            (timeline.currentPosition.toFloat() / timeline.duration.toFloat()) >= WatchProgress.defaultCompletedThreshold()
                         viewModel.launchInExternalPlayer(context, timeline.currentPosition) { launched ->
                             externalHandoffInProgress = false
                             if (launched && !exitDispatched) {

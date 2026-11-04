@@ -46,7 +46,17 @@ data class WatchProgress(
         const val SOURCE_REMOTE_PLAYBACK = "remote_playback"
         const val SOURCE_REMOTE_HISTORY = "remote_history"
         const val STARTED_THRESHOLD = 0.02f
-        const val COMPLETED_THRESHOLD = 0.95f
+        /** Where a title counts as watched while a tracking service (MDBList, Trakt) is connected: as it was, 90%. */
+        const val COMPLETED_THRESHOLD = 0.90f
+
+        /** Where it counts as watched with no tracking service connected: only the person's own history decides. */
+        const val LOCAL_ONLY_COMPLETED_THRESHOLD = 0.95f
+
+        /** Set from the connected tracking providers (see NuvioApplication). */
+        @Volatile
+        var trackingConnected: Boolean = false
+
+        fun defaultCompletedThreshold(): Float = if (trackingConnected) COMPLETED_THRESHOLD else LOCAL_ONLY_COMPLETED_THRESHOLD
         const val SIMKL_COMPLETED_THRESHOLD = 0.80f
     }
 
@@ -62,7 +72,7 @@ data class WatchProgress(
         }
 
     /**
-     * Returns true if the content has been watched past the threshold (default 95%)
+     * Returns true if the content has been watched past the threshold (default 90% with a tracking service connected, 95% without)
      */
     fun isCompleted(threshold: Float = completionThreshold()): Boolean = progressPercentage >= threshold
 
@@ -74,7 +84,7 @@ data class WatchProgress(
 
     private fun completionThreshold(): Float =
         completionThresholdOverride?.takeIf { it.isFinite() && it > 0f && it <= 1f }
-            ?: if (source == SOURCE_SIMKL_PLAYBACK) SIMKL_COMPLETED_THRESHOLD else COMPLETED_THRESHOLD
+            ?: if (source == SOURCE_SIMKL_PLAYBACK) SIMKL_COMPLETED_THRESHOLD else defaultCompletedThreshold()
 
     /**
      * Returns the remaining time in milliseconds
