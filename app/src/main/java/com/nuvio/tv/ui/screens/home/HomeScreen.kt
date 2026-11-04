@@ -102,6 +102,7 @@ fun HomeScreen(
     /** New look's Watch Now: the title's page, straight into playback. */
     onWatchNow: (String, String, String) -> Unit = onNavigateToDetail,
     /** The remote config's tab whose rows this screen shows: Home, Movies or Series. */
+    onViewMore: (String) -> Unit = {},
     remoteTab: String? = com.nuvio.tv.data.remoteconfig.RemoteHomeConfig.TAB_HOME
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -380,7 +381,8 @@ fun HomeScreen(
                             isCatalogItemWatched = isCatalogItemWatched,
                             onCatalogItemLongPress = onCatalogItemLongPress,
                             remoteTab = remoteTab,
-                            onSettled = { homeSettled = true }
+                            onSettled = { homeSettled = true },
+                            onViewMore = onViewMore
                         )
                         }
                     }

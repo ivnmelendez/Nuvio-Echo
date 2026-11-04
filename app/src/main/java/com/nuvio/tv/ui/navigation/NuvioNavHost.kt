@@ -245,6 +245,7 @@ private fun PlaybackNavHost(
             }
 
             HomeScreen(
+                onViewMore = { rowKey -> navController.navigate(Screen.ViewMore.createRoute(rowKey)) },
                 onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
                     val heroBackdrop = HeroBackdropState.consumeAndClear()
                     navController.navigate(
@@ -314,6 +315,7 @@ private fun PlaybackNavHost(
                 HomeScreen(
                     viewModel = homeViewModel,
                     remoteTab = tab,
+                    onViewMore = { rowKey -> navController.navigate(Screen.ViewMore.createRoute(rowKey)) },
                     onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
                         val heroBackdrop = HeroBackdropState.consumeAndClear()
                         navController.navigate(
@@ -1390,6 +1392,19 @@ private fun PlaybackNavHost(
 
         composable(Screen.LayoutSettings.route) {
             LayoutSettingsScreen(
+                onBackPress = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.ViewMore.route,
+            arguments = listOf(navArgument("rowKey") { type = NavType.StringType })
+        ) { backStackEntry ->
+            com.nuvio.tv.ui.newlook.home.ViewMoreGridScreen(
+                rowKey = backStackEntry.arguments?.getString("rowKey").orEmpty(),
+                onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
+                    navController.navigate(Screen.Detail.createRoute(itemId, itemType, addonBaseUrl))
+                },
                 onBackPress = { navController.popBackStack() }
             )
         }

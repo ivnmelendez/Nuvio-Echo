@@ -509,6 +509,7 @@
     <string name="advanced_confirm_exit_subtitle">Fully terminate the app and free memory when exiting. Requires pressing back twice to confirm.</string>
     <string name="exit_dialog_title">Exit %1$s?</string>
     <string name="exit_dialog_exit">Exit</string>
+    <string name="view_more">View More</string>
     <string name="confirm_exit_toast">Press back again to exit</string>
     <string name="settings_debug">Debug</string>
     <string name="settings_integrations_section">Integrations</string>

@@ -2384,4 +2384,7 @@
     <string name="player_panel_links">Enlaces</string>
     <string name="player_panel_links_loading">Cargando enlaces…</string>
     <string name="player_panel_links_none">No hay enlaces disponibles</string>
+    <string name="view_more">Ver Más</string>
+    <string name="exit_dialog_title">¿Salir de %1$s?</string>
+    <string name="exit_dialog_exit">Salir</string>
 </resources>

@@ -345,7 +345,8 @@ internal fun NewLookHome(
     onCatalogItemLongPress: (MetaPreview, String) -> Unit,
     /** The remote config's tab this Home shows (see RemoteHomeConfig.TAB_*); null keeps the catalogs and built-in rows. */
     remoteTab: String? = null,
-    onSettled: () -> Unit = {}
+    onSettled: () -> Unit = {},
+    onViewMore: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val entryPoint = remember(context) {
@@ -373,7 +374,8 @@ internal fun NewLookHome(
         isCatalogItemWatched = isCatalogItemWatched,
         onCatalogItemLongPress = onCatalogItemLongPress,
         remoteTab = remoteTab,
-        onSettled = onSettled
+        onSettled = onSettled,
+        onViewMore = onViewMore
     )
 }
 
@@ -399,7 +401,9 @@ internal fun NewLookHomeContent(
      * a moment (or [SETTLE_CAP_MS] has passed). The app keeps its splash up until then, so Home never opens on rows
      * that then shuffle as the rest arrives.
      */
-    onSettled: () -> Unit = {}
+    onSettled: () -> Unit = {},
+    /** View More was opened on the row with this key. */
+    onViewMore: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val chrome = LocalNewLookChrome.current
@@ -540,7 +544,8 @@ internal fun NewLookHomeContent(
     // ranked card drew a number as tall as the card, twice (an outline, then a fill), and sat a number's width off its start.
     val numbersOff = com.nuvio.tv.ui.newlook.LocalLightMode.current
     val rows = remember(builtRows, numbersOff) {
-        if (numbersOff) builtRows.map { if (it.ranked) it.copy(ranked = false, kind = RowKind.POSTER) else it } else builtRows
+        (if (numbersOff) builtRows.map { if (it.ranked) it.copy(ranked = false, kind = RowKind.POSTER) else it } else builtRows)
+            .withViewMore()
     }
     var sourcesIn by remember { mutableStateOf(memory.settled) }
     LaunchedEffect(source) {
@@ -1218,7 +1223,14 @@ internal fun NewLookHomeContent(
                             else if (menuOnTop) chrome?.focusTopBar()
                             true
                         }
-                        Key.DirectionRight -> row != null && col >= row.items.lastIndex
+                        Key.DirectionRight -> when {
+                            row != null && row.viewMore && row.items.getOrNull(col)?.isViewMore == true -> {
+                                // The row starts over after View More.
+                                focusRow(index, 0)
+                                true
+                            }
+                            else -> row != null && col >= row.items.lastIndex
+                        }
                         // Within a row Home moves focus itself; only Left from the first card reaches the sidebar,
                         // and with the menu on top there's no sidebar to go to.
                         Key.DirectionLeft -> when {
@@ -1350,7 +1362,9 @@ internal fun NewLookHomeContent(
                             }
                             when (val payload = item.payload) {
                                 is ModernPayload.ContinueWatching -> onContinueWatchingClick(payload.item)
-                                is ModernPayload.Catalog -> if (row.kind == RowKind.GRAND && grandButton == 0) {
+                                is ModernPayload.Catalog -> if (item.isViewMore) {
+                                    onViewMore(row.key)
+                                } else if (row.kind == RowKind.GRAND && grandButton == 0) {
                                     onWatchNow(payload.itemId, payload.itemType, payload.addonBaseUrl)
                                 } else {
                                     onNavigateToDetail(payload.itemId, payload.itemType, payload.addonBaseUrl)
@@ -1889,9 +1903,40 @@ private fun NewLookRowView(
                         ghostShift = if (index == col) ({ slide.imageFrom * (1f - slide.imageProgress) - slide.dir * openWidthPx }) else NoBackdropShift
                     )
                 }
+                // After View More the row starts over: its first cards show again, only drawn (Right from View More
+                // goes to the real first card).
+                if (row.viewMore) {
+                    itemsIndexed(row.items.take(VIEW_MORE_ECHO), key = { _, item -> "${item.key}~again" }) { echo, item ->
+                        val index = row.items.size + echo
+                        RowCard(
+                            row = row,
+                            item = item,
+                            index = index,
+                            dims = dims,
+                            focused = false,
+                            grandButton = 0,
+                            details = item.metaPreview?.id?.let { details[it] },
+                            trailerUrl = null,
+                            trailerAudioUrl = null,
+                            muted = muted,
+                            isWatched = isWatched,
+                            onTrailerEnded = onTrailerEnded,
+                            onFocusChanged = {},
+                            onClick = {},
+                            onLongClick = {},
+                            modifier = Modifier
+                                .focusProperties { canFocus = false }
+                                .graphicsLayer { translationX = if (index > col) slide.from * (1f - slide.progress) else 0f },
+                            open = false,
+                            openAtOnce = false,
+                            holdOpen = false,
+                            resting = false
+                        )
+                    }
+                }
             }
         }
-        if (row.kind != RowKind.WIDE && row.kind != RowKind.GRAND && shownItem != null) {
+        if (row.kind != RowKind.WIDE && row.kind != RowKind.GRAND && shownItem != null && !shownItem.isViewMore) {
             val metaAlpha = animateFloatAsState(if (rowShown) 1f else 0f, androidx.compose.animation.core.snap(), label = "rowMeta")
             // Only the focused row (and one fading out) has its details composed: rows coming on screen as the page
             // scrolls don't lay out a synopsis nobody sees.
@@ -2041,7 +2086,8 @@ private fun RowCard(
             modifier = modifier,
             trailerUrl = if (open) trailerUrl else null,
             trailerAudioUrl = if (open) trailerAudioUrl else null,
-            muted = muted
+            muted = muted,
+            viewMore = item.isViewMore
         )
         row.kind == RowKind.COLLECTION -> CollectionTile(
             item = item,

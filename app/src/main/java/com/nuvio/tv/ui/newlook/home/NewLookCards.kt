@@ -386,7 +386,9 @@ internal fun PosterCard(
     backdropShift: () -> Float = NoBackdropShift,
     /** The backdrop of the card the focus just left, drawn [ghostShift] px off: it shows in the gap the push opens. */
     ghostBackdrop: String? = null,
-    ghostShift: () -> Float = NoBackdropShift
+    ghostShift: () -> Float = NoBackdropShift,
+    /** The View More card at the end of a cut row: arrows on a dark card, wider (black) when open. */
+    viewMore: Boolean = false
 ) {
     // A regular row stays on its card when the trailer ends: the backdrop comes back.
     var ended by remember(trailerUrl) { mutableStateOf(false) }
@@ -415,13 +417,13 @@ internal fun PosterCard(
         ringColor = if (activeOpen) Color.White else null,
         idleRingColor = if (isOpen) Color(0xFF1F1F1F) else null
     ) {
-        Artwork(
+        if (viewMore) ViewMoreArt(isOpen) else Artwork(
             poster ?: backdrop, Modifier.fillMaxSize().graphicsLayer { alpha = if (isOpen) 0f else 1f },
             fallbackTitle = title, fallbackUrl = posterFallback
         )
         // Closed posters wear one fixed dark veil (lighter than the reference's measured 40%, by eye); only the opened card is undimmed.
         if (!isOpen) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = ClosedVeilAlpha)))
-        if (showOpen) {
+        if (showOpen && !viewMore) {
             Box(modifier = Modifier.fillMaxSize().clipToBounds().background(Color.Black)) {
                 // Pushed to the side while it settles, the black behind showing at the edge: the logo and foot stay put.
                 if (ghostBackdrop != null) Artwork(
@@ -848,3 +850,48 @@ private const val CARD_STILL_MS = 160L
 
 /** How long [HeldTrailer] holds black for a trailer that hasn't shown a frame yet. */
 private const val TRAILER_HOLD_CAP_MS = 8_000L
+
+/**
+ * View More's picture, the reference app's own SVGs at the scale measured off its screen: 0.304 dp per unit closed (a
+ * 140 dp wide poster-shaped drawing centred on the card), 0.85 dp per unit open (a 382 dp wide one centred on the wide
+ * card). The word is part of the English drawings; for other languages the arrows are drawn alone and the word is text.
+ */
+@Composable
+internal fun BoxScope.ViewMoreArt(open: Boolean) {
+    val label = stringResource(R.string.view_more)
+    val baked = label == "View More"
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val width = if (open) 382.5.dp else 140.dp
+    val height = if (open) 212.5.dp else 140.dp * 660f / 460f
+    val raw = when {
+        open && baked -> R.raw.view_more_wide
+        open -> R.raw.view_more_wide_arrows
+        baked -> R.raw.view_more_poster
+        else -> R.raw.view_more_poster_arrows
+    }
+    val painter = coil3.compose.rememberAsyncImagePainter(
+        model = coil3.request.ImageRequest.Builder(context)
+            .data(raw)
+            .size(with(density) { width.roundToPx() }, with(density) { height.roundToPx() })
+            .build()
+    )
+    Box(
+        modifier = Modifier.fillMaxSize().then(
+            if (open) Modifier.background(Color.Black)
+            else Modifier.background(Brush.verticalGradient(listOf(Color(0xFF2A2A2A), Color(0xFF0D0D0D))))
+        ),
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.foundation.Image(painter = painter, contentDescription = null, modifier = Modifier.size(width, height))
+        if (!baked) Text(
+            text = if (open) label.uppercase() else label,
+            color = Color.White,
+            fontSize = if (open) 22.sp else 15.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+            letterSpacing = if (open) 2.sp else 0.sp,
+            modifier = Modifier.offset(y = if (open) 43.dp else 54.dp)
+        )
+    }
+}

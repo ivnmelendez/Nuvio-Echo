@@ -166,6 +166,12 @@ sealed class Screen(val route: String) {
         }
     }
 
+    /** Every title of a Home row that was cut at 30 (see View More). */
+    data object ViewMore : Screen("view_more/{rowKey}") {
+        fun createRoute(rowKey: String): String =
+            "view_more/" + URLEncoder.encode(rowKey, "UTF-8").replace("+", "%20")
+    }
+
     data object Collections : Screen("collections")
 
     data object CollectionEditor : Screen("collection_editor?collectionId={collectionId}") {

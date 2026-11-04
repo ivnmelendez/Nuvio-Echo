@@ -56,7 +56,9 @@ internal data class NewLookRow(
     /** A picture drawn behind the whole row (a seasonal banner), or null. */
     val bannerUrl: String? = null,
     /** The banner carries the row's title, so the text title is left out. */
-    val hideTitle: Boolean = false
+    val hideTitle: Boolean = false,
+    /** The row was cut at [VIEW_MORE_AFTER] titles: its last card is View More, and the row wraps back to its start after it. */
+    val viewMore: Boolean = false
 ) {
     val isPlaceholder: Boolean
         get() = source?.isLoading == true && onlyPlaceholders
@@ -437,4 +439,54 @@ internal fun String.sharperPoster(): String = when {
     "image.tmdb.org/t/p/" in this -> replace(Regex("/t/p/(w\\d+|original)/"), "/t/p/w500/")
     "images.metahub.space/poster/" in this -> replace(Regex("/poster/(small|medium)/"), "/poster/medium/")
     else -> this
+}
+
+
+/** A poster row shows this many titles; the next card is View More, which opens all of them in a grid. */
+internal const val VIEW_MORE_AFTER = 30
+internal const val VIEW_MORE_ID = "__view_more__"
+
+/** After View More the row starts over: this many of its first cards show again (drawn only, never focused). */
+internal const val VIEW_MORE_ECHO = 4
+
+internal val ModernCarouselItem.isViewMore: Boolean
+    get() = (payload as? ModernPayload.Catalog)?.itemId == VIEW_MORE_ID
+
+/** What View More opens: every title of a cut row, by the row's key. */
+internal object ViewMoreStore {
+    class Entry(val title: String, val items: List<ModernCarouselItem>)
+
+    private val rows = java.util.concurrent.ConcurrentHashMap<String, Entry>()
+    fun put(key: String, title: String, items: List<ModernCarouselItem>) { rows[key] = Entry(title, items) }
+    fun get(key: String): Entry? = rows[key]
+}
+
+private fun viewMoreItem(rowKey: String): ModernCarouselItem = ModernCarouselItem(
+    key = "$rowKey::view_more",
+    title = "",
+    subtitle = null,
+    imageUrl = null,
+    heroPreview = HeroPreview(
+        title = "", logo = null, description = null, contentTypeText = null, yearText = null, imdbText = null,
+        genres = emptyList<String>().asStable(), poster = null, backdrop = null, imageUrl = null
+    ),
+    payload = ModernPayload.Catalog(
+        focusKey = "$rowKey::view_more",
+        itemId = VIEW_MORE_ID,
+        itemType = "movie",
+        addonBaseUrl = "",
+        trailerTitle = "",
+        trailerReleaseInfo = null,
+        trailerApiType = "movie"
+    )
+)
+
+/** Poster rows longer than [VIEW_MORE_AFTER] are cut there, with View More as the card after the last. */
+internal fun List<NewLookRow>.withViewMore(): List<NewLookRow> = map { row ->
+    if (row.kind == RowKind.POSTER && !row.isContinueWatching && !row.collection && !row.onlyPlaceholders &&
+        row.items.size > VIEW_MORE_AFTER
+    ) {
+        ViewMoreStore.put(row.key, row.title, row.items)
+        row.copy(items = row.items.take(VIEW_MORE_AFTER) + viewMoreItem(row.key), viewMore = true)
+    } else row
 }
