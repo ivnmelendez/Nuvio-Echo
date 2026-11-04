@@ -125,6 +125,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -3050,11 +3052,15 @@ private fun ProgressBar(
         (bufferedPosition.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
     } else 0f
 
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(100),
-        label = "progress"
-    )
+    // The position arrives twice a second. Each step glides at a constant speed to the next, so the thumb moves evenly
+    // (a fraction of a pixel at a time, drawn smoothly) instead of stepping every so often, which looked like the picture
+    // was stuttering. A jump (a seek, the first value) goes there at once.
+    val shownProgress = remember { androidx.compose.animation.core.Animatable(progress) }
+    LaunchedEffect(progress, duration) {
+        val jumpMs = kotlin.math.abs(progress - shownProgress.value) * duration
+        if (duration <= 0L || jumpMs > 1_500f) shownProgress.snapTo(progress)
+        else shownProgress.animateTo(progress, tween(durationMillis = 520, easing = androidx.compose.animation.core.LinearEasing))
+    }
     val animatedBufferedProgress by animateFloatAsState(
         targetValue = bufferedProgress,
         animationSpec = tween(200),
@@ -3164,20 +3170,21 @@ private fun ProgressBar(
                 .clip(RoundedCornerShape(1.5.dp))
                 .background(Color.White.copy(alpha = 0.19f))
         ) {
-            // Played fill: the reference's blue, 3 dp, with no buffered streak ahead of it.
+            // Played fill: the reference's blue, 3 dp, with no buffered streak ahead of it. Drawn from the animated value
+            // while drawing, so it follows the thumb to a fraction of a pixel without recomposing.
             Box(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .width(trackWidth * animatedProgress)
-                    .clip(RoundedCornerShape(1.5.dp))
-                    .background(Color(0xFF1498FE))
+                    .fillMaxSize()
+                    .drawBehind {
+                        drawRect(Color(0xFF1498FE), size = androidx.compose.ui.geometry.Size(size.width * shownProgress.value, size.height))
+                    }
             )
             if (loading) LoadingStreak(color = NuvioTheme.colors.Secondary)
         }
         if (!loading) {
             Box(
                 modifier = Modifier
-                    .offset(x = trackWidth * animatedProgress - ProgressThumbSize / 2)
+                    .graphicsLayer { translationX = trackWidth.toPx() * shownProgress.value - ProgressThumbSize.toPx() / 2f }
                     .size(ProgressThumbSize)
                     .shadow(6.dp, CircleShape, clip = false, ambientColor = Color.Black.copy(alpha = 0.5f), spotColor = Color.Black.copy(alpha = 0.5f))
                     .background(Color.White, CircleShape)
