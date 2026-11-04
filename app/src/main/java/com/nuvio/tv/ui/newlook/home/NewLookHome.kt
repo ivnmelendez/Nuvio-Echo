@@ -1569,6 +1569,9 @@ private class RowSlide(var prevCol: Int) {
     /** The card the focus just left (its backdrop shows in the gap) and the step's direction; read in the draw phase only. */
     var ghostCol = -1
     var dir = 0
+    /** When the last step was taken, and how long after the one before it (a key held down steps every ~247 ms). */
+    var stepAt = 0L
+    var sincePrevStep = Long.MAX_VALUE
 }
 
 /** Rows pin the focused card to their start, so a row always starts with its focused card. */
@@ -1807,6 +1810,9 @@ private fun NewLookRowView(
             val step = col - slide.prevCol
             if (step != 0) {
                 slide.prevCol = col
+                val stepNow = android.os.SystemClock.uptimeMillis()
+                slide.sincePrevStep = stepNow - slide.stepAt
+                slide.stepAt = stepNow
                 if (slideEnabled && abs(step) == 1) {
                     // A step taken mid-glide carries on from where the cards are, capped so a held key never trails far.
                     val left = slide.from * (1f - slide.progress)
@@ -1834,8 +1840,13 @@ private fun NewLookRowView(
                     val chained = abs(slide.from) > stepPx * 1.2f
                     androidx.compose.animation.core.animate(
                         0f, 1f,
-                        animationSpec = if (chained) tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
-                        else tween(290, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                        animationSpec = when {
+                            // A key held down: each glide takes the time between its steps (measured off the reference: ~240 ms,
+                            // the whole ease in and out), so every one is seen to the end before the next begins.
+                            slide.sincePrevStep < 320L -> tween(240, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                            chained -> tween(200, easing = androidx.compose.animation.core.LinearOutSlowInEasing)
+                            else -> tween(290, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                        }
                     ) { v, _ -> slide.progress = v }
                 }
                 if (slide.imageProgress < 1f) launch {
