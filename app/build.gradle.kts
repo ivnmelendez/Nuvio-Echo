@@ -181,8 +181,10 @@ android {
         create("playstore") {
             dimension = "distribution"
             applicationId = "com.tivistream.tv"
-            // REMOTE_CONFIG_URL is the default one from defaultConfig: Home's rows come from it until an addon names
-            // its own rows file in its manifest (HomeConfigUrlProvider); then that addon's rows are used instead.
+            // Home's rows when no installed addon names its own rows file (behaviorHints.homeConfigUrl): the default
+            // file. With the owner's addon installed its manifest names home-config.json, which then replaces this one
+            // entirely (HomeConfigUrlProvider), so the default is no longer loaded.
+            buildConfigField("String", "REMOTE_CONFIG_URL", "\"https://raw.githubusercontent.com/ivnmelendez/nuvio-config/main/default-config.json\"")
             // No crash reporting service in the Play build: Play Console already has crash and ANR reports.
             buildConfigField("String", "SENTRY_DSN", "\"\"")
             // No activation server in the Play build.
