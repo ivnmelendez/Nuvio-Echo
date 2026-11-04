@@ -210,6 +210,8 @@ private const val TRAILER_MAX_MS = 180_000L
 /** With focus elsewhere, the hero shows each title's backdrop for this long. */
 private const val ROTATE_MS = 8_000L
 /** Home counts as settled once its row layout has held still this long after its sources came in. */
+/** Time between the steps of a row while Left or Right is held (measured off the reference app). */
+private const val HELD_STEP_MS = 247L
 private const val SETTLE_QUIET_MS = 350L
 /** The longest the first Home waits to settle (a slow network): it shows what it has then. */
 private const val SETTLE_CAP_MS = 4_500L
@@ -736,6 +738,8 @@ internal fun NewLookHomeContent(
     fun leftRequester(key: String) = leftFocus.getOrPut(key) { FocusRequester() }
     val rowStates = remember { HashMap<String, LazyListState>() }
 
+    val lastHorizontalStepAt = remember { longArrayOf(0L) }
+
     fun tryFocus(requester: FocusRequester): Boolean = runCatching { requester.requestFocus() }.getOrDefault(false)
 
     fun focusRow(index: Int, col: Int? = null) {
@@ -1172,6 +1176,15 @@ internal fun NewLookHomeContent(
             .onPreviewKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
                 if (chrome?.topBarFocused == true || cwOptions != null) return@onPreviewKeyEvent false
+                // Left or Right held down: a row takes one step per ~247 ms (a step every 5.7 frames of the reference's
+                // 24 fps capture), so each glide finishes before the next starts. The key's repeats in between are dropped.
+                if (event.key == Key.DirectionLeft || event.key == Key.DirectionRight) {
+                    val now = android.os.SystemClock.uptimeMillis()
+                    if (event.nativeKeyEvent.repeatCount > 0 && now - lastHorizontalStepAt[0] < HELD_STEP_MS) {
+                        return@onPreviewKeyEvent true
+                    }
+                    lastHorizontalStepAt[0] = now
+                }
                 if (heroHasFocus) {
                     when (event.key) {
                         Key.DirectionLeft -> {
