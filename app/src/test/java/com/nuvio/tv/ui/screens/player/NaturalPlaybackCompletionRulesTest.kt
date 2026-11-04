@@ -97,4 +97,24 @@ class NaturalPlaybackCompletionRulesTest {
         assertFalse(isShortPlaceholderDuration(121_000L))
         assertFalse(isShortPlaceholderDuration(2_400_000L))
     }
+
+    @Test
+    fun `a stream cut short far from the end is not natural completion`() {
+        assertFalse(
+            shouldTreatAsNaturalPlaybackCompletion(
+                hasRenderedFirstFrame = true,
+                hasFatalError = false,
+                durationMs = 2_400_000L,
+                positionMs = 900_000L // 15 min of 40
+            )
+        )
+        assertTrue(
+            shouldTreatAsNaturalPlaybackCompletion(
+                hasRenderedFirstFrame = true,
+                hasFatalError = false,
+                durationMs = 2_400_000L,
+                positionMs = 2_399_000L
+            )
+        )
+    }
 }

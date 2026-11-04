@@ -184,11 +184,17 @@ internal fun shouldResetPostPlayStateAfterPlaybackEnded(
 internal fun shouldTreatAsNaturalPlaybackCompletion(
     hasRenderedFirstFrame: Boolean,
     hasFatalError: Boolean,
-    durationMs: Long
+    durationMs: Long,
+    positionMs: Long = -1L
 ): Boolean {
     if (hasFatalError) return false
     if (!hasRenderedFirstFrame) return false
     if (isShortPlaceholderDuration(durationMs)) return false
+    // A stream that is cut short (the server closes it, the file is shorter than announced) also ends the player, far from
+    // the end: that is not the episode finishing, so nothing is marked watched and no "continue watching?" is asked.
+    if (positionMs >= 0L && durationMs > 0L &&
+        positionMs < (durationMs * com.nuvio.tv.domain.model.WatchProgress.defaultCompletedThreshold()).toLong()
+    ) return false
     return true
 }
 
@@ -263,7 +269,8 @@ internal fun PlayerRuntimeController.startProgressUpdates() {
                     val naturalEnded = !view.isLiveStreamNow() && (nearEnd || mpvEofReached) && shouldTreatAsNaturalPlaybackCompletion(
                         hasRenderedFirstFrame = firstFrameReady,
                         hasFatalError = !_uiState.value.error.isNullOrBlank(),
-                        durationMs = effectiveDuration
+                        durationMs = effectiveDuration,
+                        positionMs = pos
                     )
                     val wasEnded = _uiState.value.playbackEnded
                     _uiState.update { state ->
@@ -561,7 +568,8 @@ internal fun PlayerRuntimeController.handleNaturalPlaybackEnded() {
     if (!shouldTreatAsNaturalPlaybackCompletion(
             hasRenderedFirstFrame = hasRenderedFirstFrame,
             hasFatalError = hasFatalError,
-            durationMs = duration
+            durationMs = duration,
+            positionMs = position
         )
     ) {
         Log.i(

@@ -1157,7 +1157,8 @@ internal fun PlayerRuntimeController.initializePlayer(
                                 hasFatalError = !_uiState.value.error.isNullOrBlank(),
                                 durationMs = playerDuration.coerceAtLeast(0L).let { d ->
                                     maxOf(d, lastKnownDuration)
-                                }
+                                },
+                                positionMs = currentPlaybackPositionMs() ?: -1L
                             )
                         _uiState.update {
                             it.copy(
