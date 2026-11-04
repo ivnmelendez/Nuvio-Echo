@@ -446,6 +446,7 @@ internal fun NewDetailsContent(
         seedUrl?.let { ImageRequest.Builder(context).data(it).crossfade(false).size(width = widthPx, height = heightPx).build() }
     }
     val background = NuvioTheme.colors.Background
+    val leftGradient = remember(background, widthPx) { detailLeftGradient(background, widthPx) }
     val emptyGradient = remember { android.graphics.Bitmap.createBitmap(1, 1, android.graphics.Bitmap.Config.ARGB_8888).asImageBitmap() }
 
     Box(
@@ -494,7 +495,7 @@ internal fun NewDetailsContent(
             onTrailerProgressChanged = onTrailerProgressChanged,
             onTrailerEnded = onTrailerEnded,
             isScrolledPastHero = scrolledPast,
-            leftGradient = emptyGradient,
+            leftGradient = leftGradient,
             bottomGradient = emptyGradient,
             pauseBackgroundTrailer = !playFocused,
             onBackgroundTrailerShowing = { trailerShowing = it }
@@ -510,9 +511,9 @@ internal fun NewDetailsContent(
                 .drawBehind {
                     drawRect(
                         Brush.horizontalGradient(
-                            0f to Color.Black.copy(alpha = 0.55f),
-                            0.30f to Color.Black.copy(alpha = 0.30f),
-                            0.50f to Color.Black.copy(alpha = 0.10f),
+                            0f to Color.Black.copy(alpha = 0.9f),
+                            0.30f to Color.Black.copy(alpha = 0.72f),
+                            0.50f to Color.Black.copy(alpha = 0.35f),
                             0.66f to Color.Transparent
                         ),
                         alpha = scrimAlpha
