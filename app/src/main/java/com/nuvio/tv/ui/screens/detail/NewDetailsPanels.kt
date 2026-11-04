@@ -713,9 +713,9 @@ private fun EpisodeRow(
             if (upcomingDate != null) {
                 Box(
                     Modifier
-                        .align(Alignment.TopStart)
-                        .padding(6.dp)
-                        .size(22.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(top = 7.5.dp, end = 6.5.dp)
+                        .size(21.dp)
                         .clip(CircleShape)
                         .background(if (reminderOn) Color.White else Color.Black.copy(alpha = 0.6f)),
                     contentAlignment = Alignment.Center
@@ -726,10 +726,11 @@ private fun EpisodeRow(
                     )
                 }
             } else if (watched) {
+                // Top right, so it never covers the episode number (the reference's: 21 dp, a grey tick on white).
                 Box(
-                    Modifier.align(Alignment.TopStart).padding(6.dp).size(20.dp).clip(CircleShape).background(Color.White),
+                    Modifier.align(Alignment.TopEnd).padding(top = 7.5.dp, end = 6.5.dp).size(21.dp).clip(CircleShape).background(Color.White),
                     contentAlignment = Alignment.Center
-                ) { Icon(Icons.Filled.Check, null, tint = Color.Black, modifier = Modifier.size(14.dp)) }
+                ) { Icon(Icons.Filled.Check, null, tint = Color(0xFF5A5A5A), modifier = Modifier.size(14.dp)) }
             } else if (progress != null && progress.progressPercentage > 0f) {
                 Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(3.dp).background(Color.White.copy(alpha = 0.25f))) {
                     Box(Modifier.fillMaxHeight().fillMaxWidth(progress.progressPercentage.coerceIn(0f, 1f)).background(Color.White))
