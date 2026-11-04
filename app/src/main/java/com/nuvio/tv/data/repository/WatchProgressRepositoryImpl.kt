@@ -92,6 +92,23 @@ internal fun resolveProviderEpisodeProgress(
         .maxByOrNull(WatchProgress::lastWatched)
 }
 
+/**
+ * The tracking service learns a position when the player tells it (a pause or stop), and answers some time later. Until
+ * then, an episode watched after everything the service knows of that title is still only here: the local copy, newer
+ * than all of the service's entries for the title, is kept, so Continue Watching and resume show where the person
+ * really stopped, not an older episode.
+ */
+internal fun withNewerLocalProgress(merged: List<WatchProgress>, local: List<WatchProgress>): List<WatchProgress> {
+    val newestByContent = merged.groupBy { it.contentId.lowercase() }.mapValues { (_, items) -> items.maxOf(WatchProgress::lastWatched) }
+    val keys = merged.mapTo(mutableSetOf()) { Triple(it.contentId.lowercase(), it.season, it.episode) }
+    val extra = local.filter { progress ->
+        val newest = newestByContent[progress.contentId.lowercase()]
+        newest != null && progress.lastWatched > newest && progress.isInProgress() &&
+            Triple(progress.contentId.lowercase(), progress.season, progress.episode) !in keys
+    }
+    return if (extra.isEmpty()) merged else (merged + extra).sortedByDescending(WatchProgress::lastWatched)
+}
+
 @Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchProgressRepositoryImpl @Inject constructor(
@@ -331,10 +348,13 @@ class WatchProgressRepositoryImpl @Inject constructor(
                         watchProgressPreferences.observeAllProgress(profileId),
                         metadataState
                     ) { items, localItems, metadata ->
-                        mergeProgressProjectionWithRetainedLocal(
-                            providerEntries = items,
-                            localEntries = localItems,
-                            retainsLocalProgress = provider::retainsLocalProgress
+                        withNewerLocalProgress(
+                            mergeProgressProjectionWithRetainedLocal(
+                                providerEntries = items,
+                                localEntries = localItems,
+                                retainsLocalProgress = provider::retainsLocalProgress
+                            ),
+                            localItems
                         ).map { progress -> enrichWithMetadata(progress, metadata) }
                             .sortedByDescending(WatchProgress::lastWatched)
                     }.onEach { items ->
@@ -408,15 +428,18 @@ class WatchProgressRepositoryImpl @Inject constructor(
                 if (provider != null) {
                     combine(
                         provider.episodeProgress(contentId),
-                        provider.allProgress
-                    ) { items, allProgress ->
-                        resolveProviderEpisodeProgress(
+                        provider.allProgress,
+                        watchProgressPreferences.getEpisodeProgress(contentId, season, episode, profileId)
+                    ) { items, allProgress, local ->
+                        val remote = resolveProviderEpisodeProgress(
                             contentId = contentId,
                             season = season,
                             episode = episode,
                             episodeProgress = items,
                             allProgress = allProgress
                         )
+                        // The service may not have heard yet of where the person stopped: the newer local copy resumes it.
+                        if (local != null && local.isInProgress() && (remote == null || local.lastWatched > remote.lastWatched)) local else remote
                     }
                 } else {
                     watchProgressPreferences.getEpisodeProgress(contentId, season, episode, profileId)
