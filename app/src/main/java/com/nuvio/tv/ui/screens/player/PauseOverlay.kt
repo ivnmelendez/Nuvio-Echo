@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -63,11 +65,30 @@ fun PauseOverlay(
         modifier = modifier,
         captureKeys = false,
         dismissOnBackgroundClick = true,
-        overlayTint = Color.Black.copy(alpha = 0.40f),
+        overlayTint = Color.Black.copy(alpha = 0.16f),
         drawShade = false
     ) {
         val context = LocalContext.current
         val isEpisode = type in listOf("series", "tv") && season != null && episode != null
+        // Darkest on the left, behind the text, and clear towards the right; the lower part a little darker too.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.horizontalGradient(
+                        0f to Color.Black.copy(alpha = 0.72f),
+                        0.5f to Color.Black.copy(alpha = 0.32f),
+                        1f to Color.Transparent
+                    )
+                )
+                .background(
+                    Brush.verticalGradient(
+                        0f to Color.Transparent,
+                        0.45f to Color.Transparent,
+                        1f to Color.Black.copy(alpha = 0.6f)
+                    )
+                )
+        )
         Column(modifier = Modifier.align(Alignment.TopStart).padding(start = 70.dp, top = 120.dp)) {
             PauseTitle(title = title, logo = logo)
             Spacer(Modifier.height(6.25.dp))
