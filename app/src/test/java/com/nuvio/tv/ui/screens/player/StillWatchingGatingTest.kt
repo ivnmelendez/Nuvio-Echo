@@ -57,7 +57,7 @@ class StillWatchingGatingTest {
     }
 
     @Test
-    fun `gating returns true when all conditions met`() {
+    fun `gating is closed even when all conditions are met, the screen is gone`() {
         val result = shouldEnterStillWatchingPrompt(
             stillWatchingEnabled = true,
             autoPlayNextEpisodeEnabled = true,
@@ -65,7 +65,7 @@ class StillWatchingGatingTest {
             consecutiveAutoPlayCount = 3,
             threshold = 3,
         )
-        assertTrue(result)
+        assertFalse(result)
     }
 
     @Test

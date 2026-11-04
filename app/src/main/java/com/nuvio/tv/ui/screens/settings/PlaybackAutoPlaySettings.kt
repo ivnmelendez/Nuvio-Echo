@@ -267,28 +267,6 @@ internal fun PlaybackUpNextSection(
         )
     }
 
-    if (settings.streamAutoPlayNextEpisodeEnabled) {
-        SettingsToggleRow(
-            title = stringResource(R.string.still_watching_setting_title),
-            subtitle = stringResource(R.string.still_watching_setting_sub),
-            checked = settings.stillWatchingEnabled,
-            onToggle = { onUpdate { setStillWatchingEnabled(!settings.stillWatchingEnabled) } }
-        )
-
-        if (settings.stillWatchingEnabled) {
-            SliderSettingsItem(
-                title = stringResource(R.string.still_watching_threshold_title),
-                subtitle = stringResource(R.string.still_watching_threshold_sub),
-                value = settings.stillWatchingEpisodeThreshold,
-                valueText = "${settings.stillWatchingEpisodeThreshold}",
-                minValue = 2,
-                maxValue = 6,
-                step = 1,
-                onValueChange = { threshold -> onUpdate { setStillWatchingEpisodeThreshold(threshold) } }
-            )
-        }
-    }
-
     SettingsToggleRow(
         title = stringResource(R.string.autoplay_prefer_binge_group),
         subtitle = stringResource(R.string.autoplay_prefer_binge_group_sub),

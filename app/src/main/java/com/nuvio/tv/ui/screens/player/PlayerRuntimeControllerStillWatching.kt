@@ -14,7 +14,8 @@ internal fun shouldEnterStillWatchingPrompt(
     nextEpisodeHasAired: Boolean,
     consecutiveAutoPlayCount: Int,
     threshold: Int,
-): Boolean = stillWatchingEnabled &&
+): Boolean = false && // The "still watching?" screen is gone: nothing asks, however many episodes play in a row.
+    stillWatchingEnabled &&
     autoPlayNextEpisodeEnabled &&
     nextEpisodeHasAired &&
     consecutiveAutoPlayCount >= threshold

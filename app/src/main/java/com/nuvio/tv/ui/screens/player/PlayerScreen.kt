@@ -1317,13 +1317,9 @@ private fun PlayerScreenContent(
             )
         }
 
-        val endPromptEpisode = nextEpisodeForEndPrompt.takeIf { shouldConfirmNextEpisodeOnEnd }
-        if (endPromptEpisode != null) {
-            NextEpisodeEndPromptOverlay(
-                nextEpisode = endPromptEpisode,
-                onContinue = continueToNextEpisodeFromEndPrompt,
-                onReturnToDetails = returnToDetailsFromEndPrompt
-            )
+        // No "Continue watching?" screen: a real end with no auto-play next goes back to the details, as "No" did.
+        LaunchedEffect(shouldConfirmNextEpisodeOnEnd) {
+            if (shouldConfirmNextEpisodeOnEnd) returnToDetailsFromEndPrompt()
         }
 
         val skipButtonBottomPadding by animateDpAsState(
