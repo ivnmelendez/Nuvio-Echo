@@ -336,7 +336,9 @@ internal fun EpisodesPanel(
                                     focusRequester = seasonRequester(s),
                                     onFocusChanged = { f ->
                                         focused = f
-                                        if (f && reviewsFor == null && !steppingSeason) season = s
+                                        // Never while the hold menu is open or focus is on its way back to the episode: the menu's window takes
+                                        // focus away, and when it gives it back a season row can catch it first and switch the season.
+                                        if (f && reviewsFor == null && !steppingSeason && menuFor == null && refocusEpisode == null) season = s
                                     },
                                     onClick = {
                                         val first = if (s == TRAILERS_TAB) trailerFocusId(0).takeIf { trailers.isNotEmpty() }
