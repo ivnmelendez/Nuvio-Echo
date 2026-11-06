@@ -238,6 +238,8 @@ internal interface NewLookHomeSource {
     fun onEvent(event: HomeEvent)
     /** A Continue Watching card has focus: warm the stream search its click will make. */
     fun prefetchContinueWatching(item: ContinueWatchingItem) {}
+    /** The stream search that card's click would make has already finished with links. */
+    suspend fun isContinueWatchingLoaded(item: ContinueWatchingItem): Boolean = false
     /** A regular row's poster opened out (Fetch on expansion): warm the search its Play would make. */
     fun prefetchOnExpansion(target: ExpansionTarget, dwellMs: Long) {}
     val smartHighlights: StateFlow<List<com.nuvio.tv.core.home.smart.SmartHighlightRow>> get() = NoSmartHighlights
@@ -297,6 +299,14 @@ private fun viewModelSource(
     }
     override fun prefetchContinueWatching(item: ContinueWatchingItem) {
         streamPrefetcher.prefetchOnFocus(item)
+    }
+    override suspend fun isContinueWatchingLoaded(item: ContinueWatchingItem): Boolean = when (item) {
+        is ContinueWatchingItem.InProgress -> streamPrefetcher.get().isLoaded(
+            item.progress.contentType, item.progress.videoId, item.progress.season, item.progress.episode
+        )
+        is ContinueWatchingItem.NextUp -> streamPrefetcher.get().isLoaded(
+            item.info.contentType, item.info.videoId, item.info.season, item.info.episode
+        )
     }
     override fun prefetchOnExpansion(target: ExpansionTarget, dwellMs: Long) {
         streamPrefetcher.get().prefetchOnExpansion(target.type, target.videoId, target.season, target.episode, dwellMs)
@@ -1361,7 +1371,20 @@ internal fun NewLookHomeContent(
                                 leavingHome = false
                             }
                             when (val payload = item.payload) {
-                                is ModernPayload.ContinueWatching -> onContinueWatchingClick(payload.item)
+                                // As on the reference: the card opens the title's page, where Resume is, unless its links
+                                // are already found (the prefetch while focus rested on it), which plays at once.
+                                is ModernPayload.ContinueWatching -> scope.launch {
+                                    val cw = payload.item
+                                    if (source.isContinueWatchingLoaded(cw)) {
+                                        onContinueWatchingClick(cw)
+                                    } else {
+                                        val (id, type) = when (cw) {
+                                            is ContinueWatchingItem.InProgress -> cw.progress.contentId to cw.progress.contentType
+                                            is ContinueWatchingItem.NextUp -> cw.info.contentId to cw.info.contentType
+                                        }
+                                        onNavigateToDetail(id, type, "")
+                                    }
+                                }
                                 is ModernPayload.Catalog -> if (item.isViewMore) {
                                     onViewMore(row.key)
                                 } else if (row.kind == RowKind.GRAND && grandButton == 0) {
@@ -1388,15 +1411,27 @@ internal fun NewLookHomeContent(
                 }
             }
         }
-        // A fixed, even veil at the bottom (hero view included) over the row below the focused one: the same opacity as
-        // the closed posters, no gradient. It never moves with the page, so scrolling costs it nothing.
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(80.dp)
-                .background(Color.Black.copy(alpha = ClosedVeilAlpha))
-        )
+        // A fixed veil at the bottom (hero view included) over the row below the focused one. It never moves with the
+        // page, so scrolling costs it nothing. Measured on the reference: clear down to 430dp from the top, a ramp
+        // to 68% black by 453.5dp, then even to the screen's edge. It dims whatever passes under it alike (the
+        // next row's title and posters, the last line of the synopsis), which is why that line fades as the page glides.
+        val veilTop = 430.dp
+        if (maxHeight > veilTop) {
+            val ramp = (23.5f / (maxHeight - veilTop).value).coerceIn(0f, 1f)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(maxHeight - veilTop)
+                    .background(
+                        Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            ramp to Color.Black.copy(alpha = BottomVeilAlpha),
+                            1f to Color.Black.copy(alpha = BottomVeilAlpha)
+                        )
+                    )
+            )
+        }
         // Solid OLED black from the top of the screen to just under the tab bar, where the rows rest: a row scrolling
         // off the page goes under it and vanishes, instead of showing around the bar or through its glass. It is part
         // of Home, so it arrives with the rows and leaves with them.
@@ -1734,9 +1769,7 @@ private fun NewLookRowView(
                 )
             }
         }
-        // The row with focus leads; the others' titles step back a little. Faded as a layer, read while drawing, so
-        // moving between rows doesn't recompose both titles for every frame of the fade.
-        val titleAlpha = animateFloatAsState(if (rowShown) 1f else 0.72f, androidx.compose.animation.core.snap(), label = "rowTitle")
+        // Every title is full white: the row below the focused one is dimmed by the veil at the bottom of Home, not here.
         if (!row.hideTitle) Text(
             text = row.title,
             color = Color.White,
@@ -1744,12 +1777,7 @@ private fun NewLookRowView(
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(start = contentStart + 4.dp, top = 4.dp, end = 24.dp)
-                .graphicsLayer {
-                    alpha = titleAlpha.value
-                    compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.ModulateAlpha
-                }
+            modifier = Modifier.padding(start = contentStart + 4.dp, top = 4.dp, end = 24.dp)
         )
         // Backdrops of the next cards are fetched ahead, so moving fast through a row doesn't catch an opened card
         // before its picture is there.

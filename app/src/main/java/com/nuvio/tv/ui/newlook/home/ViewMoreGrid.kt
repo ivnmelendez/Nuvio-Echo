@@ -66,7 +66,8 @@ import com.nuvio.tv.ui.theme.MontserratFamily
  * Measured off its screen (1920x1080, dp = px / 2): posters 168 dp wide at 2:3, 8.5 dp apart, the first column 68 dp
  * from the left (the back arrow stands in the space before it), the grid starting 56 dp from the top under the title.
  * The focused poster wears a white frame and its picture grows about 2% inside it. Moving to a row scrolls the grid
- * so that row is the second one on screen (the first at the top), 200 ms.
+ * so that row's top stands 145 dp under the top of the grid (the first row stays at the top): the row before it
+ * shows half under the title and the next one peeks in at the bottom, 200 ms. Measured off its screen recording.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -95,23 +96,28 @@ internal fun ViewMoreGridScreen(
     BoxWithConstraints(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         val cardWidth = (maxWidth - 68.5.dp - 16.dp - gap * (columns - 1)) / columns
         val rowPitchPx = with(density) { (cardWidth * 1.5f + gap).toPx() }
+        // Where a focused row's top stands, counted from the top of the grid; the first row sits at its natural place.
+        val anchorPx = with(density) { 145.dp.toPx() }
+        fun scrollFor(row: Int) = if (row <= 0) 0f else (row * rowPitchPx - anchorPx).coerceAtLeast(0f)
         val restoreIndex = remember(items) { items.indexOfFirst { it.key == focusedKey }.coerceAtLeast(0) }
 
         LaunchedEffect(items) {
             if (items.isEmpty()) return@LaunchedEffect
             val row = restoreIndex / columns
-            if (row > 1) {
-                gridState.scrollToItem((row - 1) * columns)
-                targetRow = row - 1
+            if (row > 0) {
+                val scroll = scrollFor(row)
+                val whole = (scroll / rowPitchPx).toInt()
+                gridState.scrollToItem(whole * columns, (scroll - whole * rowPitchPx).toInt())
+                targetRow = row
             }
             repeat(3) { androidx.compose.runtime.withFrameNanos { } }
             runCatching { startFocus.requestFocus() }
         }
 
-        // The focused row goes to the second place; it starts from wherever the grid is, so keys in a row compose.
+        // The focused row goes to its place under the title; it starts from wherever the grid is, so keys in a row compose.
         LaunchedEffect(targetRow) {
             val now = gridState.firstVisibleItemIndex / columns * rowPitchPx + gridState.firstVisibleItemScrollOffset
-            val delta = targetRow * rowPitchPx - now
+            val delta = scrollFor(targetRow) - now
             if (kotlin.math.abs(delta) > 1f) gridState.animateScrollBy(delta, tween(200, easing = FastOutSlowInEasing))
         }
 
@@ -158,7 +164,7 @@ internal fun ViewMoreGridScreen(
                             if (next < items.size) next else if (focusedIndex / columns < (items.size - 1) / columns) items.size - 1 else -1
                         } else focusedIndex - columns
                         if (target in items.indices) {
-                            targetRow = ((target / columns) - 1).coerceAtLeast(0)
+                            targetRow = target / columns
                             scope.launch {
                                 // The scroll brings the row in; focus it as soon as it is composed.
                                 repeat(30) {
@@ -179,7 +185,7 @@ internal fun ViewMoreGridScreen(
                         onFocused = {
                             focusedKey = item.key
                             focusedIndex = index
-                            targetRow = ((index / columns) - 1).coerceAtLeast(0)
+                            targetRow = index / columns
                         },
                         onClick = {
                             (item.payload as? ModernPayload.Catalog)?.let {

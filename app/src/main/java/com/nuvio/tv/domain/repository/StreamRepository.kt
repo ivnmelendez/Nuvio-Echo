@@ -28,6 +28,9 @@ interface StreamRepository {
         speculative: Boolean = false
     ): Flow<NetworkResult<List<AddonStreams>>>
 
+    /** Whether a finished, still fresh search for this exact request already holds links (see the prefetcher). */
+    suspend fun hasLoadedStreams(type: String, videoId: String, season: Int? = null, episode: Int? = null): Boolean
+
     /**
      * Fetches streams from a specific addon.
      *

@@ -2160,8 +2160,9 @@ internal fun PlayerRuntimeController.resetLoadingOverlayForNewStream() {
     _uiState.update { state ->
         state.copy(
             showLoadingOverlay = state.loadingOverlayEnabled,
-            // A quality or audio switch loads under the controls: they stay as the viewer has them.
-            showControls = if (isSourceSwitching()) state.showControls else false,
+            // A quality or audio switch loads under the controls: they stay as the viewer has them. A first start
+            // shows them over the black, as on the reference.
+            showControls = if (isSourceSwitching()) state.showControls else state.loadingOverlayEnabled,
             loadingMessage = preparingMessage,
             loadingIssueReportVisible = false,
             loadingIssueElapsedMs = 0L,

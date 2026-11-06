@@ -113,6 +113,7 @@ import com.nuvio.tv.domain.model.MetaPreview
 import com.nuvio.tv.domain.model.TraktCommentReview
 import com.nuvio.tv.domain.model.Video
 import com.nuvio.tv.ui.components.ImdbRatingSourceLabel
+import com.nuvio.tv.ui.util.ReadableTextStyle
 import com.nuvio.tv.ui.theme.NuvioTheme
 import com.nuvio.tv.ui.util.localizedGenreLabel
 import com.nuvio.tv.ui.util.rememberLongPressKeyTracker
@@ -878,12 +879,12 @@ private fun NdMetaLines(meta: Meta, isSeries: Boolean, tmdbRating: Float?) {
     ) {
         if (percent != null) {
             DetailGlyphIcon(DetailGlyph.THUMB_UP, true, like, 18.dp)
-            Text("$percent%", color = like, fontSize = 13.sp, fontFamily = font, maxLines = 1)
+            Text("$percent%", color = like, fontSize = 13.sp, fontFamily = font, style = ReadableTextStyle, maxLines = 1)
         }
-        year?.let { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, maxLines = 1) }
+        year?.let { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, style = ReadableTextStyle, maxLines = 1) }
         if (genres.isNotEmpty()) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.5.dp)) {
-                genres.forEach { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, maxLines = 1) }
+                genres.forEach { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, style = ReadableTextStyle, maxLines = 1) }
             }
         }
         age?.let {
@@ -892,12 +893,12 @@ private fun NdMetaLines(meta: Meta, isSeries: Boolean, tmdbRating: Float?) {
                     .height(21.dp)
                     .widthIn(min = 16.5.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(Color(0xFF9B9B9B))
+                    .background(Color.White.copy(alpha = 0.49f))
                     .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center
-            ) { Text(it, color = Color(0xFF1A1A1A), fontSize = 13.sp, fontFamily = font, fontWeight = FontWeight.Medium, maxLines = 1) }
+            ) { Text(it, color = Color.White, fontSize = 13.sp, fontFamily = font, fontWeight = FontWeight.Medium, style = ReadableTextStyle, maxLines = 1) }
         }
-        runtime?.let { Text(it, color = Color(0xFFB3B3B3), fontSize = 13.sp, fontFamily = font, maxLines = 1) }
+        runtime?.let { Text(it, color = Color(0xFFB3B3B3), fontSize = 13.sp, fontFamily = font, style = ReadableTextStyle, maxLines = 1) }
     }
 }
 
@@ -929,6 +930,7 @@ private fun CreditLine(label: String, value: String) {
         color = Color(0xFF9A9A9A),
         fontSize = 13.sp,
         lineHeight = 18.sp,
+        style = ReadableTextStyle,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -954,6 +956,7 @@ private fun NdSynopsis(
         lineHeight = 18.sp,
         letterSpacing = 0.sp,
         fontFamily = com.nuvio.tv.ui.theme.MontserratFamily,
+        style = ReadableTextStyle,
         maxLines = 3,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier.fillMaxWidth()

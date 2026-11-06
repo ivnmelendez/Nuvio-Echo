@@ -662,15 +662,9 @@ class SearchViewModel @Inject constructor(
                     extraArgs = emptyMap()
                 )
             }
-            // Only shimmer when there is nothing real to look at. If the previous query's results
-            // are still up, they stay until this query's results replace them, so refining a search
-            // is a single swap rather than results -> shimmer -> results on every letter.
-            _uiState.update { state ->
-                val showingRealRows = state.catalogRows.any { row ->
-                    row.items.firstOrNull()?.id?.startsWith("__placeholder_") != true
-                }
-                if (showingRealRows) state else state.copy(catalogRows = placeholderRows)
-            }
+            // The previous query's results leave as this one's search starts, as on the reference: the page empties,
+            // then each kind of result comes in as its catalogs answer, the ones still out shown as skeletons.
+            _uiState.update { it.copy(catalogRows = placeholderRows) }
 
             val jobs = searchTargets.map { (addon, catalog) ->
                 launch {

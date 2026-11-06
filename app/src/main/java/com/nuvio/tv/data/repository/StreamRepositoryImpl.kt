@@ -87,20 +87,7 @@ class StreamRepositoryImpl @Inject constructor(
         speculative: Boolean
     ): Flow<NetworkResult<List<AddonStreams>>> = flow {
         val sourceConfiguration = captureSourceConfiguration()
-        val requestKey = StreamSearchRequestKey(
-            profileId = sourceConfiguration.profileId,
-            type = type.lowercase(),
-            videoId = videoId,
-            season = season,
-            episode = episode,
-            sourceConfiguration = buildSourceConfigurationKey(
-                addons = sourceConfiguration.addons,
-                pluginsEnabled = sourceConfiguration.pluginsEnabled,
-                enabledScrapers = sourceConfiguration.enabledScrapers,
-                groupPluginsByRepository = sourceConfiguration.groupPluginsByRepository,
-                pluginRepositories = sourceConfiguration.pluginRepositories
-            )
-        )
+        val requestKey = requestKeyFor(sourceConfiguration, type, videoId, season, episode)
 
         emitAll(
             streamSearchSessions.observe(
@@ -120,6 +107,30 @@ class StreamRepositoryImpl @Inject constructor(
             }
         )
     }
+
+    private fun requestKeyFor(
+        sourceConfiguration: StreamSourceConfigurationSnapshot,
+        type: String,
+        videoId: String,
+        season: Int?,
+        episode: Int?
+    ) = StreamSearchRequestKey(
+        profileId = sourceConfiguration.profileId,
+        type = type.lowercase(),
+        videoId = videoId,
+        season = season,
+        episode = episode,
+        sourceConfiguration = buildSourceConfigurationKey(
+            addons = sourceConfiguration.addons,
+            pluginsEnabled = sourceConfiguration.pluginsEnabled,
+            enabledScrapers = sourceConfiguration.enabledScrapers,
+            groupPluginsByRepository = sourceConfiguration.groupPluginsByRepository,
+            pluginRepositories = sourceConfiguration.pluginRepositories
+        )
+    )
+
+    override suspend fun hasLoadedStreams(type: String, videoId: String, season: Int?, episode: Int?): Boolean =
+        streamSearchSessions.hasLoadedStreams(requestKeyFor(captureSourceConfiguration(), type, videoId, season, episode))
 
     private suspend fun captureSourceConfiguration(): StreamSourceConfigurationSnapshot {
         while (true) {

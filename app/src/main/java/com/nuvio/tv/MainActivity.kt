@@ -968,9 +968,6 @@ open class MainActivity : ComponentActivity() {
                             autoNextOverlay?.let { ov ->
                                 com.nuvio.tv.ui.screens.player.LoadingOverlay(
                                     visible = true,
-                                    backdropUrl = ov.backdrop,
-                                    logoUrl = ov.logo,
-                                    title = ov.title,
                                     message = ov.message ?: stringResource(R.string.external_auto_next_loading),
                                     progress = ov.progress,
                                     modifier = Modifier.fillMaxSize()

@@ -95,6 +95,10 @@ class StreamPrefetcher @Inject constructor(
         }
     }
 
+    /** The search a card's click would make has already finished with links (see [prefetchAfterDwell]). */
+    suspend fun isLoaded(type: String, videoId: String, season: Int?, episode: Int?): Boolean =
+        runCatching { streamRepository.hasLoadedStreams(type, videoId, season, episode) }.getOrDefault(false)
+
     private fun startSpeculativeSearch(type: String, videoId: String, season: Int?, episode: Int?) {
         if (type.isBlank() || videoId.isBlank()) return
         val key = "${type.lowercase()}|$videoId|${season ?: ""}|${episode ?: ""}"

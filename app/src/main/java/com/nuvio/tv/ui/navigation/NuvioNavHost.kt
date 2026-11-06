@@ -136,7 +136,8 @@ private fun PlaybackNavHost(
             val isAutoPlayNav = targetState.arguments
                 ?.getString("autoPlayNav")
                 ?.toBooleanStrictOrNull() == true
-            if (isStreamToPlayer(from, to) && isAutoPlayNav) {
+            // The player cuts in over black: fading it in showed the page it came from through it.
+            if (isStreamToPlayer(from, to)) {
                 EnterTransition.None
             } else {
                 fadeIn(animationSpec = tween(SCREEN_ENTER_MS, easing = FastOutSlowInEasing))
@@ -1209,7 +1210,7 @@ private fun PlaybackNavHost(
         composable(Screen.Search.route) { backStackEntry ->
             val searchViewModel: com.nuvio.tv.ui.screens.search.SearchViewModel =
                 androidx.hilt.navigation.compose.hiltViewModel(backStackEntry)
-            com.nuvio.tv.ui.screens.search.KeyboardSearchScreen(
+            com.nuvio.tv.ui.screens.search.SearchScreen(
                 searchViewModel = searchViewModel,
                 onNavigateToDetail = { itemId, itemType, addonBaseUrl ->
                     navController.navigate(

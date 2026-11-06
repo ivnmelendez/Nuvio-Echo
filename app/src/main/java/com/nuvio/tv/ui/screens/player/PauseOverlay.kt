@@ -35,6 +35,7 @@ import coil3.request.crossfade
 import com.nuvio.tv.ui.screens.detail.DetailGlyph
 import com.nuvio.tv.ui.screens.detail.DetailGlyphIcon
 import com.nuvio.tv.ui.theme.MontserratFamily
+import com.nuvio.tv.ui.util.ReadableTextStyle
 import com.nuvio.tv.ui.util.contentTextDirection
 import com.nuvio.tv.ui.util.localizeEpisodeTitle
 
@@ -124,7 +125,7 @@ fun PauseOverlay(
             if (!description.isNullOrBlank()) {
                 Text(
                     text = description,
-                    style = androidx.compose.ui.text.TextStyle(textDirection = description.contentTextDirection()),
+                    style = ReadableTextStyle.copy(textDirection = description.contentTextDirection()),
                     color = Color.White.copy(alpha = 0.92f),
                     fontSize = 11.9.sp,
                     lineHeight = 16.sp,
@@ -150,7 +151,7 @@ private fun PauseText(
 ) {
     Text(
         text = text, color = color, fontSize = size, fontWeight = weight,
-        fontFamily = MontserratFamily, letterSpacing = 0.sp, maxLines = 1, modifier = modifier
+        fontFamily = MontserratFamily, letterSpacing = 0.sp, style = ReadableTextStyle, maxLines = 1, modifier = modifier
     )
 }
 
@@ -161,7 +162,11 @@ private fun PauseTitle(title: String, logo: String?) {
     if (!logo.isNullOrBlank() && !logoFailed) {
         val context = LocalContext.current
         AsyncImage(
-            model = remember(logo) { ImageRequest.Builder(context).data(logo).memoryCacheKey(logo).crossfade(true).build() },
+            // TMDB's w500 logo is stretched to the 900 px this box is at 2x; the original keeps its edges sharp.
+            model = remember(logo) {
+                val sharp = logo.replace("/t/p/w500/", "/t/p/original/")
+                ImageRequest.Builder(context).data(sharp).memoryCacheKey(sharp).crossfade(true).build()
+            },
             contentDescription = title,
             contentScale = ContentScale.Fit,
             alignment = Alignment.BottomStart,

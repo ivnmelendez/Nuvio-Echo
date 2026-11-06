@@ -89,6 +89,14 @@ internal class StreamSearchSessionCache(
         }
     }
 
+    /** A finished search for [key] that found links and is still fresh: opening the title can play at once. */
+    suspend fun hasLoadedStreams(key: StreamSearchRequestKey): Boolean = mutex.withLock {
+        removeExpiredLocked()
+        val session = sessions[key] ?: return@withLock false
+        val snapshot = session.state.value
+        snapshot.isComplete && (snapshot.result as? NetworkResult.Success)?.data?.any { it.streams.isNotEmpty() } == true
+    }
+
     private suspend fun acquireSession(
         key: StreamSearchRequestKey,
         forceRefresh: Boolean,

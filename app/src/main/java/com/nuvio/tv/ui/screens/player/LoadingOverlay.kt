@@ -52,185 +52,40 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.nuvio.tv.R
 
+/**
+ * What shows while a stream starts, as on the reference: plain black with a small spinner, never the title's picture
+ * and logo. The status line and progress bar still appear under it when the player's loading status is switched on.
+ */
 @Composable
 fun LoadingOverlay(
     visible: Boolean,
-    backdropUrl: String?,
-    logoUrl: String?,
-    title: String? = null,
     message: String? = null,
     progress: Float? = null,
+    /** Off while the player's controls are over it: the reference shows only them on the black. */
+    showSpinner: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    var logoLoadFailed by remember(logoUrl) { mutableStateOf(false) }
-    val showLogo = !logoUrl.isNullOrBlank() && !logoLoadFailed
-
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(250)),
         exit = fadeOut(animationSpec = tween(200)),
         modifier = modifier
     ) {
-        val context = LocalContext.current
-        val logoAlpha by animateFloatAsState(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 700, delayMillis = 400, easing = LinearEasing),
-            label = "loadingLogoAlpha"
-        )
-        val infiniteTransition = rememberInfiniteTransition(label = "loadingLogoPulse")
-        val logoScale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.04f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 2000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "loadingLogoScale"
-        )
-        val backdropRequest = remember(context, backdropUrl) {
-            backdropUrl?.takeIf { it.isNotBlank() }?.let { url ->
-                ImageRequest.Builder(context)
-                    .data(url)
-                    .crossfade(true)
-                    .build()
-            }
-        }
-        val logoRequest = remember(context, logoUrl) {
-            logoUrl?.takeIf { it.isNotBlank() }?.let { url ->
-                ImageRequest.Builder(context)
-                    .data(url)
-                    .crossfade(true)
-                    .build()
-            }
-        }
-        val overlayBrush = remember {
-            Brush.verticalGradient(
-                colorStops = arrayOf(
-                    0f to Color(0x4D000000),
-                    0.35f to Color(0x99000000),
-                    0.7f to Color(0xCC000000),
-                    1f to Color(0xE6000000)
-                )
-            )
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            if (backdropRequest != null) {
-                AsyncImage(
-                    model = backdropRequest,
-                    contentDescription = stringResource(R.string.cd_loading_backdrop),
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    alignment = Alignment.TopEnd
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(overlayBrush)
-            )
-
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (showLogo) {
-                        val isLogoFillActive = progress != null
-                        val targetFill = (progress ?: 0f).coerceIn(0f, 1f)
-                        val animatedFill by animateFloatAsState(
-                            targetValue = targetFill,
-                            // When completing (target ≈ 1.0), animate faster so the
-                            // fill finishes before the overlay's 200ms fade-out;
-                            // otherwise use the smoother 400ms tween for buffering.
-                            animationSpec = tween(
-                                durationMillis = if (targetFill >= 0.999f) 160 else 400,
-                                easing = LinearEasing
-                            ),
-                            label = "loadingLogoFill"
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(320.dp)
-                                .height(180.dp)
-                        ) {
-                            // Base layer: semi-transparent logo (always visible).
-                            // When the fill effect is active we hold a steady low
-                            // alpha; otherwise fall back to the original fade+pulse.
-                            AsyncImage(
-                                model = logoRequest,
-                                contentDescription = stringResource(R.string.cd_loading_logo),
-                                onError = { logoLoadFailed = true },
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .graphicsLayer {
-                                        alpha = if (isLogoFillActive) 0.25f else logoAlpha
-                                        if (!isLogoFillActive) {
-                                            scaleX = logoScale
-                                            scaleY = logoScale
-                                        }
-                                    },
-                                contentScale = ContentScale.Fit
-                            )
-                            // Foreground layer: full-alpha logo clipped from left
-                            // to right by progress, giving the illusion that the
-                            // base logo is filling up as buffering proceeds.
-                            if (isLogoFillActive) {
-                                AsyncImage(
-                                    model = logoRequest,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .drawWithContent {
-                                            val clipWidth = size.width * animatedFill
-                                            if (clipWidth > 0f) {
-                                                clipRect(right = clipWidth) {
-                                                    this@drawWithContent.drawContent()
-                                                }
-                                            }
-                                        },
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-                        }
-                    } else if (!title.isNullOrBlank()) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2,
-                            modifier = Modifier
-                                .padding(horizontal = NuvioTheme.spacing.xl)
-                                .graphicsLayer {
-                                    alpha = logoAlpha
-                                    scaleX = logoScale
-                                    scaleY = logoScale
-                                }
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier.size(180.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingIndicator()
-                        }
-                    }
+                if (showSpinner) LoadingIndicator(color = Color.White)
 
-                }
-
-                // The horizontal progress bar is suppressed when the show logo
-                // is acting as the fill indicator. The text message stays visible.
-                val showHorizontalBar = progress != null && !showLogo
+                // The status line and, when there is progress, its bar.
+                                val showHorizontalBar = progress != null
                 if (!message.isNullOrBlank() || showHorizontalBar) {
-                    val messageOffset = if (showLogo || !title.isNullOrBlank()) 94.dp else 86.dp
+                    val messageOffset = 60.dp
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier

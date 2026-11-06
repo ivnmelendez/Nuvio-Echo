@@ -1216,11 +1216,9 @@ private fun PlayerScreenContent(
             // loading when the intro ends.
             visible = uiState.showLoadingOverlay && uiState.error == null && !postPlayRecommendationState.isVisible &&
                 !introActive,
-            backdropUrl = uiState.backdrop,
-            logoUrl = uiState.logo,
-            title = uiState.title,
             message = uiState.loadingMessage.takeIf { uiState.showPlayerLoadingStatus || uiState.isTorrentStream },
             progress = uiState.loadingProgress,
+            showSpinner = !uiState.showControls,
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)
@@ -1467,9 +1465,9 @@ private fun PlayerScreenContent(
         }
 
         // Controls overlay
+        // They show over the black while the stream starts, as on the reference, so they sit above the loading veil.
         AnimatedVisibility(
             visible = uiState.showControls && uiState.error == null &&
-                !uiState.showLoadingOverlay &&
                 !uiState.showStreamInfoOverlay &&
                 !uiState.showSubtitleStylePanel &&
                 !uiState.showSubtitleDelayOverlay &&
@@ -1479,7 +1477,7 @@ private fun PlayerScreenContent(
                 uiState.postPlayMode !is PostPlayMode.StillWatching,
             enter = fadeIn(animationSpec = tween(200)),
             exit = fadeOut(animationSpec = tween(200)),
-            modifier = Modifier.zIndex(1.5f)
+            modifier = Modifier.zIndex(2.05f)
         ) {
             val context = LocalContext.current
             PlayerControlsOverlay(
@@ -2438,7 +2436,8 @@ private fun PlayerControlsOverlay(
                             .size(width = 24.5.dp, height = 31.5.dp)
                             .semantics { contentDescription = if (uiState.isPlaying) pauseDescription else playDescription }
                     ) {
-                        if (uiState.isPlaying) {
+                        // Pause too while the stream starts: playback is about to run, as on the reference.
+                        if (uiState.isPlaying || uiState.showLoadingOverlay) {
                             // The reference's pause: two square bars 18 x 56 px, 10 px apart, from the slot's left edge.
                             val barW = 9.dp.toPx()
                             val barH = 28.dp.toPx()

@@ -93,6 +93,9 @@ internal val NoBackdropShift: () -> Float = { 0f }
 
 /** The one fixed dark veil shared by closed posters and the row below the focused one. */
 internal const val ClosedVeilAlpha = 0.28f
+
+/** The veil at the bottom of Home, over the row below the focused one: the reference lets 32% through. */
+internal const val BottomVeilAlpha = 0.68f
 private val LikeOrange = Color(0xFFE79E0A)
 private val LikeRed = Color(0xFFE74C3C)
 

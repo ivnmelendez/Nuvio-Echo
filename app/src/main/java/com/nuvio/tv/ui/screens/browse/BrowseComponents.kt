@@ -415,7 +415,7 @@ internal fun BrowsePosterGrid(
  * redrawing twenty crossfades at once.
  */
 @Composable
-private fun BrowsePosterCard(
+internal fun BrowsePosterCard(
     item: MetaPreview,
     width: Dp,
     height: Dp,
