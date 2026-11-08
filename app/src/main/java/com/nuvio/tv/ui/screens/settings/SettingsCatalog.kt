@@ -30,8 +30,6 @@ internal fun visibleSettingsCategories(
 ): List<SettingsCategory> = SettingsCategory.entries.filter { category ->
     // Settings only shows these for now; the rest stays in the code, hidden.
     category == SettingsCategory.PLAYBACK ||
-        category == SettingsCategory.ADDONS ||
-        category == SettingsCategory.TRACKING ||
         category == SettingsCategory.LANGUAGE ||
         category == SettingsCategory.ABOUT
 }
